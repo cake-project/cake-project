@@ -2,7 +2,7 @@ package com.cakemate.cake_platform.domain.proposalForm.entity;
 
 import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
-import com.cakemate.cake_platform.domain.auth.owner.entity.Owner;
+import com.cakemate.cake_platform.domain.auth.signup.owner.entity.Owner;
 import com.cakemate.cake_platform.domain.store.entity.Store;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
