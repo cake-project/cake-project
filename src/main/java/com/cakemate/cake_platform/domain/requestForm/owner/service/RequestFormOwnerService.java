@@ -1,14 +1,14 @@
 package com.cakemate.cake_platform.domain.requestForm.owner.service;
 
-import com.cakemate.cake_platform.domain.requestForm.owner.repository.RequestFormOwnerRepository;
+import com.cakemate.cake_platform.domain.requestForm.repository.RequestFormRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RequestFormOwnerService {
 
-    private final RequestFormOwnerRepository requestFormOwnerRepository;
+    private final RequestFormRepository requestFormRepository;
 
-    public RequestFormOwnerService(RequestFormOwnerRepository requestFormOwnerRepository) {
-        this.requestFormOwnerRepository = requestFormOwnerRepository;
+    public RequestFormOwnerService(RequestFormRepository requestFormRepository) {
+        this.requestFormRepository = requestFormRepository;
     }
 }
