@@ -1,0 +1,77 @@
+package com.cakemate.cake_platform.domain.store.entity;
+
+import com.cakemate.cake_platform.common.entity.BaseTimeEntity;
+import com.cakemate.cake_platform.domain.owner.entity.Owner;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.*;
+import lombok.Getter;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDateTime;
+
+@Getter
+@Entity
+@Table(name = "stores")
+public class Store extends BaseTimeEntity {
+    /**
+     * 컬럼 - 연관관계 컬럼을 제외한 컬럼을 정의합니다.
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id")
+    private Owner owner;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private String address;
+
+    @Column(updatable = false, unique = true)
+    private String businessNumber;
+
+    @Column(nullable = false)
+    private String phoneNumber;
+
+    private String image;
+
+    @Column(nullable = false)
+    private boolean isActive = false;
+
+    @CreatedDate
+    @Column(nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDateTime createAt;
+
+
+
+    /**
+     * 생성자 - 약속된 형태로만 생성가능하도록 합니다.
+     */
+    protected Store() {}
+
+    public Store(Long id, Owner owner, String name, String address,
+                 String businessNumber, String phoneNumber, String image, boolean isActive)
+    {
+        this.id = id;
+        this.owner = owner;
+        this.name = name;
+        this.address = address;
+        this.businessNumber = businessNumber;
+        this.phoneNumber = phoneNumber;
+        this.image = image;
+        this.isActive = isActive;
+    }
+
+    /**
+     * 연관관계 편의 메소드 - 반대쪽에는 연관관계 편의 메소드가 없도록 주의합니다.
+     */
+
+
+    /**
+     * 서비스 메소드 - 외부에서 엔티티를 수정할 메소드를 정의합니다. (단일 책임을 가지도록 주의합니다.)
+     */
+}
