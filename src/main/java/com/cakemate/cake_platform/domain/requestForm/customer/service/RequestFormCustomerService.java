@@ -1,14 +1,15 @@
 package com.cakemate.cake_platform.domain.requestForm.customer.service;
 
-import com.cakemate.cake_platform.domain.requestForm.customer.repository.RequestFormCustomerRepository;
+import com.cakemate.cake_platform.domain.requestForm.repository.RequestFormRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RequestFormCustomerService {
 
-    private final RequestFormCustomerRepository requestFormCustomerRepository;
+    private final RequestFormRepository requestFormRepository;
 
-    public RequestFormCustomerService(RequestFormCustomerRepository requestFormCustomerRepository) {
-        this.requestFormCustomerRepository = requestFormCustomerRepository;
+    public RequestFormCustomerService(RequestFormRepository requestFormRepository) {
+        this.requestFormRepository = requestFormRepository;
+
     }
 }
