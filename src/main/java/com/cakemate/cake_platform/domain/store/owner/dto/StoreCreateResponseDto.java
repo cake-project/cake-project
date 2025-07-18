@@ -1,9 +1,11 @@
 package com.cakemate.cake_platform.domain.store.owner.dto;
 
 import com.cakemate.cake_platform.domain.store.entity.Store;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
-
+@Getter
 public class StoreCreateResponseDto {
 
     private Long id;
@@ -12,6 +14,8 @@ public class StoreCreateResponseDto {
     private String businessNumber;
     private String phoneNumber;
     private String image;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
     private boolean isActive;
 
@@ -26,35 +30,4 @@ public class StoreCreateResponseDto {
         this.isActive = store.isActive();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public String getBusinessNumber() {
-        return businessNumber;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
 }
