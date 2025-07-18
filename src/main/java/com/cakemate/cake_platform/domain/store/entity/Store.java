@@ -53,10 +53,9 @@ public class Store extends BaseTimeEntity {
      */
     protected Store() {}
 
-    public Store(Long id, Owner owner, String name, String address,
+    public Store( Owner owner, String name, String address,
                  String businessNumber, String phoneNumber, String image, boolean isActive)
     {
-        this.id = id;
         this.owner = owner;
         this.name = name;
         this.address = address;
