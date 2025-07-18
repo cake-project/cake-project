@@ -6,11 +6,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/owners")
-public class ProposalForm {
+public class ProposalFormController {
 
     private final ProposalFormService proposalFormService;
 
-    public ProposalForm(ProposalFormService proposalFormService) {
+    public ProposalFormController(ProposalFormService proposalFormService) {
         this.proposalFormService = proposalFormService;
     }
 }
