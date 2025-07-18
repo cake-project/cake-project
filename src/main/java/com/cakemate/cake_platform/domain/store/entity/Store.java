@@ -1,7 +1,7 @@
 package com.cakemate.cake_platform.domain.store.entity;
 
 import com.cakemate.cake_platform.common.entity.BaseTimeEntity;
-import com.cakemate.cake_platform.domain.owner.entity.Owner;
+import com.cakemate.cake_platform.domain.auth.owner.entity.Owner;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
