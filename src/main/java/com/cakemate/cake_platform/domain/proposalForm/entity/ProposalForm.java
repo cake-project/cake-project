@@ -2,7 +2,7 @@ package com.cakemate.cake_platform.domain.proposalForm.entity;
 
 import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
-import com.cakemate.cake_platform.domain.auth.signup.owner.entity.Owner;
+import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.store.entity.Store;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
@@ -45,13 +45,10 @@ public class ProposalForm {
     @Enumerated(value = EnumType.STRING)
     private ProposalFormStatus status;
 
-    @Column(nullable = false)
-    private boolean isActive = false;
-
     protected ProposalForm() {}
 
     public ProposalForm(Long id, RequestForm requestForm, Store store, Owner owner, String title, String content,
-                        int price, LocalDateTime pickupDate, ProposalFormStatus status, boolean isActive) {
+                        int price, LocalDateTime pickupDate, ProposalFormStatus status) {
         this.id = id;
         this.requestForm = requestForm;
         this.store = store;
@@ -61,6 +58,6 @@ public class ProposalForm {
         this.price = price;
         this.pickupDate = pickupDate;
         this.status = status;
-        this.isActive = isActive;
+
     }
 }

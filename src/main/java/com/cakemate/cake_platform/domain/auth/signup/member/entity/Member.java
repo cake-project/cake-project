@@ -1,7 +1,7 @@
 package com.cakemate.cake_platform.domain.auth.signup.member.entity;
 
-import com.cakemate.cake_platform.domain.auth.signup.owner.entity.Owner;
-import com.cakemate.cake_platform.domain.auth.signup.customer.entity.Customer;
+import com.cakemate.cake_platform.domain.auth.entity.Owner;
+import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import jakarta.persistence.*;
 import lombok.Getter;
 
