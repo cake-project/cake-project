@@ -6,20 +6,26 @@ import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.domain.auth.signup.customer.dto.response.CustomerSignUpResponse;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import com.cakemate.cake_platform.domain.auth.signup.customer.repository.CustomerRepository;
+import com.cakemate.cake_platform.domain.member.entity.Member;
+import com.cakemate.cake_platform.domain.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Transactional
 @Service
 public class CustomerSignUpService {
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MemberRepository memberRepository;
 
-    public CustomerSignUpService(CustomerRepository customerRepository, PasswordEncoder passwordEncoder) {
+    public CustomerSignUpService(CustomerRepository customerRepository, PasswordEncoder passwordEncoder, MemberRepository memberRepository) {
         this.customerRepository = customerRepository;
         this.passwordEncoder = passwordEncoder;
+        this.memberRepository = memberRepository;
     }
 
     public ApiResponse<CustomerSignUpResponse> customerSaveProcess(SearchCommand customerSignUpRequest) {
@@ -41,15 +47,21 @@ public class CustomerSignUpService {
         String passwordEncode = passwordEncoder.encode(password);
 
         Customer customerInfo = new Customer(email, passwordEncode, passwordConfirm, name, phoneNumber);
-
         Customer customerSave = customerRepository.save(customerInfo);
+        // Member 테이블에 저장
+        Long customerId = customerInfo.getId();
+        Customer customer = customerRepository
+                .findById(customerId)
+                .orElseThrow(() -> new RuntimeException("CustomerId가 존재하지 않습니다"));
+        Member custmerMember = new Member(customer);
+        memberRepository.save(custmerMember);
 
         CustomerSignUpResponse customerSignUpResponse = new CustomerSignUpResponse(customerSave);
 
         ApiResponse<CustomerSignUpResponse> signUpSuccess
                 = ApiResponse
                 .success(HttpStatus.CREATED,
-                        customerSave.getName()+ "님 회원가입이 완료되었습니다.",
+                        customerSave.getName() + "님 회원가입이 완료되었습니다.",
                         customerSignUpResponse);
         return signUpSuccess;
     }

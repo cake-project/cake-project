@@ -24,8 +24,8 @@ public class CustomerSignInController {
 
         SearchCommand signInRequest = new SearchCommand(email, password);
 
-        ApiResponse<Object> signInProcess = customerSignInService.CustomerSignInProcess(signInRequest);
-        return signInProcess;
+        ApiResponse<Object> customerSignInProcess = customerSignInService.CustomerSignInProcess(signInRequest);
+        return customerSignInProcess;
 
     }
 }

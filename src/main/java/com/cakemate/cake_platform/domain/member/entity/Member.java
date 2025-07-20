@@ -1,4 +1,4 @@
-package com.cakemate.cake_platform.domain.auth.signup.member.entity;
+package com.cakemate.cake_platform.domain.member.entity;
 
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
@@ -10,22 +10,26 @@ import lombok.Getter;
 @Table(name = "members")
 public class Member {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
+    @JoinColumn(name = "customer_id")
     private Customer customer;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false)
+    @JoinColumn(name = "owner_id")
     private Owner owner;
 
-    protected Member() {}
+    protected Member() {
+    }
 
-    public Member(Long id, Customer customerId, Owner ownerId) {
-        this.id = id;
-        this.customer = customerId;
+    public Member(Customer customer) {
+        this.customer = customer;
+    }
+
+    public Member(Owner ownerId) {
         this.owner = ownerId;
     }
 }
