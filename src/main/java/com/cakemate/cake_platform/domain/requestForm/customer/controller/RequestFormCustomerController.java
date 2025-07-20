@@ -4,9 +4,12 @@ import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.domain.requestForm.customer.dto.request.CreateRequestFormCustomerRequestDto;
 import com.cakemate.cake_platform.domain.requestForm.customer.dto.response.CreateRequestFormCustomerResponseDto;
 import com.cakemate.cake_platform.domain.requestForm.customer.dto.response.GetDetailRequestFormCustomerResponseDto;
+import com.cakemate.cake_platform.domain.requestForm.customer.dto.response.GetListRequestFormCustomerResponseDto;
 import com.cakemate.cake_platform.domain.requestForm.customer.service.RequestFormCustomerService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/customers")
@@ -38,6 +41,13 @@ public class RequestFormCustomerController {
             @PathVariable("requestFormId") Long requestFormId
     ) {
         return requestFormCustomerService.getDetailRequestFormService(requestFormId);
+    }
+    /**
+     * 고객 의뢰 다건 조회 API
+     */
+    @GetMapping
+    public ApiResponse<List<GetListRequestFormCustomerResponseDto>> getListRequestForm() {
+        return requestFormCustomerService.getListRequestFormService();
     }
 
 

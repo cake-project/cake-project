@@ -8,6 +8,7 @@ import com.cakemate.cake_platform.domain.proposalForm.repository.ProposalFormRep
 import com.cakemate.cake_platform.domain.requestForm.customer.dto.request.CreateRequestFormCustomerRequestDto;
 import com.cakemate.cake_platform.domain.requestForm.customer.dto.response.CreateRequestFormCustomerResponseDto;
 import com.cakemate.cake_platform.domain.requestForm.customer.dto.response.GetDetailRequestFormCustomerResponseDto;
+import com.cakemate.cake_platform.domain.requestForm.customer.dto.response.GetListRequestFormCustomerResponseDto;
 import com.cakemate.cake_platform.domain.requestForm.customer.repository.RequestFormCustomerRepository;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class RequestFormCustomerService {
@@ -114,6 +116,21 @@ public class RequestFormCustomerService {
         //responseDto 반환
         return ApiResponse.success(
                 HttpStatus.OK, "의뢰서를 성공적으로 조회했습니다.", responseDto
+        );
+    }
+    /**
+     * 고객 의뢰 다건조회 서비스
+     */
+    public ApiResponse<List<GetListRequestFormCustomerResponseDto>> getListRequestFormService() {
+        //조회 & 검증
+        List<RequestForm> allRequestForm = requestFormCustomerRepository.findAllByIsDeletedFalse();
+        List<GetListRequestFormCustomerResponseDto> list = allRequestForm.stream()
+                .map(requestForm -> new GetListRequestFormCustomerResponseDto(
+                        requestForm.getId(), requestForm.getTitle(),
+                        requestForm.getStatus(), requestForm.getCreatedAt()
+                )).toList();
+        return ApiResponse.success(
+                HttpStatus.OK, "의뢰서 목록을 성공적으로 조회했습니다.", list
         );
     }
 }
