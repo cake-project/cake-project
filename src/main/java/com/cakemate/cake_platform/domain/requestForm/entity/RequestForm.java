@@ -60,6 +60,10 @@ public class RequestForm {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
 
+    //아래 추가함
+    @Column(nullable = false)
+    private Boolean isDeleted = false;
+
     protected RequestForm() {}
 
     public RequestForm(ProposalForm proposalForm, Customer customer, String title, String region,

@@ -7,13 +7,13 @@ import lombok.Getter;
 import java.time.LocalDate;
 
 @Getter
-public class RequestFormCustomerResponseDto {
+public class CreateRequestFormCustomerResponseDto {
     private Long id;
     private String title;
     private RequestFormStatus requestStatus;
     private LocalDate createdAt;
 
-    public RequestFormCustomerResponseDto(RequestForm requestForm) {
+    public CreateRequestFormCustomerResponseDto(RequestForm requestForm) {
         this.id = requestForm.getId();
         this.title = requestForm.getTitle();
         this.requestStatus = requestForm.getStatus();

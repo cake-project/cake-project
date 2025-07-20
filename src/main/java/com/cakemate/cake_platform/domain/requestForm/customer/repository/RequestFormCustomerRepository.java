@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface RequestFormCustomerRepository extends JpaRepository<RequestForm, Long> {
-
+    Optional<RequestForm> findByIdAndIsDeletedFalse(Long id);
 }

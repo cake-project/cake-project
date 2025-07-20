@@ -2,8 +2,6 @@ package com.cakemate.cake_platform.domain.requestForm.customer.dto.request;
 
 import com.cakemate.cake_platform.domain.auth.customer.entity.Customer;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
-import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
-import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -13,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Builder
 @Getter
-public class RequestFormCustomerRequestDto {
+public class CreateRequestFormCustomerRequestDto {
 //    @NotNull(message = "고객 정보는 필수입니다.")
     private Customer customer;
 

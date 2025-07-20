@@ -5,17 +5,16 @@ import com.cakemate.cake_platform.domain.auth.customer.entity.Customer;
 import com.cakemate.cake_platform.domain.auth.customer.repository.CustomerRepository;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.proposalForm.repository.ProposalFormRepository;
-import com.cakemate.cake_platform.domain.requestForm.customer.dto.request.RequestFormCustomerRequestDto;
-import com.cakemate.cake_platform.domain.requestForm.customer.dto.response.RequestFormCustomerResponseDto;
+import com.cakemate.cake_platform.domain.requestForm.customer.dto.request.CreateRequestFormCustomerRequestDto;
+import com.cakemate.cake_platform.domain.requestForm.customer.dto.response.CreateRequestFormCustomerResponseDto;
+import com.cakemate.cake_platform.domain.requestForm.customer.dto.response.GetDetailRequestFormCustomerResponseDto;
 import com.cakemate.cake_platform.domain.requestForm.customer.repository.RequestFormCustomerRepository;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 public class RequestFormCustomerService {
@@ -39,14 +38,8 @@ public class RequestFormCustomerService {
     /**
      * 고객 의뢰 생성(등록) 서비스
      */
-    //  "title": "돌잔치 케이크를 의뢰합니다.",
-    //  "region": "서울시 마포구",
-    //  "content": "2단 분홍색 케이크에 아기 그림을 원해요.",
-    //  "desiredPrice": 30000,
-    //  "image": "https://xxxxx.com/xxxx.png",
-    //  "pickupDate": "yyyy-MM-dd hh-mm"
-    public ApiResponse<RequestFormCustomerResponseDto> createRequestFormService(
-            RequestFormCustomerRequestDto requestFormCustomerRequestDto
+    public ApiResponse<CreateRequestFormCustomerResponseDto> createRequestFormService(
+            CreateRequestFormCustomerRequestDto requestFormCustomerRequestDto
     ) {
         //데이터 준비
         String foundTitle = requestFormCustomerRequestDto.getTitle();
@@ -82,10 +75,45 @@ public class RequestFormCustomerService {
 
         //저장
         RequestForm saveRequestForm = requestFormCustomerRepository.save(newRequestForm);
-        RequestFormCustomerResponseDto requestFormCustomerResponseDto
-                = new RequestFormCustomerResponseDto(saveRequestForm);
+        CreateRequestFormCustomerResponseDto requestFormCustomerResponseDto
+                = new CreateRequestFormCustomerResponseDto(saveRequestForm);
         return ApiResponse.success(
                 HttpStatus.OK, "의뢰가 성공적으로 등록되었습니다.", requestFormCustomerResponseDto
+        );
+    }
+    /**
+     * 고객 의뢰 단건조회 서비스
+     */
+    public ApiResponse<GetDetailRequestFormCustomerResponseDto> getDetailRequestFormService(Long requestFormId) {
+        //조회 & 검증
+        RequestForm requestForm = requestFormCustomerRepository.findByIdAndIsDeletedFalse(
+                requestFormId
+                ).orElseThrow(() -> new RuntimeException("존재하지 않는 의뢰서 입니다."));
+        Long foundRequestFormId = requestForm.getId();
+        String foundRequestFormTitle = requestForm.getTitle();
+        String foundRequestFormRegion = requestForm.getRegion();
+        String foundRequestFormContent = requestForm.getContent();
+        Integer foundRequestFormDesiredPrice = requestForm.getDesiredPrice();
+        String foundRequestFormImage = requestForm.getImage();
+        LocalDateTime foundRequestFormPickupDate = requestForm.getPickupDate();
+        RequestFormStatus foundRequestFormStatus = requestForm.getStatus();
+        LocalDateTime foundRequestFormCreatedAt = requestForm.getCreatedAt();
+
+        //responseDto 만들기
+        GetDetailRequestFormCustomerResponseDto responseDto = new GetDetailRequestFormCustomerResponseDto(
+                foundRequestFormId,
+                foundRequestFormTitle,
+                foundRequestFormRegion,
+                foundRequestFormContent,
+                foundRequestFormDesiredPrice,
+                foundRequestFormImage,
+                foundRequestFormPickupDate,
+                foundRequestFormStatus,
+                foundRequestFormCreatedAt
+        );
+        //responseDto 반환
+        return ApiResponse.success(
+                HttpStatus.OK, "의뢰서를 성공적으로 조회했습니다.", responseDto
         );
     }
 }
