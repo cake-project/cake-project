@@ -58,14 +58,14 @@ public class RequestForm {
     @CreatedDate
     @Column(nullable = false, updatable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     protected RequestForm() {}
 
-    public RequestForm(Long id, ProposalForm proposalForm, Customer customer, String title, String region,
+    public RequestForm(ProposalForm proposalForm, Customer customer, String title, String region,
                        String content, int desiredPrice, String image, LocalDateTime pickupDate,
-                       RequestFormStatus status, boolean isActive) {
-        this.id = id;
+                       RequestFormStatus status) {
+
         this.proposalForm = proposalForm;
         this.customer = customer;
         this.title = title;
@@ -75,6 +75,5 @@ public class RequestForm {
         this.image = image;
         this.pickupDate = pickupDate;
         this.status = status;
-        this.isActive = isActive;
     }
 }

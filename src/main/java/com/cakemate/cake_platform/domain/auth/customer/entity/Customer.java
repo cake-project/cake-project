@@ -2,10 +2,12 @@ package com.cakemate.cake_platform.domain.auth.customer.entity;
 
 import com.cakemate.cake_platform.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Entity
+@Builder
 @Table(name = "customers")
 public class Customer extends BaseTimeEntity {
 
