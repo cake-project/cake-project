@@ -1,6 +1,6 @@
 package com.cakemate.cake_platform.domain.store.customer.service;
 
-import com.cakemate.cake_platform.domain.store.customer.command.SearchCommand;
+import com.cakemate.cake_platform.domain.store.customer.command.StoreSearchCommand;
 import com.cakemate.cake_platform.domain.store.customer.dto.StoreSummaryResponseDto;
 import com.cakemate.cake_platform.domain.store.entity.Store;
 import com.cakemate.cake_platform.domain.store.owner.repository.StoreOwnerRepository;
@@ -21,8 +21,8 @@ public class StoreCustomerService {
     public List<StoreSummaryResponseDto> getStoreList(String address) {
         List<Store> stores;
 
-        SearchCommand searchCommand = new SearchCommand(address);
-        boolean hasAddress = searchCommand.hasAddress();
+        StoreSearchCommand storeSearchCommand = new StoreSearchCommand(address);
+        boolean hasAddress = storeSearchCommand.hasAddress();
 
         if (hasAddress) {
             stores = storeOwnerRepository.findByAddressContaining(address);
