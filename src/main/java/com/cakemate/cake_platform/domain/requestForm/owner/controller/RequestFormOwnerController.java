@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/owners")
+@RequestMapping("/api")
 public class RequestFormOwnerController {
 
     private final RequestFormOwnerService requestFormOwnerService;
@@ -20,7 +20,7 @@ public class RequestFormOwnerController {
     }
 
     // 점주 -> 의뢰서 단건 조회 API
-    @GetMapping("/{ownerId}/requestForms/{requestFormId}")
+    @GetMapping("/owners/{ownerId}/requestForms/{requestFormId}")
     public ApiResponse getRequestDetailOwnerAPI(
             @PathVariable Long ownerId,
             @PathVariable Long requestFormId
@@ -32,7 +32,7 @@ public class RequestFormOwnerController {
     }
 
     // 점주 -> 의뢰서 목록 조회 API
-    @GetMapping("/{ownerId}/requestForms")
+    @GetMapping("/owners/{ownerId}/requestForms")
     public ApiResponse getRequestListOwnerAPI(
             @PathVariable Long ownerId,
             @RequestParam(defaultValue = "1") int page,

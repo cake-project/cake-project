@@ -15,6 +15,7 @@ import com.cakemate.cake_platform.domain.requestForm.repository.RequestFormRepos
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -58,6 +59,7 @@ public class OrderService {
     }
 
     // 소비자 -> 주문 목록 조회 Service
+    @Transactional(readOnly = true)
     public OrderPageResponseDto getCustomerOrderPageService(Long customerId, Pageable pageable) {
         Page<Order> orderPage = orderRepository.findByRequestFormCustomerId(customerId, pageable);
 

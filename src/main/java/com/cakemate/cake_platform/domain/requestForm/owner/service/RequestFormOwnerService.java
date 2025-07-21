@@ -11,6 +11,7 @@ import com.cakemate.cake_platform.domain.store.repository.StoreRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,6 +29,7 @@ public class RequestFormOwnerService {
     }
 
     // 점주 -> 의뢰서 단건 조회 Service
+    @Transactional(readOnly = true)
     public RequestFormDetailOwnerResponseDto getRequestDetailOwnerService(Long ownerId, Long requestFormId) {
 
         // 데이터 준비
@@ -50,6 +52,7 @@ public class RequestFormOwnerService {
     }
 
     // 점주 -> 의뢰서 목록 조회 Service
+    @Transactional(readOnly = true)
     public RequestFormPageOwnerResponseDto<RequestFormDetailOwnerResponseDto> getRequestListOwnerService(Long ownerId, Pageable pageable) {
         // 오너 아이디로 가게 찾기 -> 가게 아이디로 가게 주소 찾기 -> 가게 주소랑 의뢰서 지역 일치하는 의뢰서 찾기
         Store store = storeRepository.findByOwnerId(ownerId)
