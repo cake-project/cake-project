@@ -1,15 +1,14 @@
 package com.cakemate.cake_platform.domain.requestForm.customer.service;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
-import com.cakemate.cake_platform.domain.auth.customer.entity.Customer;
-import com.cakemate.cake_platform.domain.auth.customer.repository.CustomerRepository;
+import com.cakemate.cake_platform.domain.auth.entity.Customer;
+import com.cakemate.cake_platform.domain.auth.signup.customer.repository.CustomerRepository;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.proposalForm.repository.ProposalFormRepository;
 import com.cakemate.cake_platform.domain.requestForm.customer.dto.request.CreateRequestFormCustomerRequestDto;
 import com.cakemate.cake_platform.domain.requestForm.customer.dto.response.CreateRequestFormCustomerResponseDto;
 import com.cakemate.cake_platform.domain.requestForm.customer.dto.response.GetDetailRequestFormCustomerResponseDto;
 import com.cakemate.cake_platform.domain.requestForm.customer.dto.response.GetListRequestFormCustomerResponseDto;
-import com.cakemate.cake_platform.domain.requestForm.customer.repository.RequestFormCustomerRepository;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
 import org.springframework.http.HttpStatus;
@@ -23,16 +22,15 @@ import java.util.List;
 public class RequestFormCustomerService {
 
     //속
-    private final RequestFormCustomerRepository requestFormCustomerRepository;
     private final ProposalFormRepository proposalFormRepository;
     private final CustomerRepository customerRepository;
     private final RequestFormRepository requestFormRepository;
 
     //생
     public RequestFormCustomerService(
-            RequestFormCustomerRepository requestFormCustomerRepository, ProposalFormRepository proposalFormRepository, CustomerRepository customerRepository
+            RequestFormRepository requestFormRepository, ProposalFormRepository proposalFormRepository, CustomerRepository customerRepository
     ) {
-        this.requestFormCustomerRepository = requestFormCustomerRepository;
+        this.requestFormRepository = requestFormRepository;
         this.proposalFormRepository = proposalFormRepository;
         this.customerRepository = customerRepository;
     }
@@ -78,21 +76,22 @@ public class RequestFormCustomerService {
         );
 
         //저장
-        RequestForm saveRequestForm = requestFormCustomerRepository.save(newRequestForm);
+        RequestForm saveRequestForm = requestFormRepository.save(newRequestForm);
         CreateRequestFormCustomerResponseDto requestFormCustomerResponseDto
                 = new CreateRequestFormCustomerResponseDto(saveRequestForm);
         return ApiResponse.success(
                 HttpStatus.OK, "의뢰가 성공적으로 등록되었습니다.", requestFormCustomerResponseDto
         );
     }
+
     /**
      * 고객 의뢰 단건조회 서비스
      */
     public ApiResponse<GetDetailRequestFormCustomerResponseDto> getDetailRequestFormService(Long requestFormId) {
         //조회 & 검증
-        RequestForm requestForm = requestFormCustomerRepository.findByIdAndIsDeletedFalse(
+        RequestForm requestForm = requestFormRepository.findByIdAndIsDeletedFalse(
                 requestFormId
-                ).orElseThrow(() -> new RuntimeException("존재하지 않는 의뢰서 입니다."));
+        ).orElseThrow(() -> new RuntimeException("존재하지 않는 의뢰서 입니다."));
         Long foundRequestFormId = requestForm.getId();
         String foundRequestFormTitle = requestForm.getTitle();
         String foundRequestFormRegion = requestForm.getRegion();
@@ -120,12 +119,13 @@ public class RequestFormCustomerService {
                 HttpStatus.OK, "의뢰서를 성공적으로 조회했습니다.", responseDto
         );
     }
+
     /**
      * 고객 의뢰 다건조회 서비스
      */
     public ApiResponse<List<GetListRequestFormCustomerResponseDto>> getListRequestFormService() {
         //조회 & 검증
-        List<RequestForm> allRequestForm = requestFormCustomerRepository.findAllByIsDeletedFalse();
+        List<RequestForm> allRequestForm = requestFormRepository.findAllByIsDeletedFalse();
         List<GetListRequestFormCustomerResponseDto> list = allRequestForm.stream()
                 .map(requestForm -> new GetListRequestFormCustomerResponseDto(
                         requestForm.getId(), requestForm.getTitle(),
@@ -134,8 +134,5 @@ public class RequestFormCustomerService {
         return ApiResponse.success(
                 HttpStatus.OK, "의뢰서 목록을 성공적으로 조회했습니다.", list
         );
-    public RequestFormCustomerService(RequestFormRepository requestFormRepository) {
-        this.requestFormRepository = requestFormRepository;
-
     }
 }
