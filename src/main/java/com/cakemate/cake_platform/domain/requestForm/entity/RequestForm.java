@@ -1,6 +1,5 @@
 package com.cakemate.cake_platform.domain.requestForm.entity;
 
-
 import com.cakemate.cake_platform.domain.order.entity.Order;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
@@ -71,7 +70,6 @@ public class RequestForm {
     public RequestForm(ProposalForm proposalForm, Customer customer, String title, String region,
                        String content, int desiredPrice, String image, LocalDateTime pickupDate,
                        RequestFormStatus status) {
-
         this.proposalForm = proposalForm;
         this.customer = customer;
         this.title = title;

@@ -83,10 +83,6 @@ public class RequestFormCustomerService {
                         saveRequestForm.getId(), saveRequestForm.getTitle(),
                 saveRequestForm.getStatus(), saveRequestForm.getCreatedAt()
         );
-        //        this.id = id;
-        //        this.title = title;
-        //        this.requestStatus = requestStatus;
-        //        this.createdAt = createdAt;
         return ApiResponse.success(
                 HttpStatus.OK, "의뢰가 성공적으로 등록되었습니다.", requestFormCustomerResponseDto
         );
