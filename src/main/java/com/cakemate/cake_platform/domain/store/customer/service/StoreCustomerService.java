@@ -31,7 +31,10 @@ public class StoreCustomerService {
         } else {
             stores = storeOwnerRepository.findAll();
         }
-
+        // 조회 결과 없을 경우 예외
+        if (stores.isEmpty()) {
+            throw new IllegalArgumentException("조건에 맞는 가게가 존재하지 않습니다.");
+        }
         return stores.stream()
                 .map(StoreSummaryResponseDto::new)
                 .collect(Collectors.toList());
