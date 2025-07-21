@@ -29,8 +29,7 @@ public class Order {
 
     protected Order() {}
 
-    public Order(Long id, RequestForm requestForm, ProposalForm proposalForm, OrderStatus status) {
-        this.id = id;
+    public Order(RequestForm requestForm, ProposalForm proposalForm, OrderStatus status) {
         this.requestForm = requestForm;
         this.proposalForm = proposalForm;
         this.status = status;

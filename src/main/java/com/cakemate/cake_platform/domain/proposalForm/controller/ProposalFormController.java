@@ -5,6 +5,8 @@ import com.cakemate.cake_platform.domain.proposalForm.dto.ProposalFormContainsRe
 import com.cakemate.cake_platform.domain.proposalForm.dto.ProposalFormCreateRequestDto;
 import com.cakemate.cake_platform.domain.proposalForm.dto.ProposalFormDataDto;
 import com.cakemate.cake_platform.domain.proposalForm.service.ProposalFormService;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
