@@ -1,7 +1,7 @@
 package com.cakemate.cake_platform.domain.store.entity;
 
 import com.cakemate.cake_platform.common.entity.BaseTimeEntity;
-import com.cakemate.cake_platform.domain.auth.owner.entity.Owner;
+import com.cakemate.cake_platform.domain.auth.signup.owner.entity.Owner;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -44,7 +44,7 @@ public class Store extends BaseTimeEntity {
     @CreatedDate
     @Column(nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
 
 

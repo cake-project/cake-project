@@ -3,7 +3,7 @@ package com.cakemate.cake_platform.domain.requestForm.entity;
 
 import com.cakemate.cake_platform.domain.order.entity.Order;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
-import com.cakemate.cake_platform.domain.auth.customer.entity.Customer;
+import com.cakemate.cake_platform.domain.auth.signup.customer.entity.Customer;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
@@ -38,7 +38,7 @@ public class RequestForm {
     @Column(nullable = false)
     private int desiredPrice;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String image;
 
     @Column(nullable = false)
@@ -58,7 +58,7 @@ public class RequestForm {
     @CreatedDate
     @Column(nullable = false, updatable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     protected RequestForm() {}
 
