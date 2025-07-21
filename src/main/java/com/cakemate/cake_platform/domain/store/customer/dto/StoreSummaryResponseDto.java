@@ -32,7 +32,7 @@ public class StoreSummaryResponseDto {
         this.businessNumber = store.getBusinessNumber();
         this.storePhoneNumber = store.getPhoneNumber();
         this.storeImage = store.getImage();
-        this.createdAt = store.getCreateAt();
+        this.createdAt = store.getCreatedAt();
         this.isActive = store.isActive();
     }
 }

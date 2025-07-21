@@ -27,7 +27,7 @@ public class StoreDetailResponseDto {
         this.businessNumber = store.getBusinessNumber();
         this.phoneNumber = store.getPhoneNumber();
         this.image = store.getImage();
-        this.createdAt = store.getCreateAt();
+        this.createdAt = store.getCreatedAt();
         this.isActive = store.isActive();
     }
 }

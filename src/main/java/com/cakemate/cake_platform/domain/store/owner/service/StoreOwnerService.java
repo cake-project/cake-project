@@ -1,7 +1,8 @@
 package com.cakemate.cake_platform.domain.store.owner.service;
 
-import com.cakemate.cake_platform.domain.auth.owner.entity.Owner;
+
 import com.cakemate.cake_platform.domain.auth.owner.repository.OwnerRespository;
+import com.cakemate.cake_platform.domain.auth.signup.owner.entity.Owner;
 import com.cakemate.cake_platform.domain.store.entity.Store;
 import com.cakemate.cake_platform.domain.store.owner.dto.StoreCreateRequestDto;
 import com.cakemate.cake_platform.domain.store.owner.dto.StoreCreateResponseDto;
