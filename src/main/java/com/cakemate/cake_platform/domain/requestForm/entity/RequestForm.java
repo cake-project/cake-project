@@ -49,9 +49,6 @@ public class RequestForm {
     @Enumerated(value = EnumType.STRING)
     private RequestFormStatus status;
 
-    @Column(nullable = false)
-    private boolean isActive = false;
-
     @OneToOne(mappedBy = "requestForm", orphanRemoval = true)
     private Order order;
 
@@ -64,7 +61,7 @@ public class RequestForm {
 
     public RequestForm(Long id, ProposalForm proposalForm, Customer customer, String title, String region,
                        String content, int desiredPrice, String image, LocalDateTime pickupDate,
-                       RequestFormStatus status, boolean isActive) {
+                       RequestFormStatus status) {
         this.id = id;
         this.proposalForm = proposalForm;
         this.customer = customer;
@@ -75,6 +72,5 @@ public class RequestForm {
         this.image = image;
         this.pickupDate = pickupDate;
         this.status = status;
-        this.isActive = isActive;
     }
 }
