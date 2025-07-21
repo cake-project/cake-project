@@ -7,17 +7,20 @@ import com.cakemate.cake_platform.domain.store.entity.Store;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 @Getter
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class ProposalForm {
-
+    //속성
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "requestForm_id")
+    @JoinColumn(name = "request_form_id")
     private RequestForm requestForm;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,33 +37,87 @@ public class ProposalForm {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Column(nullable = false)
-    private int price;
-
-    @Column(nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm") // 문자열 방식으로 출력
-    private LocalDateTime pickupDate;
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private ProposalFormStatus status;
 
     @Column(nullable = false)
-    private boolean isActive = false;
+    private Boolean isActive = true;
 
+    //생성자
     protected ProposalForm() {}
 
+    public ProposalForm(RequestForm requestForm, Store store, Owner owner, String title, String content,
+                        ProposalFormStatus status) {
+        this.requestForm = requestForm;
+        this.store = store;
+        this.owner = owner;
+        this.title = title;
+        this.content = content;
+        this.status = status;
+        this.isActive = true;
+    }
+
+    public ProposalForm(String title, String content, ProposalFormStatus status, RequestForm requestForm) {
+        this.title = title;
+        this.content = content;
+        this.status = status;
+        this.requestForm = requestForm;
+    }
+
+    /**
+     * proposalFormCreateRequestDto 정보를 꺼내와서 entity를 만들 떄 씁니다.
+     */
     public ProposalForm(Long id, RequestForm requestForm, Store store, Owner owner, String title, String content,
-                        int price, LocalDateTime pickupDate, ProposalFormStatus status, boolean isActive) {
+                        ProposalFormStatus status) {
         this.id = id;
         this.requestForm = requestForm;
         this.store = store;
         this.owner = owner;
         this.title = title;
         this.content = content;
-        this.price = price;
-        this.pickupDate = pickupDate;
         this.status = status;
-        this.isActive = isActive;
+    }
+
+    //게터
+    public Long getId() {
+        return id;
+    }
+
+    public RequestForm getRequestForm() {
+        return requestForm;
+    }
+
+    public Store getStore() {
+        return store;
+    }
+
+    public Owner getOwner() {
+        return owner;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public ProposalFormStatus getStatus() {
+        return status;
+    }
+
+    public Boolean getActive() {
+        return isActive;
     }
 }

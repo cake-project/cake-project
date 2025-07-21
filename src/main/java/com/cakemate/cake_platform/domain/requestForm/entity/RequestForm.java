@@ -21,6 +21,8 @@ public class RequestForm {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "proposalForm_id")
     private ProposalForm proposalForm;
+//    @OneToMany(mappedBy = "requestForm", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<ProposalForm> proposalForms = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
@@ -58,7 +60,7 @@ public class RequestForm {
     @CreatedDate
     @Column(nullable = false, updatable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     protected RequestForm() {}
 

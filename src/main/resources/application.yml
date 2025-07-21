@@ -4,10 +4,10 @@ spring:
 
   datasource:
     # 환경변수 설정 파일
-    url: jdbc:mysql://localhost:3306/${DATABASE}?serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/cake?serverTimezone=UTC
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${USERNAME}
-    password: ${PASSWORD}
+    username: root
+    password: vkflwldod3
 
   jpa:
     hibernate:
