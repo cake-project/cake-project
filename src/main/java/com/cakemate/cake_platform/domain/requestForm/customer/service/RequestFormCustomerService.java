@@ -51,6 +51,7 @@ public class RequestFormCustomerService {
         String foundImage = requestFormCustomerRequestDto.getImage();
         LocalDateTime foundPickupDate = requestFormCustomerRequestDto.getPickupDate();
         RequestFormStatus requestFormStatus = RequestFormStatus.REQUESTED;
+        LocalDateTime foundCreatedAt = requestFormCustomerRequestDto.getCreatedAt();
 
         //검증로직 작성 필요시
 
@@ -78,7 +79,14 @@ public class RequestFormCustomerService {
         //저장
         RequestForm saveRequestForm = requestFormRepository.save(newRequestForm);
         CreateRequestFormCustomerResponseDto requestFormCustomerResponseDto
-                = new CreateRequestFormCustomerResponseDto(saveRequestForm);
+                = new CreateRequestFormCustomerResponseDto(
+                        saveRequestForm.getId(), saveRequestForm.getTitle(),
+                saveRequestForm.getStatus(), saveRequestForm.getCreatedAt()
+        );
+        //        this.id = id;
+        //        this.title = title;
+        //        this.requestStatus = requestStatus;
+        //        this.createdAt = createdAt;
         return ApiResponse.success(
                 HttpStatus.OK, "의뢰가 성공적으로 등록되었습니다.", requestFormCustomerResponseDto
         );

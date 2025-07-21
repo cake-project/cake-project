@@ -9,10 +9,15 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import java.time.LocalDateTime;
 
 @Getter
 @Entity
+//Auditing 은 감사하는 것 -> 리퀘스트 폼이라는 엔티티가 변경되면 감지를 해서 디비에 적용을 시켜주는 어노테이션
+//@EnableJpaAuditing 을 설정하먄 읽어 준다.-> 베이스 엔티티가 보는 상황(JpaConfig)
+@EntityListeners(AuditingEntityListener.class)
 public class RequestForm {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,7 +58,7 @@ public class RequestForm {
     private Order order;
 
     @CreatedDate
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
 

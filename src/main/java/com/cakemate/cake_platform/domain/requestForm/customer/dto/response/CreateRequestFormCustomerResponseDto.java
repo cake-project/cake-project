@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 public class CreateRequestFormCustomerResponseDto {
@@ -14,12 +15,14 @@ public class CreateRequestFormCustomerResponseDto {
     private RequestFormStatus requestStatus;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
-    public CreateRequestFormCustomerResponseDto(RequestForm requestForm) {
-        this.id = requestForm.getId();
-        this.title = requestForm.getTitle();
-        this.requestStatus = requestForm.getStatus();
-        this.createdAt = requestForm.getCreatedAt().toLocalDate();
+    public CreateRequestFormCustomerResponseDto(
+            Long id, String title, RequestFormStatus requestStatus, LocalDateTime createdAt
+    ) {
+        this.id = id;
+        this.title = title;
+        this.requestStatus = requestStatus;
+        this.createdAt = createdAt;
     }
 }
