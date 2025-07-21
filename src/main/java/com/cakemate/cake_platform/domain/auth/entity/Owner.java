@@ -1,4 +1,4 @@
-package com.cakemate.cake_platform.domain.auth.signup.customer.entity;
+package com.cakemate.cake_platform.domain.auth.entity;
 
 import com.cakemate.cake_platform.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -8,8 +8,8 @@ import lombok.Getter;
 
 @Getter
 @Entity
-@Table(name = "customers")
-public class Customer extends BaseTimeEntity {
+@Table(name = "owners")
+public class Owner extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,8 +20,6 @@ public class Customer extends BaseTimeEntity {
     private String email;
 
     @Column(nullable = false)
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\\\d)(?=.*[@$!%*#?&])[A-Za-z\\\\d@$!%*#?&]{8,}$",
-            message = "비밀번호는 최소8자, 대소문자, 숫자, 특수문자를 포함해야 합니다." )
     private String password;
 
     @Column(nullable = false)
@@ -34,14 +32,20 @@ public class Customer extends BaseTimeEntity {
     @Pattern(regexp = "^010-[0-9]{4}-[0-9]{4}$", message = "핸드폰 번호 형식을 지켜주세요(010-xxxx-xxxx)")
     private String phoneNumber;
 
-    protected Customer() {
+    protected Owner() {
     }
-
-    public Customer(String email, String password, String passwordConfirm, String name, String phoneNumber) {
+    // 회원가입 생성자
+    public Owner(String email, String password, String passwordConfirm, String name, String phoneNumber) {
         this.email = email;
         this.password = password;
         this.passwordConfirm = passwordConfirm;
         this.name = name;
         this.phoneNumber = phoneNumber;
     }
+    // 로그인 생성자
+    public Owner(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
 }
