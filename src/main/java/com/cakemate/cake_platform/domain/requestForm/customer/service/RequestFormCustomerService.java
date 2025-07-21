@@ -13,6 +13,7 @@ import com.cakemate.cake_platform.domain.requestForm.customer.repository.Request
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
 import org.springframework.http.HttpStatus;
+import com.cakemate.cake_platform.domain.requestForm.repository.RequestFormRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,6 +26,7 @@ public class RequestFormCustomerService {
     private final RequestFormCustomerRepository requestFormCustomerRepository;
     private final ProposalFormRepository proposalFormRepository;
     private final CustomerRepository customerRepository;
+    private final RequestFormRepository requestFormRepository;
 
     //생
     public RequestFormCustomerService(
@@ -132,5 +134,8 @@ public class RequestFormCustomerService {
         return ApiResponse.success(
                 HttpStatus.OK, "의뢰서 목록을 성공적으로 조회했습니다.", list
         );
+    public RequestFormCustomerService(RequestFormRepository requestFormRepository) {
+        this.requestFormRepository = requestFormRepository;
+
     }
 }
