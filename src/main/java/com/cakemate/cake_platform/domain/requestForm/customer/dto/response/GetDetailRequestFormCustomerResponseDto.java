@@ -2,6 +2,7 @@ package com.cakemate.cake_platform.domain.requestForm.customer.dto.response;
 
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,8 +14,10 @@ public class GetDetailRequestFormCustomerResponseDto {
     private String content;
     private Integer desiredPrice;
     private String image;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime pickupDate;
     private RequestFormStatus requestStatus;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
 
 

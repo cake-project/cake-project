@@ -48,7 +48,7 @@ public class ProposalForm {
     protected ProposalForm() {}
 
     public ProposalForm(RequestForm requestForm, Store store, Owner owner, String title, String content,
-                        int price, LocalDateTime pickupDate, ProposalFormStatus status, boolean isActive) {
+                        int price, LocalDateTime pickupDate, ProposalFormStatus status) {
         this.requestForm = requestForm;
         this.store = store;
         this.owner = owner;

@@ -14,11 +14,9 @@ import java.time.LocalDateTime;
 @Getter
 public class CreateRequestFormCustomerRequestDto {
 //    @NotNull(message = "고객 정보는 필수입니다.")
-
     private Customer customer;
-
     private ProposalForm proposalForm;
-    @NotNull(message = "재목을 입력하세요.")
+    @NotNull(message = "제목을 입력하세요.")
     private String title;
     @NotNull(message = "내용을 입력하세요.")
     private String content;
@@ -28,8 +26,7 @@ public class CreateRequestFormCustomerRequestDto {
     private int desiredPrice;
     private String image;
     @NotNull(message = "픽업일을 입력하세요.")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime pickupDate;
-
 }
 
