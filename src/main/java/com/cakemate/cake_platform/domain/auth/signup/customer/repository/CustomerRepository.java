@@ -13,4 +13,5 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     Optional<Customer> findByEmail(@Email(message = "email 형식을 지켜주십시오(ex. cake@gmail.com)") String email);
     boolean existsByEmail(@Email(message = "email 형식을 지켜주십시오(ex. cake@gmail.com)") String email);
 
+
 }

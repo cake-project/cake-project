@@ -4,10 +4,10 @@ import lombok.Getter;
 
 @Getter
 public class OwnerSignInResponse {
-    private final String jwtToken;
+    private final String jwtOwnerToken;
     // 추후 사용자의 접속한 지역에 따라 시간도 표기
 
-    public OwnerSignInResponse(String jwtToken) {
-        this.jwtToken = jwtToken;
+    public OwnerSignInResponse(String jwtOwnerToken) {
+        this.jwtOwnerToken = jwtOwnerToken;
     }
 }
