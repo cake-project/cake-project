@@ -1,6 +1,7 @@
 package com.cakemate.cake_platform.domain.requestForm.owner.dto;
 
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -17,6 +18,7 @@ public class RequestFormDetailOwnerResponseDto {
     private String image;
     private LocalDateTime pickupDate;
     private RequestFormStatus status;
+    @JsonFormat
     private LocalDateTime createdAt;
 
     public RequestFormDetailOwnerResponseDto(Long requestFormId, String customerName, String title, String region, String content, int desiredPrice, String image, LocalDateTime pickupDate, RequestFormStatus status, LocalDateTime createdAt) {
