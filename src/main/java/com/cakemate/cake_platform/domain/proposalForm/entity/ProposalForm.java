@@ -56,6 +56,12 @@ public class ProposalForm {
         this.title = title;
         this.content = content;
         this.status = status;
-
+    }
+    public ProposalForm(String title, String content,
+                         ProposalFormStatus status, RequestForm requestForm) {
+        this.requestForm = requestForm;
+        this.title = title;
+        this.content = content;
+        this.status = status;
     }
 }

@@ -13,7 +13,6 @@ import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
 import org.springframework.http.HttpStatus;
 import com.cakemate.cake_platform.domain.requestForm.repository.RequestFormRepository;
-import com.cakemate.cake_platform.domain.requestForm.customer.repository.RequestFormRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
