@@ -10,6 +10,7 @@ import com.cakemate.cake_platform.domain.store.owner.dto.StoreCreateResponseDto;
 import com.cakemate.cake_platform.domain.store.owner.dto.StoreDetailResponseDto;
 import com.cakemate.cake_platform.domain.store.owner.repository.StoreOwnerRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StoreOwnerService {
@@ -20,7 +21,8 @@ public class StoreOwnerService {
         this.storeOwnerRepository = storeOwnerRepository;
         this.ownerRespository = ownerRespository;
     }
-
+    //가게 등록 Service
+    @Transactional
     public StoreCreateResponseDto createStore(StoreCreateRequestDto requestDto) {
         // Long ownerId로 부터 Owner 엔티티 조회
         Owner owner = ownerRespository.findById(requestDto.getOwnerId())
@@ -41,7 +43,8 @@ public class StoreOwnerService {
         // 4. 응답 DTO 생성해서 반환
         return new StoreCreateResponseDto(savedStore);
     }
-
+    //가게 상세 조회 Service
+    @Transactional(readOnly = true)
     public StoreDetailResponseDto getStoreDetail(Long ownerId) {
         Store store = storeOwnerRepository.findByOwnerId(ownerId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다."));
