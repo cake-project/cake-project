@@ -27,25 +27,25 @@ public class ProposalFormController {
      * proposalForm 생성 API
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<ProposalFormDataDto>> createProposalFormAPI(@RequestBody ProposalFormCreateRequestDto requestDto) {
+    public ApiResponse<ProposalFormDataDto> createProposalFormAPI(@RequestBody ProposalFormCreateRequestDto requestDto) {
         ApiResponse<ProposalFormDataDto> response = proposalFormService.createProposal(requestDto);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        return response;
     }
     /**
      * proposalForm 단건 상세 조회 API
      */
     @GetMapping("/proposalForms/{proposalFormId}")
-    public ResponseEntity<ApiResponse<ProposalFormContainsRequestFormDataDto>> getProposalFormDetailAPI(@PathVariable("proposalFormId") Long proposalFormId) {
+    public ApiResponse<ProposalFormContainsRequestFormDataDto> getProposalFormDetailAPI(@PathVariable("proposalFormId") Long proposalFormId) {
         ApiResponse<ProposalFormContainsRequestFormDataDto> response = proposalFormService.getProposalFormDetail(proposalFormId);
-        return ResponseEntity.ok(response);
+        return response;
     }
 
     /**
      * proposalForm 목록 조회 API
      */
     @GetMapping("/{ownerId}/proposalForms")
-    public ResponseEntity<ApiResponse<List<ProposalFormContainsRequestFormDataDto>>> getProposalFormsAPI(@PathVariable("ownerId") Long ownerId) {
+    public ApiResponse<List<ProposalFormContainsRequestFormDataDto>> getProposalFormsAPI(@PathVariable("ownerId") Long ownerId) {
         ApiResponse<List<ProposalFormContainsRequestFormDataDto>> response = proposalFormService.getProposalFormList();
-        return ResponseEntity.ok(response);
+        return response;
     }
 }
