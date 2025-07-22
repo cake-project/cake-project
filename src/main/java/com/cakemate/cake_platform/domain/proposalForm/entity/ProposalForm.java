@@ -7,17 +7,20 @@ import com.cakemate.cake_platform.domain.store.entity.Store;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 @Getter
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class ProposalForm {
-
+    //속성
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "requestForm_id")
+    @JoinColumn(name = "request_form_id")
     private RequestForm requestForm;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,12 +37,17 @@ public class ProposalForm {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Column(nullable = false)
-    private int price;
+//    @Column
+//    private int price;
 
-    @Column(nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm") // 문자열 방식으로 출력
-    private LocalDateTime pickupDate;
+//    @Column(nullable = false)
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm") // 문자열 방식으로 출력
+//    private LocalDateTime pickupDate;
+
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
@@ -54,9 +62,13 @@ public class ProposalForm {
         this.owner = owner;
         this.title = title;
         this.content = content;
-        this.price = price;
-        this.pickupDate = pickupDate;
         this.status = status;
-
+    }
+    public ProposalForm(String title, String content,
+                         ProposalFormStatus status, RequestForm requestForm) {
+        this.requestForm = requestForm;
+        this.title = title;
+        this.content = content;
+        this.status = status;
     }
 }
