@@ -37,6 +37,13 @@ public class ProposalForm {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
+//    @Column
+//    private int price;
+
+//    @Column(nullable = false)
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm") // 문자열 방식으로 출력
+//    private LocalDateTime pickupDate;
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
