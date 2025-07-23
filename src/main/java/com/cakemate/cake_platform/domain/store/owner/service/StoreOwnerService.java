@@ -9,8 +9,10 @@ import com.cakemate.cake_platform.domain.auth.signup.owner.repository.OwnerRepos
 import com.cakemate.cake_platform.domain.member.repository.MemberRepository;
 import com.cakemate.cake_platform.domain.store.entity.Store;
 import com.cakemate.cake_platform.domain.store.owner.dto.*;
+import com.cakemate.cake_platform.domain.store.owner.exception.AccessDeniedException;
 import com.cakemate.cake_platform.domain.store.owner.exception.DuplicatedStoreException;
 import com.cakemate.cake_platform.domain.store.owner.exception.OwnerNotFoundException;
+import com.cakemate.cake_platform.domain.store.owner.exception.StoreNotFoundException;
 import com.cakemate.cake_platform.domain.store.owner.repository.StoreOwnerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +38,8 @@ public class StoreOwnerService {
         // Long ownerId로 부터 Owner 엔티티 조회
         Owner owner = ownerRepository.findById(ownerId)
                 .orElseThrow(() -> new OwnerNotFoundException("해당 점주가 존재하지 않습니다."));
+        //필수값 검증
+
         // 2. 이미 가게가 존재하는지 확인
         boolean exists = storeOwnerRepository.existsByOwnerId(ownerId);
         if (exists) {
@@ -62,7 +66,11 @@ public class StoreOwnerService {
     @Transactional(readOnly = true)
     public StoreDetailResponseDto getStoreDetail(Long ownerId) {
         Store store = storeOwnerRepository.findByOwnerId(ownerId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 가게가 존재하지 않습니다."));
+                .orElseThrow(() -> new StoreNotFoundException("가게 정보가 존재하지 않습니다."));
+        //권한 조회
+        if (!store.getOwner().getId().equals(ownerId)) {
+            throw new AccessDeniedException("본인의 가게만 조회할 수 있습니다.");
+        }
 
         return new StoreDetailResponseDto(store);
     }
@@ -74,6 +82,10 @@ public class StoreOwnerService {
 
         Store store = storeOwnerRepository.findByOwner(owner)
                 .orElseThrow(() -> new RuntimeException("해당 오너의 가게가 존재하지 않습니다."));
+
+        if (!store.getOwner().getId().equals(ownerId)) {
+            throw new AccessDeniedException("본인의 가게만 수정할 수 있습니다.");
+        }
 
         store.update(requestDto); // 엔티티 내부에서 값 수정
         return new StoreUpdateResponseDto(store);
@@ -88,6 +100,10 @@ public class StoreOwnerService {
         // 2. Owner의 Store 조회
         Store store = storeOwnerRepository.findByOwner(owner)
                 .orElseThrow(() -> new RuntimeException("해당 오너의 가게가 존재하지 않습니다."));
+        //3.권한 조회
+        if (!store.getOwner().getId().equals(ownerId)) {
+            throw new AccessDeniedException("본인의 가게만 삭제할 수 있습니다.");
+        }
 
         //Soft delete 처리
         store.setIsDeleted(true);

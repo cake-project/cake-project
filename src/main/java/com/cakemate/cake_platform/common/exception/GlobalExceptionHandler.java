@@ -1,21 +1,58 @@
 package com.cakemate.cake_platform.common.exception;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
-import com.cakemate.cake_platform.domain.store.owner.exception.NotFoundOwnerException;
+import com.cakemate.cake_platform.domain.store.owner.exception.AccessDeniedException;
+import com.cakemate.cake_platform.domain.store.owner.exception.DuplicatedStoreException;
+import com.cakemate.cake_platform.domain.store.owner.exception.OwnerNotFoundException;
+import com.cakemate.cake_platform.domain.store.owner.exception.StoreNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
-    @ExceptionHandler(NotFoundOwnerException.class)
-    public ResponseEntity<ApiResponse<Void>> handleNotFoundOwnerException(NotFoundOwnerException ex) {
+    //점주가 없을때 사용
+    @ExceptionHandler(OwnerNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNotFoundOwnerException(OwnerNotFoundException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
+    //가게가 없을때 사용
+    @ExceptionHandler(StoreNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleStoreNotFoundException(StoreNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(HttpStatus.NOT_FOUND, e.getMessage()));
+    }
+    //가게 중복 등록시 사용
+    @ExceptionHandler(DuplicatedStoreException.class)
+    public ResponseEntity<ApiResponse<Void>> handleDuplicatedStoreException(DuplicatedStoreException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error(HttpStatus.CONFLICT, ex.getMessage()));
+    }
+    //권한이 없을 떄 사용
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<?>> handleAccessDeniedException(AccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error(HttpStatus.FORBIDDEN, ex.getMessage()));
+    }
+    //필수값 데이터가 없을 때 사용
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse<?>> handleValidationException(MethodArgumentNotValidException ex) {
+        String errorMessage = ex.getBindingResult().getFieldErrors()
+                .stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.joining(", "));
+
+        ApiResponse<Void> response = ApiResponse.error(HttpStatus.BAD_REQUEST, errorMessage);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
 }
