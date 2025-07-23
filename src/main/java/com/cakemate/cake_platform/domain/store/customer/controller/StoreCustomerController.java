@@ -1,9 +1,12 @@
 package com.cakemate.cake_platform.domain.store.customer.controller;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
+import com.cakemate.cake_platform.common.jwt.utll.JwtUtil;
 import com.cakemate.cake_platform.domain.store.customer.dto.StoreCustomerDetailResponseDto;
 import com.cakemate.cake_platform.domain.store.customer.dto.StoreSummaryResponseDto;
 import com.cakemate.cake_platform.domain.store.customer.service.StoreCustomerService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwt;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,14 +17,22 @@ import java.util.List;
 @RequestMapping("/api")
 public class StoreCustomerController {
     private final StoreCustomerService storeCustomerService;
+    private final JwtUtil jwtUtil;
 
-    public StoreCustomerController(StoreCustomerService storeCustomerService) {
+    public StoreCustomerController(StoreCustomerService storeCustomerService, JwtUtil jwtUtil) {
         this.storeCustomerService = storeCustomerService;
+        this.jwtUtil = jwtUtil;
     }
     @GetMapping("/customer/stores")
     public ResponseEntity<ApiResponse<List<StoreSummaryResponseDto>>> getStoreList(
+            @RequestHeader("Authorization") String authorization,
             @RequestParam(required = false) String address) {
-        List<StoreSummaryResponseDto> storeList = storeCustomerService.getStoreList(address);
+        // 토큰 파싱 및 인증 처리
+        String token = jwtUtil.substringToken(authorization);
+        Claims claims = jwtUtil.verifyToken(token);
+        Long customerId = jwtUtil.subjectMemberId(claims);
+        //서비스 호출
+        List<StoreSummaryResponseDto> storeList = storeCustomerService.getStoreList(customerId, address);
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "가게 목록을 성공적으로 불러왔습니다.", storeList));
     }
 
@@ -30,7 +41,13 @@ public class StoreCustomerController {
             @RequestHeader("Authorization") String authorization,
             @PathVariable Long storeId
     ) {
-        StoreCustomerDetailResponseDto responseDto = storeCustomerService.getStoreDetail(authorization, storeId);
+        //토큰 파싱 및 인증 처리
+        String token = jwtUtil.substringToken(authorization);
+        Claims claims = jwtUtil.verifyToken(token);
+        Long customerId = jwtUtil.subjectMemberId(claims);
+
+        //서비스 호출
+        StoreCustomerDetailResponseDto responseDto = storeCustomerService.getStoreDetail(customerId, storeId);
 
         return ResponseEntity.ok(
                 ApiResponse.success(HttpStatus.OK, "가게 정보를 성공적으로 불러왔습니다.", responseDto)

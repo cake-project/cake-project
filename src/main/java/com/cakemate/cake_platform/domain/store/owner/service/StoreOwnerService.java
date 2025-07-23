@@ -32,10 +32,15 @@ public class StoreOwnerService {
 
     //가게 등록 Service
     @Transactional
-    public StoreCreateResponseDto createStore(StoreCreateRequestDto requestDto) {
+    public StoreCreateResponseDto createStore(Long ownerId, StoreCreateRequestDto requestDto) {
         // Long ownerId로 부터 Owner 엔티티 조회
-        Owner owner = ownerRepository.findById(requestDto.getOwnerId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 사장님이 존재하지 않습니다."));
+        Owner owner = ownerRepository.findById(ownerId)
+                .orElseThrow(() -> new OwnerNotFoundException("해당 점주가 존재하지 않습니다."));
+        // 2. 이미 가게가 존재하는지 확인
+        boolean exists = storeOwnerRepository.existsByOwnerId(ownerId);
+        if (exists) {
+            throw new DuplicatedStoreException("이미 등록된 가게가 존재합니다.");
+        }
         //store 객체 생성
         Store store = new Store(
                 owner,

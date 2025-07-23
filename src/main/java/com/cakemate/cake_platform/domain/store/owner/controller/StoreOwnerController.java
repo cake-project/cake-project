@@ -22,14 +22,25 @@ public class StoreOwnerController {
     }
 
     @PostMapping("/owner/stores")
-    public ResponseEntity<ApiResponse<StoreCreateResponseDto>> createStore(@RequestBody StoreCreateRequestDto requestDto) {
-        StoreCreateResponseDto responseDto = storeOwnerService.createStore(requestDto);
+    public ResponseEntity<ApiResponse<StoreCreateResponseDto>> createStore(
+            @RequestHeader("Authorization") String authorization,
+            @RequestBody StoreCreateRequestDto requestDto) {
+        String token = jwtUtil.substringToken(authorization);
+        Claims claims = jwtUtil.verifyToken(token);
+        Long ownerId = jwtUtil.subjectMemberId(claims);
+
+        StoreCreateResponseDto responseDto = storeOwnerService.createStore(ownerId, requestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(HttpStatus.CREATED, "가게가 성공적으로 등록되었습니다.", responseDto));
     }
 
     @GetMapping("/owner/{ownerId}/store")
-    public ResponseEntity<ApiResponse<StoreDetailResponseDto>> getStoreDetail(@PathVariable Long ownerId) {
+    public ResponseEntity<ApiResponse<StoreDetailResponseDto>> getStoreDetail(
+            @RequestHeader("Authorization") String authorization) {
+        String token = jwtUtil.substringToken(authorization);
+        Claims claims = jwtUtil.verifyToken(token);
+        Long ownerId = jwtUtil.subjectMemberId(claims);
+
         StoreDetailResponseDto responseDto = storeOwnerService.getStoreDetail(ownerId);
         return ResponseEntity.ok(
                 ApiResponse.success(HttpStatus.OK, "가게 정보를 성공적으로 불러왔습니다.", responseDto)
