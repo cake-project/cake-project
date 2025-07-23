@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: cake-platform
+
+  datasource:
+    # 환경변수 설정 파일
+    url: jdbc:mysql://localhost:3306/prod_cake_db?serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root1234!
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+server:
+  port: 8000
