@@ -43,7 +43,7 @@ public class RequestFormOwnerService {
         String content = requestForm.getContent();
         int desiredPrice = requestForm.getDesiredPrice();
         String image = requestForm.getImage();
-        LocalDateTime pickupDate = requestForm.getPickupDate();
+        LocalDateTime pickupDate = requestForm.getDesiredPickupDate();
         RequestFormStatus status = requestForm.getStatus();
         LocalDateTime createAt = requestForm.getCreatedAt();
 
@@ -91,7 +91,7 @@ public class RequestFormOwnerService {
                         requestForm.getContent(),
                         requestForm.getDesiredPrice(),
                         requestForm.getImage(),
-                        requestForm.getPickupDate(),
+                        requestForm.getDesiredPickupDate(),
                         requestForm.getStatus(),
                         requestForm.getCreatedAt()
                 )).collect(Collectors.toList());

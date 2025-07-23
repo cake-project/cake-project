@@ -56,7 +56,7 @@ public class ProposalFormService {
                 savedProposalForm.getTitle(),
                 savedProposalForm.getContent(),
                 savedProposalForm.getRequestForm().getDesiredPrice(),
-                savedProposalForm.getRequestForm().getPickupDate(),
+                savedProposalForm.getRequestForm().getDesiredPickupDate(),
                 savedProposalForm.getCreatedAt(),
                 savedProposalForm.getStatus().name()
         );
@@ -89,7 +89,7 @@ public class ProposalFormService {
                 foundProposalForm.getTitle(),
                 foundProposalForm.getContent(),
                 requestForm.getDesiredPrice(),
-                requestForm.getPickupDate(),
+                requestForm.getDesiredPickupDate(),
                 foundProposalForm.getCreatedAt(),
                 foundProposalForm.getStatus().name()
         );
@@ -99,7 +99,7 @@ public class ProposalFormService {
                 requestForm.getId(),
                 requestForm.getTitle(),
                 requestForm.getDesiredPrice(),
-                requestForm.getPickupDate(),
+                requestForm.getDesiredPickupDate(),
                 requestForm.getStatus().name(),
                 requestForm.getCreatedAt(),
                 requestForm.getImage()
@@ -132,7 +132,7 @@ public class ProposalFormService {
                             proposalForm.getTitle(),
                             proposalForm.getContent(),
                             requestForm.getDesiredPrice(),
-                            requestForm.getPickupDate(),
+                            requestForm.getDesiredPickupDate(),
                             proposalForm.getCreatedAt(),
                             proposalForm.getStatus().name()
                     );
@@ -141,7 +141,7 @@ public class ProposalFormService {
                             requestForm.getId(),
                             requestForm.getTitle(),
                             requestForm.getDesiredPrice(),
-                            requestForm.getPickupDate(),
+                            requestForm.getDesiredPickupDate(),
                             requestForm.getStatus().name(),
                             requestForm.getCreatedAt(),
                             requestForm.getImage()

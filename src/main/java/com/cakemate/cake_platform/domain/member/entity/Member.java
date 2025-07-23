@@ -22,6 +22,9 @@ public class Member {
     @JoinColumn(name = "owner_id")
     private Owner owner;
 
+    @Column(nullable = false)
+    private boolean isDeleted = false;
+
     protected Member() {
     }
 

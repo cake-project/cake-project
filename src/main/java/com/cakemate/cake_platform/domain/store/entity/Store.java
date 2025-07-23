@@ -24,6 +24,11 @@ public class Store extends BaseTimeEntity {
     @JoinColumn(name = "owner_id")
     private Owner owner;
 
+    // 가게 상호명
+    @Column(nullable = false)
+    private String businessName;
+
+    // 가게 이름
     @Column(nullable = false)
     private String name;
 
@@ -46,16 +51,19 @@ public class Store extends BaseTimeEntity {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
 
+    @Column(nullable = false)
+    private boolean isDeleted = false;
 
 
     /**
      * 생성자 - 약속된 형태로만 생성가능하도록 합니다.
      */
-    protected Store() {}
+    protected Store() {
+    }
 
-    public Store( Owner owner, String name, String address,
-                 String businessNumber, String phoneNumber, String image, boolean isActive)
-    {
+    public Store(Owner owner, String businessName, String name, String address,
+                 String businessNumber, String phoneNumber, String image, boolean isActive) {
+        this.businessName = businessName;
         this.owner = owner;
         this.name = name;
         this.address = address;
