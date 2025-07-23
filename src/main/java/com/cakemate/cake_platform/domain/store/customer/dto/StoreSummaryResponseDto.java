@@ -8,13 +8,13 @@ import java.time.LocalDateTime;
 
 @Getter
 public class StoreSummaryResponseDto {
-    private Long storeId;
+    private Long id;
     private Long ownerId;
-    private String storeName;
-    private String storeAddress;
+    private String name;
+    private String address;
     private String businessNumber;
-    private String storePhoneNumber;
-    private String storeImage;
+    private String phoneNumber;
+    private String image;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
@@ -25,13 +25,13 @@ public class StoreSummaryResponseDto {
     public StoreSummaryResponseDto() {}
 
     public StoreSummaryResponseDto(Store store) {
-        this.storeId = store.getId();
+        this.id = store.getId();
         this.ownerId = store.getOwner().getId();
-        this.storeName = store.getName();
-        this.storeAddress = store.getAddress();
+        this.name = store.getName();
+        this.address = store.getAddress();
         this.businessNumber = store.getBusinessNumber();
-        this.storePhoneNumber = store.getPhoneNumber();
-        this.storeImage = store.getImage();
+        this.phoneNumber = store.getPhoneNumber();
+        this.image = store.getImage();
         this.createdAt = store.getCreatedAt();
         this.isActive = store.isActive();
     }
