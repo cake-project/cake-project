@@ -79,10 +79,13 @@ public class JwtUtil {
          * startsWith - BEARER_PREFIX( bearer ) 시작이 아니면 false
          * 즉 둘중에 하나라도 false 발생시 예외 발생
          */
-        if (StringUtils.hasText(bearerJwtToken) && bearerJwtToken.startsWith(BEARER_PREFIX)) {
+        if (bearerJwtToken != null && !bearerJwtToken.isBlank() && bearerJwtToken.startsWith(BEARER_PREFIX)){
             String substring = bearerJwtToken.substring(7);
             return substring;
         }
+//        if (StringUtils.hasText(bearerJwtToken) && bearerJwtToken.startsWith(BEARER_PREFIX)) {
+//
+//        }
 
         throw new RuntimeException();
     }
@@ -98,7 +101,7 @@ public class JwtUtil {
         return claims;
     }
 
-    public Long subjectMemberId(Claims claims) {
+    public Long extractMemberId(Claims claims) {
         long memberId = Long.parseLong(claims.getSubject());
         return memberId;
     }

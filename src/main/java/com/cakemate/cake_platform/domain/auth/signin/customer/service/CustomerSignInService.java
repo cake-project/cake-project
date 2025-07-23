@@ -5,7 +5,6 @@ import com.cakemate.cake_platform.common.command.SearchCommand;
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.common.jwt.utll.JwtUtil;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
-import com.cakemate.cake_platform.domain.auth.signin.customer.dto.request.CustomerSignInRequest;
 import com.cakemate.cake_platform.domain.auth.signin.customer.dto.response.CustomerSignInResponse;
 import com.cakemate.cake_platform.domain.auth.signup.customer.repository.CustomerRepository;
 import com.cakemate.cake_platform.domain.member.entity.Member;
@@ -52,4 +51,5 @@ public class CustomerSignInService {
                 .success(HttpStatus.OK, "환영합니다 " + customer.getName() + "님", customerSignInResponse);
         return SignInSuccess;
     }
+
 }
