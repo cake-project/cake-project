@@ -2,6 +2,7 @@ package com.cakemate.cake_platform.domain.store.entity;
 
 import com.cakemate.cake_platform.common.entity.BaseTimeEntity;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
+import com.cakemate.cake_platform.domain.store.owner.dto.StoreUpdateRequestDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -72,7 +73,19 @@ public class Store extends BaseTimeEntity {
         this.image = image;
         this.isActive = isActive;
     }
-
+    //가게 수정 서비스에서 사용
+    public void update(StoreUpdateRequestDto dto) {
+        this.name = dto.getName();
+        this.businessName = dto.getBusinessName();
+        this.address = dto.getAddress();
+        this.phoneNumber = dto.getPhoneNumber();
+        this.image = dto.getImage();
+        this.isActive = dto.getIsActive();
+    }
+    //가게 삭제 서비스에 사용
+    public void setIsDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
     /**
      * 연관관계 편의 메소드 - 반대쪽에는 연관관계 편의 메소드가 없도록 주의합니다.
      */

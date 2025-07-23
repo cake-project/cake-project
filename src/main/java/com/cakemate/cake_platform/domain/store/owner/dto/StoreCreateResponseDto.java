@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public class StoreCreateResponseDto {
 
     private Long id;
+    private String businessName;
     private String name;
     private String address;
     private String businessNumber;
@@ -21,6 +22,7 @@ public class StoreCreateResponseDto {
 
     public StoreCreateResponseDto(Store store) {
         this.id = store.getId();
+        this.businessName = store.getBusinessName();
         this.name = store.getName();
         this.address = store.getAddress();
         this.businessNumber = store.getBusinessNumber();

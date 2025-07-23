@@ -1,11 +1,12 @@
 package com.cakemate.cake_platform.domain.store.owner.dto;
 
 import com.cakemate.cake_platform.domain.store.entity.Store;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
 public class StoreCreateRequestDto {
-    private Long ownerId;
+
     private String businessName;
     private String name;
     private String address;
