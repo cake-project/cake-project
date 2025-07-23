@@ -102,7 +102,7 @@ public class RequestFormCustomerService {
         String foundRequestFormContent = requestForm.getContent();
         Integer foundRequestFormDesiredPrice = requestForm.getDesiredPrice();
         String foundRequestFormImage = requestForm.getImage();
-        LocalDateTime foundRequestFormPickupDate = requestForm.getPickupDate();
+        LocalDateTime foundRequestFormPickupDate = requestForm.getDesiredPickupDate();
         RequestFormStatus foundRequestFormStatus = requestForm.getStatus();
         LocalDateTime foundRequestFormCreatedAt = requestForm.getCreatedAt();
 

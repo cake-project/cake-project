@@ -32,6 +32,7 @@ public class StoreOwnerService {
         //store 객체 생성
         Store store = new Store(
                 owner,
+                requestDto.getBusinessName(),
                 requestDto.getName(),
                 requestDto.getAddress(),
                 requestDto.getBusinessNumber(),

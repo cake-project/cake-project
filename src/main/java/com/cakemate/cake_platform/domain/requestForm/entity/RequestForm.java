@@ -19,14 +19,13 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public class RequestForm {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "proposalForm_id")
     private ProposalForm proposalForm;
-//    @OneToMany(mappedBy = "requestForm", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<ProposalForm> proposalForms = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
@@ -48,29 +47,26 @@ public class RequestForm {
     private String image;
 
     @Column(nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm") // 문자열 방식으로 출력
-    private LocalDateTime pickupDate;
+    private LocalDateTime desiredPickupDate;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private RequestFormStatus status;
 
-    @OneToOne(mappedBy = "requestForm", orphanRemoval = true)
-    private Order order;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
 
     //아래 추가함
     @Column(nullable = false)
     private Boolean isDeleted = false;
 
-    protected RequestForm() {}
+    protected RequestForm() {
+    }
 
     public RequestForm(ProposalForm proposalForm, Customer customer, String title, String region,
-                       String content, int desiredPrice, String image, LocalDateTime pickupDate,
+                       String content, int desiredPrice, String image, LocalDateTime desiredPickupDate,
                        RequestFormStatus status) {
         this.proposalForm = proposalForm;
         this.customer = customer;
@@ -79,7 +75,7 @@ public class RequestForm {
         this.content = content;
         this.desiredPrice = desiredPrice;
         this.image = image;
-        this.pickupDate = pickupDate;
+        this.desiredPickupDate = desiredPickupDate;
         this.status = status;
     }
 }
