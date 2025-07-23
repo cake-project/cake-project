@@ -32,8 +32,12 @@ public class Customer extends BaseTimeEntity {
     @Pattern(regexp = "^010-[0-9]{4}-[0-9]{4}$", message = "핸드폰 번호 형식을 지켜주세요(010-xxxx-xxxx)")
     private String phoneNumber;
 
+    @Column(nullable = false)
+    private boolean isDeleted = false;
+
     protected Customer() {
     }
+
     // 회원가입 생성자
     public Customer(String email, String password, String passwordConfirm, String name, String phoneNumber) {
         this.email = email;
@@ -42,6 +46,7 @@ public class Customer extends BaseTimeEntity {
         this.name = name;
         this.phoneNumber = phoneNumber;
     }
+
     // 로그인 생성자
     public Customer(String email, String password) {
         this.email = email;

@@ -11,12 +11,14 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+
 @Getter
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class ProposalForm {
     //속성
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
@@ -38,7 +40,9 @@ public class ProposalForm {
     private String content;
 
 //    @Column
-//    private int price;
+//    private int proposalPrice;
+
+    private String image;
 
 //    @Column(nullable = false)
 //    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm") // 문자열 방식으로 출력
@@ -53,7 +57,11 @@ public class ProposalForm {
     @Enumerated(value = EnumType.STRING)
     private ProposalFormStatus status;
 
-    protected ProposalForm() {}
+    @Column(nullable = false)
+    private boolean isDeleted = false;
+
+    protected ProposalForm() {
+    }
 
     public ProposalForm(RequestForm requestForm, Store store, Owner owner, String title, String content,
                         int price, LocalDateTime pickupDate, ProposalFormStatus status) {
@@ -64,8 +72,9 @@ public class ProposalForm {
         this.content = content;
         this.status = status;
     }
+
     public ProposalForm(String title, String content,
-                         ProposalFormStatus status, RequestForm requestForm) {
+                        ProposalFormStatus status, RequestForm requestForm) {
         this.requestForm = requestForm;
         this.title = title;
         this.content = content;
