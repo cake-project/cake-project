@@ -24,6 +24,11 @@ public class OwnerManagementService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /**
+     * 점주 -> 내 정보 조회 Service
+     * @param ownerId
+     * @return
+     */
     public OwnerProfileResponseDto getOwnerProfileService(Long ownerId) {
         Owner owner = ownerRepository.findById(ownerId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
