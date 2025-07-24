@@ -1,6 +1,7 @@
 package com.cakemate.cake_platform.common.jwt.utll;
 
 import com.cakemate.cake_platform.domain.member.entity.Member;
+import com.cakemate.cake_platform.domain.store.owner.exception.ForbiddenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -37,7 +38,8 @@ public class JwtUtil {
                     .subject(subjectOwnerId)
                     .issuedAt(now)
                     .claim("email", member.getOwner().getEmail())
-                    .expiration(expiration) // 만료시간 15분
+                    .claim("memberType", "OWNER")
+                    .expiration(expiration) // 만료시간 120분
                     .signWith(secretKey, SignatureAlgorithm.HS256)
                     .compact();
             return bearerOwnerJwtToken;
@@ -47,12 +49,21 @@ public class JwtUtil {
                     .subject(subjectCustomerId)
                     .issuedAt(now)
                     .claim("email", member.getCustomer().getEmail())
-                    .expiration(expiration) // 만료시간 15분
+                    .claim("memberType", "CUSTOMER")
+                    .expiration(expiration) // 만료시간 120분
                     .signWith(secretKey, SignatureAlgorithm.HS256)
                     .compact();
             return bearerCustomerJwtToken;
         }
 
+    }
+    //점주인지 소비자인지 구분하는 메서드
+    public boolean isOwnerToken(Claims claims) {
+        return "OWNER".equals(claims.get("memberType", String.class));
+    }
+
+    public boolean isCustomerToken(Claims claims) {
+        return "CUSTOMER".equals(claims.get("memberType", String.class));
     }
 
     private boolean hasOwnerId(Member member) {
@@ -102,6 +113,26 @@ public class JwtUtil {
         long memberId = Long.parseLong(claims.getSubject());
         return memberId;
     }
+    //OwnerController에 사용
+    public Long extractOwnerId(String authorizationHeader) {
+        String token = substringToken(authorizationHeader);
+        Claims claims = verifyToken(token);
 
+        if (!isOwnerToken(claims)) {
+            throw new ForbiddenException("점주 권한이 필요한 요청입니다.");
+        }
 
+        return subjectMemberId(claims);
+    }
+    //CustomerController에 사용
+    public Long extractCustomerId(String authorizationHeader) {
+        String token = substringToken(authorizationHeader);
+        Claims claims = verifyToken(token);
+
+        if (!isCustomerToken(claims)) {
+            throw new ForbiddenException("고객 권한이 필요한 요청입니다.");
+        }
+
+        return subjectMemberId(claims);
+    }
 }

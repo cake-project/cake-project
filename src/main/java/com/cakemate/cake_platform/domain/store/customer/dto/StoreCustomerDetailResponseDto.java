@@ -1,4 +1,4 @@
-package com.cakemate.cake_platform.domain.store.owner.dto;
+package com.cakemate.cake_platform.domain.store.customer.dto;
 
 import com.cakemate.cake_platform.domain.store.entity.Store;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -6,7 +6,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 @Getter
-public class StoreDetailResponseDto {
+public class StoreCustomerDetailResponseDto {
     private Long id;
     private String businessName;
     private String name;
@@ -19,9 +19,9 @@ public class StoreDetailResponseDto {
     private boolean isActive;
 
     //기본 생성자
-    public StoreDetailResponseDto() {}
+    public StoreCustomerDetailResponseDto() {}
 
-    public StoreDetailResponseDto(Store store) {
+    public StoreCustomerDetailResponseDto(Store store) {
         this.id = store.getId();
         this.businessName = store.getBusinessName();
         this.name = store.getName();
