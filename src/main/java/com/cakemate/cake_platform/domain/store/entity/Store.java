@@ -45,7 +45,7 @@ public class Store extends BaseTimeEntity {
     private String image;
 
     @Column(nullable = false)
-    private boolean isActive = false;
+    private boolean isActive;
 
     @CreatedDate
     @Column(nullable = false)
@@ -63,7 +63,7 @@ public class Store extends BaseTimeEntity {
     }
 
     public Store(Owner owner, String businessName, String name, String address,
-                 String businessNumber, String phoneNumber, String image, boolean isActive) {
+                 String businessNumber, String phoneNumber, String image) {
         this.businessName = businessName;
         this.owner = owner;
         this.name = name;
@@ -71,7 +71,7 @@ public class Store extends BaseTimeEntity {
         this.businessNumber = businessNumber;
         this.phoneNumber = phoneNumber;
         this.image = image;
-        this.isActive = isActive;
+        this.isActive = false;
     }
     //가게 수정 서비스에서 사용
     public void update(StoreUpdateRequestDto dto) {

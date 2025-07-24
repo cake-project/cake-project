@@ -20,7 +20,6 @@ public class StoreCreateRequestDto {
     private String phoneNumber;
 
     private String image;
-    private boolean isActive;
 
     //기본생성자
     public StoreCreateRequestDto() {
