@@ -53,7 +53,7 @@ public class ProposalForm {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "status")
     @Enumerated(value = EnumType.STRING)
     private ProposalFormStatus status = ProposalFormStatus.AWAITING;  // 디폴트 값;
 
@@ -90,6 +90,10 @@ public class ProposalForm {
         this.requestForm = requestForm;
         this.title = title;
         this.content = content;
+        this.status = status;
+    }
+
+    public void updateStatus(ProposalFormStatus status) {
         this.status = status;
     }
 }

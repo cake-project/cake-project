@@ -7,6 +7,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface StoreOwnerRepository extends JpaRepository<Store, Long> {
+
     Optional<Store> findByOwnerId(Long ownerId);
+
     List<Store> findByAddressContaining(String address);
+
+    //가게 중복등록했는지 확인할 때 사용
+    boolean existsByOwnerId(Long ownerId);
+    //가게 사업자등록번호가 중복되었는지 확인할 때 사용
+    boolean existsByBusinessNumber(String businessNumber);
 }

@@ -35,6 +35,11 @@ public class CustomerManagementService {
         this.passwordValidator = passwordValidator;
     }
 
+    /**
+     * 소비자 -> 내 정보 조회 Service
+     * @param customerId
+     * @return
+     */
     public CustomerProfileResponseDto getCustomerProfileService(Long customerId) {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));

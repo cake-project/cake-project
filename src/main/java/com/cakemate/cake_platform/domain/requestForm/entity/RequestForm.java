@@ -1,6 +1,5 @@
 package com.cakemate.cake_platform.domain.requestForm.entity;
 
-import com.cakemate.cake_platform.domain.order.entity.Order;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
@@ -92,6 +91,10 @@ public class RequestForm {
         this.desiredPrice = desiredPrice;
         this.image = image;
         this.desiredPickupDate = desiredPickupDate;
+        this.status = status;
+    }
+
+    public void updateStatus(RequestFormStatus status) {
         this.status = status;
     }
 

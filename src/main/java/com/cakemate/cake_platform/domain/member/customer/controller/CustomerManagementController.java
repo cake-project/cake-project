@@ -24,8 +24,13 @@ public class CustomerManagementController {
         this.jwtUtil = jwtUtil;
     }
 
+    /**
+     * 소비자 -> 내 정보 조회 API
+     * @param bearerJwtToken
+     * @return
+     */
     @GetMapping("/me")
-    public ApiResponse getCustomerProfileAPI(@RequestHeader("Authorization") String bearerJwtToken) {
+    public ApiResponse<CustomerProfileResponseDto> getCustomerProfileAPI(@RequestHeader("Authorization") String bearerJwtToken) {
 
         // 헤더에서 토큰 추출 후 customerId 꺼내기
         String jwtToken = jwtUtil.substringToken(bearerJwtToken);
@@ -33,7 +38,7 @@ public class CustomerManagementController {
         Long customerId = jwtUtil.subjectMemberId(claims);
 
         CustomerProfileResponseDto responseDto = customerManagementService.getCustomerProfileService(customerId);
-        ApiResponse response = ApiResponse.success(HttpStatus.OK, "회원 정보 조회가 완료되었습니다.", responseDto);
+        ApiResponse<CustomerProfileResponseDto> response = ApiResponse.success(HttpStatus.OK, "회원 정보 조회가 완료되었습니다.", responseDto);
         return response;
     }
     /**
