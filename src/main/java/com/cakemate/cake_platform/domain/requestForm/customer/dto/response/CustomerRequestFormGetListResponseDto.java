@@ -6,13 +6,13 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
-public class GetListRequestFormCustomerResponseDto {
+public class CustomerRequestFormGetListResponseDto {
     private Long RequestFormId;
     private String title;
     private RequestFormStatus requestStatus;
     private LocalDateTime createdAt;
 
-    public GetListRequestFormCustomerResponseDto(
+    public CustomerRequestFormGetListResponseDto(
             Long RequestFormId, String title, RequestFormStatus requestStatus, LocalDateTime createdAt
     ) {
         this.RequestFormId = RequestFormId;

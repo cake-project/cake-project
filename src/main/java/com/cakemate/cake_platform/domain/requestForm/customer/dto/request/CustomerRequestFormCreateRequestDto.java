@@ -12,23 +12,24 @@ import java.time.LocalDateTime;
 
 @Builder
 @Getter
-public class CreateRequestFormCustomerRequestDto {
+public class CustomerRequestFormCreateRequestDto {
     @NotNull(message = "고객 정보는 필수입니다.")
     private Customer customer;
+
     private ProposalForm proposalForm;
+
     @NotNull(message = "제목을 입력하세요.")
     private String title;
+
     @NotNull(message = "내용을 입력하세요.")
     private String content;
     @NotNull(message = "지역을 입력하세요.")
     private String region;
     @NotNull(message = "가격을 입력하세요.")
-    private int desiredPrice;
+    private Integer desiredPrice;
     private String image;
     @NotNull(message = "픽업일을 입력하세요.")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime pickupDate;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDateTime createdAt;
 }
 
