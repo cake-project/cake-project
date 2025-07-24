@@ -21,14 +21,19 @@ public class  OwnerManagementController {
         this.jwtUtil = jwtUtil;
     }
 
+    /**
+     * 점주 -> 내 정보 조회 API
+     * @param bearerJwtToken
+     * @return
+     */
     @GetMapping("/me")
-    public ApiResponse getOwnerProfileAPI(@RequestHeader("Authorization") String bearerJwtToken) {
+    public ApiResponse<OwnerProfileResponseDto> getOwnerProfileAPI(@RequestHeader("Authorization") String bearerJwtToken) {
         String jwtToken = jwtUtil.substringToken(bearerJwtToken);
         Claims claims = jwtUtil.verifyToken(jwtToken);
         Long ownerId = jwtUtil.subjectMemberId(claims);
 
         OwnerProfileResponseDto responseDto = ownerManagementService.getOwnerProfileService(ownerId);
-        ApiResponse response = ApiResponse.success(HttpStatus.OK, "회원 정보 조회가 완료되었습니다.", responseDto);
+        ApiResponse<OwnerProfileResponseDto> response = ApiResponse.success(HttpStatus.OK, "회원 정보 조회가 완료되었습니다.", responseDto);
         return response;
     }
 

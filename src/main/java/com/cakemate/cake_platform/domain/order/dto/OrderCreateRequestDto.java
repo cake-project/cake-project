@@ -2,19 +2,13 @@ package com.cakemate.cake_platform.domain.order.dto;
 
 public class OrderCreateRequestDto {
 
-    private Long requestFormId;
-    private Long proposalFormId;
+    private String customerName;
 
-    public OrderCreateRequestDto(Long requestFormId, Long proposalFormId) {
-        this.requestFormId = requestFormId;
-        this.proposalFormId = proposalFormId;
+    public OrderCreateRequestDto(String customerName) {
+        this.customerName = customerName;
     }
 
-    public Long getRequestFormId() {
-        return requestFormId;
-    }
-
-    public Long getProposalFormId() {
-        return proposalFormId;
+    public String getCustomerName() {
+        return customerName;
     }
 }
