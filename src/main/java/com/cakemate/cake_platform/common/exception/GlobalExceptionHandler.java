@@ -1,11 +1,13 @@
 package com.cakemate.cake_platform.common.exception;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
+import com.cakemate.cake_platform.domain.auth.exception.BadRequestException;
+import com.cakemate.cake_platform.domain.requestForm.exception.RequestFormAccessDeniedException;
 import com.cakemate.cake_platform.domain.order.exception.MismatchedRequestAndProposalException;
 import com.cakemate.cake_platform.domain.order.exception.UnauthorizedRequestFormAccessException;
-import com.cakemate.cake_platform.domain.requestForm.exception.NotFoundProposalFormException;
-import com.cakemate.cake_platform.domain.requestForm.exception.NotFoundRequestFormException;
 import com.cakemate.cake_platform.domain.store.owner.exception.*;
+import com.cakemate.cake_platform.domain.store.owner.exception.NotFoundCustomerException;
+import com.cakemate.cake_platform.domain.store.owner.exception.NotFoundOwnerException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -56,21 +58,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    //lse : 의뢰서를 찾을 수 없을때 사용합니다.
-    @ExceptionHandler(NotFoundRequestFormException.class)
-    public ResponseEntity<ApiResponse<Void>> handleNotFoundRequestFormException(NotFoundRequestFormException ex) {
+    @ExceptionHandler(NotFoundCustomerException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNotFoundCustomerException(NotFoundCustomerException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
 
-    //lse : 견적서를 찾을 수 없을때 사용합니다.
-    @ExceptionHandler(NotFoundProposalFormException.class)
-    public ResponseEntity<ApiResponse<Void>> handleNotFoundProposalFormException(NotFoundRequestFormException ex) {
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
-    }
 
     // 필수 경로 변수(PathVariable) 값이 없을 때 사용합니다.
     @ExceptionHandler(MissingPathVariableException.class)
@@ -111,6 +105,24 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.FORBIDDEN)
                 .body(ApiResponse.error(HttpStatus.FORBIDDEN, ex.getMessage()));
     }
+    //잘못된 요청 예외 처리 시 사용합니다.-> ex) 이름, 전화번호 null, 비밀번호 불일치 등
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBadRequest(BadRequestException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+
+    //의뢰서 접근 권한 예외 처리 시 사용합니다 -> 본인 소유가 아닌 의뢰서 삭제/수정 시
+    @ExceptionHandler(RequestFormAccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleForbiddenRequestForm(RequestFormAccessDeniedException ex) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error(HttpStatus.FORBIDDEN, ex.getMessage()));
+    }
+
+
 
     // 주문을 찾을 수 없을 때 사용합니다.
     @ExceptionHandler(OrderNotFoundException.class)

@@ -4,6 +4,7 @@ import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.common.jwt.utll.JwtUtil;
 import com.cakemate.cake_platform.domain.member.owner.dto.request.UpdateOwnerProfileRequestDto;
 import com.cakemate.cake_platform.domain.member.owner.dto.response.OwnerProfileResponseDto;
+import com.cakemate.cake_platform.domain.member.owner.dto.response.UpdateOwnerProfileResponseDto;
 import com.cakemate.cake_platform.domain.member.owner.service.OwnerManagementService;
 import io.jsonwebtoken.Claims;
 import org.springframework.http.HttpStatus;
@@ -41,12 +42,16 @@ public class  OwnerManagementController {
      * (점주) 내 정보 수정 API
      */
     @PutMapping("/me")
-    public void putOwnerProfileAPI(
+    public ApiResponse<UpdateOwnerProfileResponseDto> putOwnerProfileAPI(
             @RequestHeader("Authorization") String bearerJwtToken,
             @RequestBody UpdateOwnerProfileRequestDto updateOwnerProfileRequestDto
             ) {
-        System.out.println("bearerJwtToken = " + bearerJwtToken);
-        System.out.println("updateOwnerProfileRequestDto = " + updateOwnerProfileRequestDto);
+        String jwtToken = jwtUtil.substringToken(bearerJwtToken);
+        Claims claims = jwtUtil.verifyToken(jwtToken);
+        Long ownerId = jwtUtil.subjectMemberId(claims);
 
+        return ownerManagementService.putUpdateOwnerService(
+                ownerId, updateOwnerProfileRequestDto
+        );
     }
 }

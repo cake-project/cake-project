@@ -1,12 +1,16 @@
 package com.cakemate.cake_platform.domain.requestForm.customer.controller;
 
+import com.cakemate.cake_platform.common.config.PasswordValidator;
 import com.cakemate.cake_platform.common.dto.ApiResponse;
+import com.cakemate.cake_platform.common.jwt.utll.JwtUtil;
 import com.cakemate.cake_platform.domain.requestForm.customer.dto.request.CustomerRequestFormCreateRequestDto;
 import com.cakemate.cake_platform.domain.requestForm.customer.dto.response.CustomerRequestFormCreateResponseDto;
 import com.cakemate.cake_platform.domain.requestForm.customer.dto.response.CustomerRequestFormGetDetailResponseDto;
 import com.cakemate.cake_platform.domain.requestForm.customer.dto.response.CustomerRequestFormGetListResponseDto;
 import com.cakemate.cake_platform.domain.requestForm.customer.service.RequestFormCustomerService;
+import io.jsonwebtoken.Claims;
 import jakarta.validation.Valid;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,10 +20,12 @@ import java.util.List;
 public class RequestFormCustomerController {
     //속
     private final RequestFormCustomerService requestFormCustomerService;
+    private final JwtUtil jwtUtil;
 
     //생
-    public RequestFormCustomerController(RequestFormCustomerService requestFormCustomerService) {
+    public RequestFormCustomerController(RequestFormCustomerService requestFormCustomerService, JwtUtil jwtUtil) {
         this.requestFormCustomerService = requestFormCustomerService;
+        this.jwtUtil = jwtUtil;
     }
 
     //기
@@ -54,9 +60,16 @@ public class RequestFormCustomerController {
      */
     @DeleteMapping("/customers/request-form/{requestFormId}")
     public ApiResponse<Object> deleteRequestForm(
+            @RequestHeader("Authorization") String bearerJwtToken,
             @PathVariable("requestFormId") Long requestFormId
     ) {
-        return requestFormCustomerService.deleteListRequestFormService(requestFormId);
+        String jwtToken = jwtUtil.substringToken(bearerJwtToken);
+        Claims claims = jwtUtil.verifyToken(jwtToken);
+        Long authenticatedCustomerId = jwtUtil.subjectMemberId(claims);
+
+        return requestFormCustomerService.deleteListRequestFormService(
+                requestFormId, authenticatedCustomerId
+        );
     }
 
 
