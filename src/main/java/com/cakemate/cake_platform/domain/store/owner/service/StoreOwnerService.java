@@ -53,8 +53,7 @@ public class StoreOwnerService {
                 requestDto.getAddress(),
                 requestDto.getBusinessNumber(),
                 requestDto.getPhoneNumber(),
-                requestDto.getImage(),
-                requestDto.isActive()
+                requestDto.getImage()
         );
         //store 저장
         Store savedStore = storeOwnerRepository.save(store);
