@@ -25,9 +25,7 @@ public class StoreOwnerController {
     public ResponseEntity<ApiResponse<StoreCreateResponseDto>> createStore(
             @RequestHeader("Authorization") String authorization,
             @RequestBody @Valid StoreCreateRequestDto requestDto) {
-        String token = jwtUtil.substringToken(authorization);
-        Claims claims = jwtUtil.verifyToken(token);
-        Long ownerId = jwtUtil.subjectMemberId(claims);
+        Long ownerId = jwtUtil.extractOwnerId(authorization);
 
         StoreOwnerCommand command = new StoreOwnerCommand(ownerId);
         StoreCreateResponseDto responseDto = storeOwnerService.createStore(command, requestDto);
@@ -38,9 +36,7 @@ public class StoreOwnerController {
     @GetMapping("/owner/store")
     public ResponseEntity<ApiResponse<StoreDetailResponseDto>> getStoreDetail(
             @RequestHeader("Authorization") String authorization) {
-        String token = jwtUtil.substringToken(authorization);
-        Claims claims = jwtUtil.verifyToken(token);
-        Long ownerId = jwtUtil.subjectMemberId(claims);
+        Long ownerId = jwtUtil.extractOwnerId(authorization);
 
         StoreOwnerCommand command = new StoreOwnerCommand(ownerId);
         StoreDetailResponseDto responseDto = storeOwnerService.getStoreDetail(command);
@@ -55,9 +51,7 @@ public class StoreOwnerController {
             @RequestHeader("Authorization") String authorization,
             @RequestBody StoreUpdateRequestDto requestDto
     ) {
-        String token = jwtUtil.substringToken(authorization);
-        Claims claims = jwtUtil.verifyToken(token);
-        Long ownerId = jwtUtil.subjectMemberId(claims);
+        Long ownerId = jwtUtil.extractOwnerId(authorization);
 
         StoreOwnerCommand command = new StoreOwnerCommand(ownerId, storeId);
         StoreUpdateResponseDto responseDto = storeOwnerService.updateStore(command, requestDto);
@@ -71,9 +65,7 @@ public class StoreOwnerController {
             @PathVariable Long storeId
     ) {
         // 1. JWT 토큰에서 ownerId 추출
-        String token = jwtUtil.substringToken(authorization);
-        Claims claims = jwtUtil.verifyToken(token);
-        Long ownerId = jwtUtil.subjectMemberId(claims);
+        Long ownerId = jwtUtil.extractOwnerId(authorization);
 
         // 2. 서비스 호출
         StoreOwnerCommand command = new StoreOwnerCommand(ownerId, storeId);

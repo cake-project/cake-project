@@ -30,9 +30,7 @@ public class StoreCustomerController {
             @RequestHeader("Authorization") String authorization,
             @RequestParam(required = false) String address) {
         // 토큰 파싱 및 인증 처리
-        String token = jwtUtil.substringToken(authorization);
-        Claims claims = jwtUtil.verifyToken(token);
-        Long customerId = jwtUtil.subjectMemberId(claims);
+        Long customerId = jwtUtil.extractCustomerId(authorization);
         //서비스 호출
         StoreSearchCommand command = new StoreSearchCommand(customerId, address);
         List<StoreSummaryResponseDto> storeList = storeCustomerService.getStoreList(command);
@@ -45,9 +43,7 @@ public class StoreCustomerController {
             @PathVariable Long storeId
     ) {
         //토큰 파싱 및 인증 처리
-        String token = jwtUtil.substringToken(authorization);
-        Claims claims = jwtUtil.verifyToken(token);
-        Long customerId = jwtUtil.subjectMemberId(claims);
+        Long customerId = jwtUtil.extractCustomerId(authorization);
 
         //서비스 호출
         StoreDetailCommand command = new StoreDetailCommand(customerId, storeId);
