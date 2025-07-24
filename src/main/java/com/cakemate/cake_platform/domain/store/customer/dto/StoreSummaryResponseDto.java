@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 public class StoreSummaryResponseDto {
     private Long id;
     private Long ownerId;
+    private String businessName;
     private String name;
     private String address;
     private String businessNumber;
@@ -27,6 +28,7 @@ public class StoreSummaryResponseDto {
     public StoreSummaryResponseDto(Store store) {
         this.id = store.getId();
         this.ownerId = store.getOwner().getId();
+        this.businessName = store.getBusinessName();
         this.name = store.getName();
         this.address = store.getAddress();
         this.businessNumber = store.getBusinessNumber();
