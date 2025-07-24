@@ -35,7 +35,7 @@ public class StoreOwnerController {
                 .body(ApiResponse.success(HttpStatus.CREATED, "가게가 성공적으로 등록되었습니다.", responseDto));
     }
     //가게 상세 조회
-    @GetMapping("/owner/{ownerId}/store")
+    @GetMapping("/owner/store")
     public ResponseEntity<ApiResponse<StoreDetailResponseDto>> getStoreDetail(
             @RequestHeader("Authorization") String authorization) {
         String token = jwtUtil.substringToken(authorization);

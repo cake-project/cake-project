@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     //점주가 없을때 사용
-    @ExceptionHandler(OwnerNotFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleNotFoundOwnerException(OwnerNotFoundException ex) {
+    @ExceptionHandler(NotFoundOwnerException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNotFoundOwnerException(NotFoundOwnerException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
@@ -53,14 +53,6 @@ public class GlobalExceptionHandler {
         ApiResponse<Void> response = ApiResponse.error(HttpStatus.BAD_REQUEST, errorMessage);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
-    //storeId가 없을때 사용
-    @ExceptionHandler(MissingStoreIdException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMissingStoreIdException(MissingStoreIdException ex) {
-        log.error("MissingStoreIdException: {}", ex.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
-    }
 
     //lse : 의뢰서를 찾을 수 없을때 사용합니다.
     @ExceptionHandler(NotFoundRequestFormException.class)
@@ -77,6 +69,11 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
-
+    @ExceptionHandler(DuplicateBusinessNumberException.class)
+    public ResponseEntity<ApiResponse<Void>> handleDuplicateBusinessNumberException(DuplicateBusinessNumberException ex) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error(HttpStatus.CONFLICT, ex.getMessage()));
+    }
 
 }

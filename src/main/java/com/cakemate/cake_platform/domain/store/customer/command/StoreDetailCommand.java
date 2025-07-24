@@ -13,9 +13,4 @@ public class StoreDetailCommand {
         this.storeId = storeId;
     }
 
-    public void validateAuthenticatedCustomer() {
-        if (customerId == null) {
-            throw new AccessDeniedException("로그인한 고객만 접근할 수 있습니다.");
-        }
-    }
 }

@@ -31,13 +31,15 @@ public class StoreOwnerService {
     //가게 등록 Service
     @Transactional
     public StoreCreateResponseDto createStore(StoreOwnerCommand command, StoreCreateRequestDto requestDto) {
-        command.validateAuthenticatedOwner();
 
         // Long ownerId로 부터 Owner 엔티티 조회
         Owner owner = ownerRepository.findById(command.getOwnerId())
-                .orElseThrow(() -> new OwnerNotFoundException("해당 점주가 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundOwnerException("해당 점주가 존재하지 않습니다."));
         //필수값 검증
-
+        boolean exist = storeOwnerRepository.existsByBusinessNumber(requestDto.getBusinessNumber());
+        if (exist) {
+            throw new DuplicateBusinessNumberException("이미 등록된 사업자번호입니다.");
+        }
         // 2. 이미 가게가 존재하는지 확인
         boolean exists = storeOwnerRepository.existsByOwnerId(command.getOwnerId());
         if (exists) {
@@ -63,7 +65,6 @@ public class StoreOwnerService {
     //가게 상세 조회 Service
     @Transactional(readOnly = true)
     public StoreDetailResponseDto getStoreDetail(StoreOwnerCommand command) {
-        command.validateAuthenticatedOwner();
 
         Store store = storeOwnerRepository.findByOwnerId(command.getOwnerId())
                 .orElseThrow(() -> new StoreNotFoundException("가게 정보가 존재하지 않습니다."));
@@ -77,16 +78,13 @@ public class StoreOwnerService {
     //가게 수정 Service
     @Transactional
     public StoreUpdateResponseDto updateStore(StoreOwnerCommand command, StoreUpdateRequestDto requestDto) {
-        command.validateAuthenticatedOwner();
+
 
         boolean ownerExists = ownerRepository.existsById(command.getOwnerId());
         if (!ownerExists) {
-            throw new OwnerNotFoundException("해당 점주가 존재하지 않습니다.");
+            throw new NotFoundOwnerException("해당 점주가 존재하지 않습니다.");
         }
 
-        if (!command.hasStoreId()) {
-            throw new MissingStoreIdException("가게 ID가 필요합니다.");
-        }
 
         Store store = storeOwnerRepository.findById(command.getStoreId())
                 .orElseThrow(() -> new StoreNotFoundException("해당 가게가 존재하지 않습니다."));
@@ -101,17 +99,13 @@ public class StoreOwnerService {
     //가게 삭제 Service
     @Transactional
     public void deleteStore(StoreOwnerCommand command) {
-        command.validateAuthenticatedOwner();
 
         // 1. Owner 조회
         boolean ownerExists = ownerRepository.existsById(command.getOwnerId());
         if (!ownerExists) {
-            throw new OwnerNotFoundException("해당 점주가 존재하지 않습니다.");
+            throw new NotFoundOwnerException("해당 점주가 존재하지 않습니다.");
         }
 
-        if (!command.hasStoreId()) {
-            throw new MissingStoreIdException("가게 ID가 필요합니다.");
-        }
 
         // 2. Owner Store 조회
         Store store = storeOwnerRepository.findById(command.getStoreId())

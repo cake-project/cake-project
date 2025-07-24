@@ -31,8 +31,6 @@ public class StoreCustomerService {
 
         List<Store> stores;
 
-        storeSearchCommand.validateAuthenticatedCustomer();
-
         boolean hasAddress = storeSearchCommand.hasAddress();
 
         if (hasAddress) {
@@ -48,7 +46,6 @@ public class StoreCustomerService {
     //가게 상세 조회 Service
     @Transactional(readOnly = true)
     public StoreCustomerDetailResponseDto getStoreDetail(StoreDetailCommand command) {
-        command.validateAuthenticatedCustomer();
         Store store = storeOwnerRepository.findById(command.getStoreId())
                 .orElseThrow(() -> new StoreNotFoundException("해당 가게를 찾을 수 없습니다."));
 
