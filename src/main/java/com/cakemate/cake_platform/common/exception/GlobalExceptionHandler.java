@@ -1,10 +1,7 @@
 package com.cakemate.cake_platform.common.exception;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
-import com.cakemate.cake_platform.domain.store.owner.exception.AccessDeniedException;
-import com.cakemate.cake_platform.domain.store.owner.exception.DuplicatedStoreException;
-import com.cakemate.cake_platform.domain.store.owner.exception.OwnerNotFoundException;
-import com.cakemate.cake_platform.domain.store.owner.exception.StoreNotFoundException;
+import com.cakemate.cake_platform.domain.store.owner.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -54,5 +51,12 @@ public class GlobalExceptionHandler {
         ApiResponse<Void> response = ApiResponse.error(HttpStatus.BAD_REQUEST, errorMessage);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
-
+    //storeId가 없을때 사용
+    @ExceptionHandler(MissingStoreIdException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMissingStoreIdException(MissingStoreIdException ex) {
+        log.error("MissingStoreIdException: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
 }

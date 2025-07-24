@@ -2,6 +2,8 @@ package com.cakemate.cake_platform.domain.store.customer.controller;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.common.jwt.utll.JwtUtil;
+import com.cakemate.cake_platform.domain.store.customer.command.StoreDetailCommand;
+import com.cakemate.cake_platform.domain.store.customer.command.StoreSearchCommand;
 import com.cakemate.cake_platform.domain.store.customer.dto.StoreCustomerDetailResponseDto;
 import com.cakemate.cake_platform.domain.store.customer.dto.StoreSummaryResponseDto;
 import com.cakemate.cake_platform.domain.store.customer.service.StoreCustomerService;
@@ -32,7 +34,8 @@ public class StoreCustomerController {
         Claims claims = jwtUtil.verifyToken(token);
         Long customerId = jwtUtil.subjectMemberId(claims);
         //서비스 호출
-        List<StoreSummaryResponseDto> storeList = storeCustomerService.getStoreList(customerId, address);
+        StoreSearchCommand command = new StoreSearchCommand(customerId, address);
+        List<StoreSummaryResponseDto> storeList = storeCustomerService.getStoreList(command);
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "가게 목록을 성공적으로 불러왔습니다.", storeList));
     }
 
@@ -47,7 +50,8 @@ public class StoreCustomerController {
         Long customerId = jwtUtil.subjectMemberId(claims);
 
         //서비스 호출
-        StoreCustomerDetailResponseDto responseDto = storeCustomerService.getStoreDetail(customerId, storeId);
+        StoreDetailCommand command = new StoreDetailCommand(customerId, storeId);
+        StoreCustomerDetailResponseDto responseDto = storeCustomerService.getStoreDetail(command);
 
         return ResponseEntity.ok(
                 ApiResponse.success(HttpStatus.OK, "가게 정보를 성공적으로 불러왔습니다.", responseDto)

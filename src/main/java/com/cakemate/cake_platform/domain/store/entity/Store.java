@@ -75,12 +75,11 @@ public class Store extends BaseTimeEntity {
     }
     //가게 수정 서비스에서 사용
     public void update(StoreUpdateRequestDto dto) {
-        this.name = dto.getName();
-        this.businessName = dto.getBusinessName();
-        this.address = dto.getAddress();
-        this.phoneNumber = dto.getPhoneNumber();
-        this.image = dto.getImage();
-        this.isActive = dto.getIsActive();
+        if (dto.getName() != null) this.name = dto.getName();
+        if (dto.getAddress() != null) this.address = dto.getAddress();
+        if (dto.getPhoneNumber() != null) this.phoneNumber = dto.getPhoneNumber();
+        if (dto.getImage() != null) this.image = dto.getImage();
+        if (dto.getIsActive() != null) this.isActive = dto.getIsActive();
     }
     //가게 삭제 서비스에 사용
     public void setIsDeleted(boolean isDeleted) {

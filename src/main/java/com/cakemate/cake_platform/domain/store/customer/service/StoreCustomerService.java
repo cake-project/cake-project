@@ -1,6 +1,7 @@
 package com.cakemate.cake_platform.domain.store.customer.service;
 
 import com.cakemate.cake_platform.common.jwt.utll.JwtUtil;
+import com.cakemate.cake_platform.domain.store.customer.command.StoreDetailCommand;
 import com.cakemate.cake_platform.domain.store.customer.command.StoreSearchCommand;
 import com.cakemate.cake_platform.domain.store.customer.dto.StoreCustomerDetailResponseDto;
 import com.cakemate.cake_platform.domain.store.customer.dto.StoreSummaryResponseDto;
@@ -26,14 +27,16 @@ public class StoreCustomerService {
     }
     //가게 리스트 조회(지역 필터)Service
     @Transactional(readOnly = true)
-    public List<StoreSummaryResponseDto> getStoreList(Long customerId, String address) {
+    public List<StoreSummaryResponseDto> getStoreList(StoreSearchCommand storeSearchCommand) {
+
         List<Store> stores;
 
-        StoreSearchCommand storeSearchCommand = new StoreSearchCommand(address);
+        storeSearchCommand.validateAuthenticatedCustomer();
+
         boolean hasAddress = storeSearchCommand.hasAddress();
 
         if (hasAddress) {
-            stores = storeOwnerRepository.findByAddressContaining(address);
+            stores = storeOwnerRepository.findByAddressContaining(storeSearchCommand.getAddress());
         } else {
             stores = storeOwnerRepository.findAll();
         }
@@ -44,8 +47,9 @@ public class StoreCustomerService {
     }
     //가게 상세 조회 Service
     @Transactional(readOnly = true)
-    public StoreCustomerDetailResponseDto getStoreDetail(Long customerId, Long storeId) {
-        Store store = storeOwnerRepository.findById(storeId)
+    public StoreCustomerDetailResponseDto getStoreDetail(StoreDetailCommand command) {
+        command.validateAuthenticatedCustomer();
+        Store store = storeOwnerRepository.findById(command.getStoreId())
                 .orElseThrow(() -> new StoreNotFoundException("해당 가게를 찾을 수 없습니다."));
 
         return new StoreCustomerDetailResponseDto(store);

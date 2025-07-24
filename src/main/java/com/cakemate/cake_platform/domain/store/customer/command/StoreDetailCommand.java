@@ -4,18 +4,13 @@ import com.cakemate.cake_platform.domain.store.owner.exception.AccessDeniedExcep
 import lombok.Getter;
 
 @Getter
-public class StoreSearchCommand {
-    private final String address;
+public class StoreDetailCommand {
     private final Long customerId;
+    private final Long storeId;
 
-
-    public StoreSearchCommand(Long customerId, String address) {
+    public StoreDetailCommand(Long customerId, Long storeId) {
         this.customerId = customerId;
-        this.address = address;
-    }
-
-    public boolean hasAddress() {
-        return address != null && !address.isBlank();
+        this.storeId = storeId;
     }
 
     public void validateAuthenticatedCustomer() {
