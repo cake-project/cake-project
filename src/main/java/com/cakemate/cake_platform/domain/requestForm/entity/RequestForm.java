@@ -68,7 +68,7 @@ public class RequestForm {
 
     //생성자
 
-    //의뢰서 생성시에는 견적서가 없어도 생성 가는하니, proposalForm 을 뺀 생성자를 추가로 만들었습니다.
+    //의뢰서 생성시에는 견적서가 없어도 생성 가능하니, proposalForm 을 뺀 생성자를 추가로 만들었습니다.
     public RequestForm(Customer customer, String title, String region,
                        String content, int desiredPrice, String image, LocalDateTime desiredPickupDate,
                        RequestFormStatus status) {

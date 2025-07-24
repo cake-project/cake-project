@@ -1,7 +1,6 @@
 package com.cakemate.cake_platform.domain.requestForm.customer.service;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
-import com.cakemate.cake_platform.common.exception.GlobalExceptionHandler;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import com.cakemate.cake_platform.domain.auth.signup.customer.repository.CustomerRepository;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
@@ -12,8 +11,9 @@ import com.cakemate.cake_platform.domain.requestForm.customer.dto.response.Custo
 import com.cakemate.cake_platform.domain.requestForm.customer.dto.response.CustomerRequestFormGetListResponseDto;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
-import com.cakemate.cake_platform.domain.requestForm.exception.NotFoundProposalFormException;
+import com.cakemate.cake_platform.domain.requestForm.exception.RequestFormAccessDeniedException;
 import com.cakemate.cake_platform.domain.requestForm.exception.NotFoundRequestFormException;
+import com.cakemate.cake_platform.domain.store.owner.exception.NotFoundCustomerException;
 import org.springframework.http.HttpStatus;
 import com.cakemate.cake_platform.domain.requestForm.repository.RequestFormRepository;
 import org.springframework.stereotype.Service;
@@ -64,7 +64,7 @@ public class RequestFormCustomerService {
         //고객(커스터머)아이디가 존재하면 통과, 아니면 예외 발생
         Customer customer = customerRepository.findById(
                 requestFormCustomerRequestDto.getCustomer().getId()
-        ).orElseThrow(() -> new RuntimeException("존재하지 않는 고객입니다."));
+        ).orElseThrow(() -> new NotFoundCustomerException("존재하지 않는 고객입니다."));
 
         //엔티티만들기
         RequestForm newRequestForm = new RequestForm(
@@ -163,14 +163,20 @@ public class RequestFormCustomerService {
      * 고객 의뢰 삭제 서비스
      */
     @Transactional
-    public ApiResponse<Object> deleteListRequestFormService(Long requestFormId) {
-        //조회 & 검증
+    public ApiResponse<Object> deleteListRequestFormService(Long requestFormId, Long authenticatedCustomerId) {
+        //조회 & 검증 -> 의뢰서 존재 여부
         RequestForm requestForm = requestFormRepository.findByIdAndIsDeletedFalse(requestFormId)
                 .orElseThrow(() -> new NotFoundRequestFormException("삭제할 의뢰서를 찾을 수 없습니다."));
 
+        // 검증.-> 본인 여부 검증
+        if (!requestForm.getCustomer().getId().equals(authenticatedCustomerId)) {
+            // 작성자가 아니면 예외 발생
+            throw new RequestFormAccessDeniedException("본인이 작성한 의뢰서만 삭제할 수 있습니다.");
+        }
         //삭제(소프트 딜리트)
         requestForm.softDelete();
 
+        //반환
         return ApiResponse.success(
                 HttpStatus.OK, "의뢰서가 성공적으로 삭제되었습니다.", null
         );

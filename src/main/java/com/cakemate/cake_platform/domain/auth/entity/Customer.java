@@ -1,6 +1,7 @@
 package com.cakemate.cake_platform.domain.auth.entity;
 
 import com.cakemate.cake_platform.common.entity.BaseTimeEntity;
+import com.cakemate.cake_platform.domain.auth.exception.BadRequestException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
@@ -11,6 +12,7 @@ import lombok.Getter;
 @Table(name = "customers")
 public class Customer extends BaseTimeEntity {
 
+    //속성
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,6 +37,7 @@ public class Customer extends BaseTimeEntity {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
+
     protected Customer() {
     }
 
@@ -51,5 +54,27 @@ public class Customer extends BaseTimeEntity {
     public Customer(String email, String password) {
         this.email = email;
         this.password = password;
+    }
+
+
+
+    //기능
+
+    // 비밀번호 변경
+    public void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+
+    // 이름 & 전화번호 수정
+    public Customer updateProfile(String newName, String newPhoneNumber) {
+        if (newName == null || newName.isBlank()) {
+            throw new BadRequestException("이름은 빈 문자열일 수 없습니다.");
+        }
+        if (newPhoneNumber == null || newPhoneNumber.isBlank()) {
+            throw new BadRequestException("전화번호는 null 이거나 빈 문자열일 수 없습니다.");
+        }
+        this.name = newName;
+        this.phoneNumber = newPhoneNumber;
+        return this;
     }
 }
