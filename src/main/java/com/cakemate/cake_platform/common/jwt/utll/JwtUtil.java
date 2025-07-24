@@ -8,7 +8,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
+
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -90,7 +90,7 @@ public class JwtUtil {
          * startsWith - BEARER_PREFIX( bearer ) 시작이 아니면 false
          * 즉 둘중에 하나라도 false 발생시 예외 발생
          */
-        if (StringUtils.hasText(bearerJwtToken) && bearerJwtToken.startsWith(BEARER_PREFIX)) {
+        if (bearerJwtToken != null && !bearerJwtToken.isBlank() && bearerJwtToken.startsWith(BEARER_PREFIX)) {
             String substring = bearerJwtToken.substring(7);
             return substring;
         }
