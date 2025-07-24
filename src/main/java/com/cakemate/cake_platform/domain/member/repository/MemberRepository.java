@@ -11,4 +11,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByCustomer_Email(@Email(message = "email 형식을 지켜주십시오(ex. cake@gmail.com)") String customerEmail);
     Optional<Member> findByOwner_Email(@Email(message = "email 형식을 지켜주십시오(ex. cake@gmail.com)") String ownerEmail);
 
+
+
 }

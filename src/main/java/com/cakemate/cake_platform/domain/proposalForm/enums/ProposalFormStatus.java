@@ -3,8 +3,8 @@ package com.cakemate.cake_platform.domain.proposalForm.enums;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
 
 public enum ProposalFormStatus {
-    AWAITING_CUSTOMER_DECISION("AWAITING_CUSTOMER_DECISION", "컨택 대기 중"),
-    CUSTOMER_ACCEPTED("CUSTOMER_ACCEPTED", "컨택 완료"),
+    AWAITING("AWAITING", "컨택 대기 중"),
+    ACCEPTED("ACCEPTED", "컨택 완료"),
     CANCELLED("CANCELLED", "컨택 실패");
     private final String strValue;
     private final String description;

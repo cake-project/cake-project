@@ -1,4 +1,4 @@
-package com.cakemate.cake_platform.domain.member.owner.dto;
+package com.cakemate.cake_platform.domain.member.owner.dto.response;
 
 import lombok.Getter;
 

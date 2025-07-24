@@ -35,6 +35,9 @@ public class Owner extends BaseTimeEntity {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
+    /**
+     * 아래는 JPA 애서 쓰는 기본 생성자 입니다.
+     */
     protected Owner() {
     }
 
@@ -52,5 +55,26 @@ public class Owner extends BaseTimeEntity {
         this.email = email;
         this.password = password;
     }
+
+
+    /**
+     * 아래는 회원 수정 생성자 입니다.
+     */
+    public Owner(String password, String name, String phoneNumber) {
+        this.password = password;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+    }
+
+    //기능
+
+    /**
+     * 아래는 비밀번호 변경시 쓰는 메소드 입니다.
+     */
+    public void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
+
+    }
+
 
 }

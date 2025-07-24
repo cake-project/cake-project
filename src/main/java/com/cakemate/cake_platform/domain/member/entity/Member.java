@@ -35,4 +35,6 @@ public class Member {
     public Member(Owner ownerId) {
         this.owner = ownerId;
     }
+
+
 }
