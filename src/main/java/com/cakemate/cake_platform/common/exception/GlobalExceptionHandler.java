@@ -1,6 +1,8 @@
 package com.cakemate.cake_platform.common.exception;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
+import com.cakemate.cake_platform.domain.requestForm.exception.NotFoundProposalFormException;
+import com.cakemate.cake_platform.domain.requestForm.exception.NotFoundRequestFormException;
 import com.cakemate.cake_platform.domain.store.owner.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -59,4 +61,22 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
+
+    //lse : 의뢰서를 찾을 수 없을때 사용합니다.
+    @ExceptionHandler(NotFoundRequestFormException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNotFoundRequestFormException(NotFoundRequestFormException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    //lse : 견적서를 찾을 수 없을때 사용합니다.
+    @ExceptionHandler(NotFoundProposalFormException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNotFoundProposalFormException(NotFoundRequestFormException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+
 }

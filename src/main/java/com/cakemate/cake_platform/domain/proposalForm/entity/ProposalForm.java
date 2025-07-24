@@ -39,14 +39,14 @@ public class ProposalForm {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-//    @Column
-//    private int proposalPrice;
+    @Column
+    private int proposedPrice;
 
     private String image;
 
-//    @Column(nullable = false)
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm") // 문자열 방식으로 출력
-//    private LocalDateTime pickupDate;
+    @Column(nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm") // 문자열 방식으로 출력
+    private LocalDateTime proposedPickupDate;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -55,7 +55,7 @@ public class ProposalForm {
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
-    private ProposalFormStatus status;
+    private ProposalFormStatus status = ProposalFormStatus.AWAITING;  // 디폴트 값;
 
     @Column(nullable = false)
     private boolean isDeleted = false;
@@ -63,15 +63,27 @@ public class ProposalForm {
     protected ProposalForm() {
     }
 
+    //아래 추가함
     public ProposalForm(RequestForm requestForm, Store store, Owner owner, String title, String content,
-                        int price, LocalDateTime pickupDate, ProposalFormStatus status) {
+                        int proposedPrice, LocalDateTime proposedPickupDate, ProposalFormStatus status) {
         this.requestForm = requestForm;
         this.store = store;
         this.owner = owner;
         this.title = title;
         this.content = content;
+        this.proposedPrice = proposedPrice;
+        this.proposedPickupDate = proposedPickupDate;
         this.status = status;
     }
+//    public ProposalForm(RequestForm requestForm, Store store, Owner owner, String title, String content,
+//                        int proposalPrice, LocalDateTime pickupDate, ProposalFormStatus status) {
+//        this.requestForm = requestForm;
+//        this.store = store;
+//        this.owner = owner;
+//        this.title = title;
+//        this.content = content;
+//        this.status = status;
+//    }
 
     public ProposalForm(String title, String content,
                         ProposalFormStatus status, RequestForm requestForm) {

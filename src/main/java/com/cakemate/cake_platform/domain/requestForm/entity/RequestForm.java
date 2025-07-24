@@ -19,6 +19,8 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public class RequestForm {
 
+    //속성
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -51,8 +53,7 @@ public class RequestForm {
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
-    private RequestFormStatus status;
-
+    private RequestFormStatus status = RequestFormStatus.REQUESTED; //디폴트 값
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -65,6 +66,21 @@ public class RequestForm {
     protected RequestForm() {
     }
 
+    //생성자
+
+    //의뢰서 생성시에는 견적서가 없어도 생성 가는하니, proposalForm 을 뺀 생성자를 추가로 만들었습니다.
+    public RequestForm(Customer customer, String title, String region,
+                       String content, int desiredPrice, String image, LocalDateTime desiredPickupDate,
+                       RequestFormStatus status) {
+        this.customer = customer;
+        this.title = title;
+        this.region = region;
+        this.content = content;
+        this.desiredPrice = desiredPrice;
+        this.image = image;
+        this.desiredPickupDate = desiredPickupDate;
+        this.status = status;
+    }
     public RequestForm(ProposalForm proposalForm, Customer customer, String title, String region,
                        String content, int desiredPrice, String image, LocalDateTime desiredPickupDate,
                        RequestFormStatus status) {
@@ -77,5 +93,10 @@ public class RequestForm {
         this.image = image;
         this.desiredPickupDate = desiredPickupDate;
         this.status = status;
+    }
+
+    //가능
+    public void softDelete() {
+        this.isDeleted = true;
     }
 }

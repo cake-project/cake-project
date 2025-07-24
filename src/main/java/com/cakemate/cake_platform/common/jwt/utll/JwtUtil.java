@@ -24,7 +24,7 @@ public class JwtUtil {
     // 환경변수로 설정한 키 가져오는 속성값
     public JwtUtil(@Value("${JWT_SECRET_KEY}") String secretKey) {
         this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
-        this.TOKEN_EXPIRATION_TIME = 15;
+        this.TOKEN_EXPIRATION_TIME = 1000 * 60 * 120;
     }
 
     public String createMemberJwtToken(Member member) {
