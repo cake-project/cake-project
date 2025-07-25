@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StoreOwnerService {
-    private final com.cakemate.cake_platform.domain.store.repository.StoreRepository storeRepository;
+    private final StoreRepository storeRepository;
     private final OwnerRepository ownerRepository;
 
     public StoreOwnerService(
