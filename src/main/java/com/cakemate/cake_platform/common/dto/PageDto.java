@@ -1,4 +1,4 @@
-package com.cakemate.cake_platform.domain.requestForm.owner.dto;
+package com.cakemate.cake_platform.common.dto;
 
 public class PageDto {
 

@@ -1,20 +1,23 @@
-package com.cakemate.cake_platform.domain.order.customer.dto;
+package com.cakemate.cake_platform.domain.order.owner.dto;
 
-import com.cakemate.cake_platform.domain.order.enums.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-
 @Getter
 @AllArgsConstructor
-public class CustomerOrderCreateResponseDto {
+public class OwnerOrderSummaryResponseDto {
 
     private Long orderId;
     private String orderNumber;
-    private OrderStatus orderStatus;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime orderCreatedAt;
+    private String orderStatus;
+    private String customerName;
+    private String productName;
+    private int agreedPrice;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime agreedPickupDate;
 }

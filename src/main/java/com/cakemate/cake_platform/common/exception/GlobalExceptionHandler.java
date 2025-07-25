@@ -2,9 +2,10 @@ package com.cakemate.cake_platform.common.exception;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.domain.auth.exception.BadRequestException;
+import com.cakemate.cake_platform.domain.order.owner.exception.UnauthorizedAccessException;
 import com.cakemate.cake_platform.domain.requestForm.exception.RequestFormAccessDeniedException;
-import com.cakemate.cake_platform.domain.order.exception.MismatchedRequestAndProposalException;
-import com.cakemate.cake_platform.domain.order.exception.UnauthorizedRequestFormAccessException;
+import com.cakemate.cake_platform.domain.order.customer.exception.MismatchedRequestAndProposalException;
+import com.cakemate.cake_platform.domain.order.customer.exception.UnauthorizedRequestFormAccessException;
 import com.cakemate.cake_platform.domain.store.owner.exception.*;
 import com.cakemate.cake_platform.domain.store.owner.exception.NotFoundCustomerException;
 import com.cakemate.cake_platform.domain.store.owner.exception.NotFoundOwnerException;
@@ -168,5 +169,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.error(HttpStatus.NOT_FOUND, ex.getMessage()));
+    }
+
+    // 접근 권한이 없는 경우 발생하는 예외입니다.
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUnauthorizedAccessException(UnauthorizedAccessException ex) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error(HttpStatus.FORBIDDEN, ex.getMessage()));
     }
 }

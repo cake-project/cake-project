@@ -4,6 +4,7 @@ import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import com.cakemate.cake_platform.domain.order.enums.OrderStatus;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
+import com.cakemate.cake_platform.domain.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,6 +32,10 @@ public class Order {
     private Customer customer;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requestForm_id", nullable = false)
     private RequestForm requestForm;
 
@@ -46,6 +51,9 @@ public class Order {
     // 주문 당시 고객 이름과 의뢰서에 있는 고객 이름이 달라질 경우 사용할 수 있습니다.
     @Column(nullable = false)
     private String customerName;
+
+    @Column(nullable = false)
+    private String customerPhoneNumber;
 
 //    추후 payment table 생성 시
 //    private String payerName;
@@ -71,6 +79,9 @@ public class Order {
     private LocalDateTime agreedPickupDate;
 
     private String finalCakeImage;
+
+    @Column(nullable = false)
+    private LocalDateTime orderCreatedAt;
 
     protected Order() {
     }
