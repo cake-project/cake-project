@@ -123,8 +123,6 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(HttpStatus.FORBIDDEN, ex.getMessage()));
     }
 
-
-
     // 주문을 찾을 수 없을 때 사용합니다.
     @ExceptionHandler(OrderNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleOrderNotFoundException(OrderNotFoundException ex) {
@@ -171,42 +169,49 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(HttpStatus.NOT_FOUND, ex.getMessage()));
     }
 
+    // 점주가 존재하지 않을 때 사용합니다.
     @ExceptionHandler(OwnerNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleOwnerNotFound(OwnerNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.error(HttpStatus.NOT_FOUND, ex.getMessage()));
     }
 
+    // 견적서가 이미 존재할 때 사용합니다.
     @ExceptionHandler(ProposalFormAlreadyExistsException.class)
     public ResponseEntity<ApiResponse<Void>> handleProposalFormAlreadyExists(ProposalFormAlreadyExistsException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(ApiResponse.error(HttpStatus.CONFLICT, ex.getMessage()));
     }
 
+    // 견적서 삭제 권한이 없을 때 사용합니다.
     @ExceptionHandler(ProposalFormDeleteAccessDeniedException.class)
     public ResponseEntity<ApiResponse<Void>> handleDeleteAccessDenied(ProposalFormDeleteAccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(ApiResponse.error(HttpStatus.FORBIDDEN, ex.getMessage()));
     }
 
+    // 견적서를 삭제할 수 없는 상태일 때 사용합니다.
     @ExceptionHandler(ProposalFormDeleteInvalidStatusException.class)
     public ResponseEntity<ApiResponse<Void>> handleDeleteInvalidStatus(ProposalFormDeleteInvalidStatusException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
 
+    // 견적서 수정 권한이 없을 때 사용합니다.
     @ExceptionHandler(ProposalFormUpdateAccessDeniedException.class)
     public ResponseEntity<ApiResponse<Void>> handleUpdateAccessDenied(ProposalFormUpdateAccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(ApiResponse.error(HttpStatus.FORBIDDEN, ex.getMessage()));
     }
 
+    // 견적서를 수정할 수 없는 상태일 때 사용합니다.
     @ExceptionHandler(ProposalFormUpdateInvalidStatusException.class)
     public ResponseEntity<ApiResponse<Void>> handleUpdateInvalidStatus(ProposalFormUpdateInvalidStatusException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
 
+    // 해당 정보가 없을 때 사용합니다.
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleResourceNotFound(ResourceNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
