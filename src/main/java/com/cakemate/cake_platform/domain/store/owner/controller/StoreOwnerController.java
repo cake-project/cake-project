@@ -5,7 +5,6 @@ import com.cakemate.cake_platform.common.jwt.utll.JwtUtil;
 import com.cakemate.cake_platform.domain.store.customer.command.StoreOwnerCommand;
 import com.cakemate.cake_platform.domain.store.owner.dto.*;
 import com.cakemate.cake_platform.domain.store.owner.service.StoreOwnerService;
-import io.jsonwebtoken.Claims;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
