@@ -1,5 +1,6 @@
 package com.cakemate.cake_platform.domain.order.entity;
 
+import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import com.cakemate.cake_platform.domain.order.enums.OrderStatus;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
@@ -23,7 +24,11 @@ public class Order {
 
     // 사용자에게 보여줄 주문 번호 입니다.
     @Column(unique = true, nullable = false)
-    private String orderId;
+    private String orderNumber;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requestForm_id", nullable = false)
