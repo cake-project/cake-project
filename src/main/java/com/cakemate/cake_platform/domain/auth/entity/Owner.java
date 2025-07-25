@@ -95,5 +95,11 @@ public class Owner extends BaseTimeEntity {
         return this;
     }
 
+    //멤버(owner) 삭제 메서드
+    public void delete() {
+        this.isDeleted = true;
+    }
+
+
 
 }

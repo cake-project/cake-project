@@ -77,4 +77,9 @@ public class Customer extends BaseTimeEntity {
         this.phoneNumber = newPhoneNumber;
         return this;
     }
+
+    //멤버(customer) 삭제 메서드
+    public void delete() {
+        this.isDeleted = true;
+    }
 }
