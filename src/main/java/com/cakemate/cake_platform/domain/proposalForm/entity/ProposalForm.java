@@ -51,12 +51,10 @@ public class ProposalForm {
     private String image;
 
     @Column(nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm") // 문자열 방식으로 출력
     private LocalDateTime proposedPickupDate;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
@@ -69,7 +67,6 @@ public class ProposalForm {
     protected ProposalForm() {
     }
 
-    //아래 추가함
     public ProposalForm(RequestForm requestForm, Store store, Owner owner, String storeName, String title, String content,
                         int proposedPrice, LocalDateTime proposedPickupDate, String image, ProposalFormStatus status) {
         this.requestForm = requestForm;
@@ -111,6 +108,7 @@ public class ProposalForm {
         this.proposedPickupDate = pickupDate;
         this.image = image;
     }
+
     public void updateStatus(ProposalFormStatus status) {
         this.status = status;
     }
@@ -118,4 +116,5 @@ public class ProposalForm {
     public void delete() {
         this.isDeleted = true;
     }
+
 }

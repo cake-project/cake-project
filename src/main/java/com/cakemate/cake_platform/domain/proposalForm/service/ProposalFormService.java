@@ -268,6 +268,7 @@ public class ProposalFormService {
         //응답 DTO 만들기
         ProposalFormDataDto responseDto = new ProposalFormDataDto(
                 updatedProposalForm.getId(),
+                updatedProposalForm.getStoreName(),
                 updatedProposalForm.getTitle(),
                 updatedProposalForm.getContent(),
                 updatedProposalForm.getManagerName(),

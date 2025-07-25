@@ -47,6 +47,7 @@ public class CustomerProposalFormService {
         // ProposalForm DTO 변환 (필요하면 별도 메서드로 분리)
         ProposalFormDataDto proposalFormDto = new ProposalFormDataDto(
                 proposalForm.getId(),
+                proposalForm.getStoreName(),
                 proposalForm.getTitle(),
                 proposalForm.getContent(),
                 proposalForm.getProposedPrice(),

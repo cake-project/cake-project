@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 
 public class ProposalFormCreateRequestDto {
     //속성
-//속성
     private Long requestFormId;
     private String storeName;
     private String title;
@@ -20,11 +19,9 @@ public class ProposalFormCreateRequestDto {
     private String image;
     private String proposalFormStatus;
 
-
     //생성자
     public ProposalFormCreateRequestDto() {
     }
-
 
     public ProposalFormCreateRequestDto(Long requestFormId, String storeName, String title, String content, int proposedPrice, LocalDateTime proposedPickupDate, String image, String proposalFormStatus) {
         this.requestFormId = requestFormId;
@@ -49,8 +46,6 @@ public class ProposalFormCreateRequestDto {
         return content;
     }
 
-    public String getStoreName() {return storeName;}
-
     public int getProposedPrice() {
         return proposedPrice;
     }
@@ -65,6 +60,10 @@ public class ProposalFormCreateRequestDto {
 
     public String getProposalFormStatus() {
         return proposalFormStatus;
+    }
+
+    public String getStoreName() {
+        return storeName;
     }
 }
 

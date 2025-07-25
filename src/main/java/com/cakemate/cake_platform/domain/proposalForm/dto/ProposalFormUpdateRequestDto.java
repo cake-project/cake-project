@@ -58,4 +58,8 @@ public class ProposalFormUpdateRequestDto {
     public String getStoreName() {
         return storeName;
     }
+
+    public String getStoreName() {
+        return storeName;
+    }
 }
