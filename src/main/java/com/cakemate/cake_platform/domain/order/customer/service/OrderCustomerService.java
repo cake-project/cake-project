@@ -7,15 +7,15 @@ import com.cakemate.cake_platform.domain.order.common.OrderNumberGenerator;
 import com.cakemate.cake_platform.domain.order.customer.dto.*;
 import com.cakemate.cake_platform.domain.order.entity.Order;
 import com.cakemate.cake_platform.domain.order.enums.OrderStatus;
-import com.cakemate.cake_platform.domain.order.exception.MismatchedRequestAndProposalException;
-import com.cakemate.cake_platform.domain.order.exception.UnauthorizedRequestFormAccessException;
+import com.cakemate.cake_platform.domain.order.customer.exception.MismatchedRequestAndProposalException;
+import com.cakemate.cake_platform.domain.order.customer.exception.UnauthorizedRequestFormAccessException;
 import com.cakemate.cake_platform.domain.order.repository.OrderRepository;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
 import com.cakemate.cake_platform.domain.proposalForm.repository.ProposalFormRepository;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
-import com.cakemate.cake_platform.domain.requestForm.owner.dto.PageDto;
+import com.cakemate.cake_platform.common.dto.PageDto;
 import com.cakemate.cake_platform.domain.requestForm.repository.RequestFormRepository;
 import com.cakemate.cake_platform.domain.store.entity.Store;
 import org.springframework.data.domain.Page;
@@ -88,10 +88,12 @@ public class OrderCustomerService {
         Order order = Order.builder()
                 .orderNumber(orderNumber)
                 .customer(customer)
+                .store(store)
                 .requestForm(requestForm)
                 .proposalForm(proposalForm)
                 .status(OrderStatus.MAKE_WAITING)
                 .customerName(requestDto.getCustomerName())
+                .customerPhoneNumber(customer.getPhoneNumber())
                 .storeBusinessName(store.getBusinessName())
                 .storeName(store.getName())
                 .productName(null)
@@ -100,11 +102,14 @@ public class OrderCustomerService {
                 .agreedPrice(proposalForm.getProposedPrice())
                 .agreedPickupDate(proposalForm.getProposedPickupDate())
                 .finalCakeImage(proposalForm.getImage())
+                .orderCreatedAt(LocalDateTime.now())
                 .build();
 
         orderRepository.save(order);
 
-        CustomerOrderCreateResponseDto responseDto = new CustomerOrderCreateResponseDto(orderNumber, OrderStatus.MAKE_WAITING, LocalDateTime.now());
+        CustomerOrderCreateResponseDto responseDto = new CustomerOrderCreateResponseDto(
+                order.getId(), orderNumber, OrderStatus.MAKE_WAITING, LocalDateTime.now()
+        );
         return responseDto;
     }
 
@@ -116,16 +121,18 @@ public class OrderCustomerService {
                 .orElseThrow(() -> new OrderNotFoundException("주문 내역이 존재하지 않습니다."));
 
         CustomerOrderDetailResponseDto responseDto = new CustomerOrderDetailResponseDto(
+                order.getId(),
                 order.getOrderNumber(),
-                order.getRequestForm().getId(),
-                order.getProposalForm().getId(),
+                order.getOrderCreatedAt(),
                 order.getStatus().toString(),
                 order.getCustomerName(),
-                order.getStoreBusinessName(),
                 order.getStoreName(),
-                Optional.ofNullable(order.getProductName()).orElse("상품 정보 없음"),
+                order.getStoreBusinessName(),
                 order.getStorePhoneNumber(),
                 order.getStoreAddress(),
+                order.getRequestForm().getId(),
+                order.getProposalForm().getId(),
+                Optional.ofNullable(order.getProductName()).orElse("상품 정보 없음"),
                 order.getAgreedPrice(),
                 order.getAgreedPickupDate(),
                 Optional.ofNullable(order.getFinalCakeImage()).orElse("케이크 이미지 없음")
@@ -150,13 +157,17 @@ public class OrderCustomerService {
 
         List<CustomerOrderSummaryResponseDto> responseDtoList = orderPage.stream()
                 .map(order -> {
+                    Long orderId = order.getId();
                     String orderNumber = order.getOrderNumber();
                     String status = order.getStatus().toString();
                     String storeName = order.getStoreName();
                     LocalDateTime agreedPickupDate = order.getAgreedPickupDate();
+                    LocalDateTime orderCreatedAt = order.getOrderCreatedAt();
 
                     return new CustomerOrderSummaryResponseDto(
+                            orderId,
                             orderNumber,
+                            orderCreatedAt,
                             status,
                             storeName,
                             agreedPickupDate

@@ -1,5 +1,7 @@
 package com.cakemate.cake_platform.domain.requestForm.owner.dto;
 
+import com.cakemate.cake_platform.common.dto.PageDto;
+
 import java.util.List;
 
 public class RequestFormPageOwnerResponseDto<T> {

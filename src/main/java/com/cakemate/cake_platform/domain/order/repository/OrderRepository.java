@@ -9,8 +9,15 @@ import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
+    // 소비자의 주문 목록 조회에서 사용합니다.
     Page<Order> findByRequestFormCustomerId(Long customerId, Pageable pageable);
 
-    Optional<Order> findByCustomerIdAndId(Long customerId, Long id);
+    // 소비자의 주문 상세 조회에서 사용합니다.
+    Optional<Order> findByCustomerIdAndId(Long customerId, Long orderId);
 
+    // 가게의 주문 목록 조회에서 사용합니다.
+    Page<Order> findByStoreId(Long storeId, Pageable pageable);
+
+    // 가게의 주문 상세 조회에서 사용합니다.
+    Optional<Order> findByStoreIdAndId(Long storeId, Long OrderId);
 }

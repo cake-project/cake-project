@@ -33,13 +33,16 @@ public class ProposalForm {
     @JoinColumn(name = "owner_id")
     private Owner owner;
 
+    @Column(name = "manager_name")
+    private String managerName;
+
     @Column(nullable = false)
     private String title;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Column
+    @Column(nullable = false)
     private int proposedPrice;
 
     private String image;
@@ -53,7 +56,7 @@ public class ProposalForm {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
 
-    @Column(nullable = false, name = "status")
+    @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private ProposalFormStatus status = ProposalFormStatus.AWAITING;  // 디폴트 값;
 
@@ -65,7 +68,7 @@ public class ProposalForm {
 
     //아래 추가함
     public ProposalForm(RequestForm requestForm, Store store, Owner owner, String title, String content,
-                        int proposedPrice, LocalDateTime proposedPickupDate, ProposalFormStatus status) {
+                        int proposedPrice, LocalDateTime proposedPickupDate, String image, ProposalFormStatus status) {
         this.requestForm = requestForm;
         this.store = store;
         this.owner = owner;
@@ -73,6 +76,7 @@ public class ProposalForm {
         this.content = content;
         this.proposedPrice = proposedPrice;
         this.proposedPickupDate = proposedPickupDate;
+        this.image = image;
         this.status = status;
     }
 //    public ProposalForm(RequestForm requestForm, Store store, Owner owner, String title, String content,
@@ -85,17 +89,29 @@ public class ProposalForm {
 //        this.status = status;
 //    }
 
-    public ProposalForm(String title, String content,
-                        ProposalFormStatus status, RequestForm requestForm) {
-        this.requestForm = requestForm;
+    public ProposalFormStatus getStatus() {
+        return status;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    //기능
+    public void update(String title, String content, String managerName, int price, LocalDateTime pickupDate, String image) {
         this.title = title;
         this.content = content;
-        this.status = status;
+        this.managerName = managerName;
+        this.proposedPrice = price;
+        this.proposedPickupDate = pickupDate;
+        this.image = image;
     }
 
     public void updateStatus(ProposalFormStatus status) {
         this.status = status;
     }
 
-
+    public void delete() {
+        this.isDeleted = true;
+    }
 }
