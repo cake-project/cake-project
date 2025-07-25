@@ -1,6 +1,6 @@
 package com.cakemate.cake_platform.domain.order.customer.dto;
 
-import com.cakemate.cake_platform.domain.requestForm.owner.dto.PageDto;
+import com.cakemate.cake_platform.common.dto.PageDto;
 
 import java.util.List;
 

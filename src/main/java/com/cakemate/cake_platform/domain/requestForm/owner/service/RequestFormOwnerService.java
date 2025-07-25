@@ -2,7 +2,7 @@ package com.cakemate.cake_platform.domain.requestForm.owner.service;
 
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
-import com.cakemate.cake_platform.domain.requestForm.owner.dto.PageDto;
+import com.cakemate.cake_platform.common.dto.PageDto;
 import com.cakemate.cake_platform.domain.requestForm.owner.dto.RequestFormDetailOwnerResponseDto;
 import com.cakemate.cake_platform.domain.requestForm.owner.dto.RequestFormPageOwnerResponseDto;
 import com.cakemate.cake_platform.domain.requestForm.repository.RequestFormRepository;
