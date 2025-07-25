@@ -7,17 +7,17 @@ import java.time.LocalDateTime;
 
 @Getter
 public class CommentCreateResponseDto {
-    private Long id;
+    private Long commentId;
     private Long proposalFormId;
     private Long customerId;
     private Long ownerId;
     private String content;
 
     public CommentCreateResponseDto(
-            Long id, Long proposalFormId, Long customerId,
+            Long commentId, Long proposalFormId, Long customerId,
             Long ownerId, String content
     ) {
-        this.id = id;
+        this.commentId = commentId;
         this.proposalFormId = proposalFormId;
         this.customerId = customerId;
         this.ownerId = ownerId;

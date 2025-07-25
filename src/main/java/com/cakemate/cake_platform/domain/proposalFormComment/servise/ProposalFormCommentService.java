@@ -38,7 +38,7 @@ public class ProposalFormCommentService {
      * 특정 견적서에 대해 고객 또는 사장이 댓글을 작성하는 서비스
      */
     @Transactional
-    public void createRequestFormCommentService(
+    public ApiResponse<CommentCreateResponseDto> createRequestFormCommentService(
             CommentCreateRequestDto commentCreateRequestDto,
             Long proposalFormId,
             Long memberId
@@ -48,7 +48,7 @@ public class ProposalFormCommentService {
 
         // 견적서 존재 여부 확인
         ProposalForm proposalForm = proposalFormRepository.findByIdAndIsDeletedFalse(proposalFormId)
-                .orElseThrow(() -> new MemberAlreadyDeletedException("견적서를 찾을 수 없습니다."));
+                .orElseThrow(() -> new MemberAlreadyDeletedException("댓글을 달 견적서가 존재하지 않습니다."));
 
         //검증
         //커스터머가 있으면 통과 그렇지 않으면(orElse) 널
@@ -67,32 +67,33 @@ public class ProposalFormCommentService {
         //엔티티 만들기
         ProposalFormComment proposalFormComment = ProposalFormComment.create(proposalForm, customer, owner, content);
 
+
         //저장
-        ProposalFormComment saved = proposalFormCommentRepository.save(proposalFormComment);
+        ProposalFormComment savedComment = proposalFormCommentRepository.save(proposalFormComment);
 
         // 저장된 엔티티에서 ID 불러오기
+        //오너, 소비자가 널이 아니면 아이디를 불러오고 널이면 그대로 둔다.
         Long ownerId;
-        if (saved.getOwner() != null) {
-            Long savedOwnerId = saved.getOwner().getId();
+        if (savedComment.getOwner() != null) {
+            ownerId = savedComment.getOwner().getId();
         } else {
             ownerId = null;
         }
         Long customerId;
-        if (saved.getCustomer() != null) {
-            Long savedId = saved.getCustomer().getId();
+        if (savedComment.getCustomer() != null) {
+            customerId = savedComment.getCustomer().getId();
         } else {
-            Long savedCustomerIdId = null;
+            customerId = null;
         }
 
         //responseDto 만들기
+        CommentCreateResponseDto commentCreateResponseDto
+                = new CommentCreateResponseDto(
+                savedComment.getId() , proposalFormId, customerId, ownerId, content
+        );
 
-//        CommentCreateResponseDto commentCreateResponseDto
-//                = new CommentCreateResponseDto(memberId, proposalFormId, customerId, ownerId, content);
-//
-//        return ApiResponse.success(
-//                HttpStatus.OK, "댓글 작성 성공", commentCreateResponseDto
-//        );
-
+        return ApiResponse.success(
+                HttpStatus.OK, "댓글 작성 성공", commentCreateResponseDto
+        );
     }
-
 }
