@@ -30,9 +30,9 @@ public class GlobalExceptionHandler {
     }
     //가게가 없을때 사용
     @ExceptionHandler(StoreNotFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleStoreNotFoundException(StoreNotFoundException e) {
+    public ResponseEntity<ApiResponse<Void>> handleStoreNotFoundException(StoreNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse.error(HttpStatus.NOT_FOUND, e.getMessage()));
+                .body(ApiResponse.error(HttpStatus.NOT_FOUND, ex.getMessage()));
     }
     //가게 중복 등록시 사용
     @ExceptionHandler(DuplicatedStoreException.class)
@@ -71,7 +71,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleMissingPathVariable(MissingPathVariableException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, "필수 경로 변수가 없습니다."));
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
 
     // 견적서를 찾을 수 없을 때 사용합니다.

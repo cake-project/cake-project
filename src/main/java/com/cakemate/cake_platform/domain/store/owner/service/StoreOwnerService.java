@@ -2,6 +2,7 @@ package com.cakemate.cake_platform.domain.store.owner.service;
 
 
 
+import com.cakemate.cake_platform.common.exception.StoreNotFoundException;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
 
 

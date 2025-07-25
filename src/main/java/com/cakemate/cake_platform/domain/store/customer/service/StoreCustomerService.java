@@ -1,14 +1,13 @@
 package com.cakemate.cake_platform.domain.store.customer.service;
 
+import com.cakemate.cake_platform.common.exception.StoreNotFoundException;
 import com.cakemate.cake_platform.common.jwt.utll.JwtUtil;
 import com.cakemate.cake_platform.domain.store.customer.command.StoreDetailCommand;
 import com.cakemate.cake_platform.domain.store.customer.command.StoreSearchCommand;
 import com.cakemate.cake_platform.domain.store.customer.dto.StoreCustomerDetailResponseDto;
 import com.cakemate.cake_platform.domain.store.customer.dto.StoreSummaryResponseDto;
 import com.cakemate.cake_platform.domain.store.entity.Store;
-import com.cakemate.cake_platform.domain.store.owner.exception.StoreNotFoundException;
 import com.cakemate.cake_platform.domain.store.owner.repository.StoreOwnerRepository;
-import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
