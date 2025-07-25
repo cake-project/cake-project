@@ -138,10 +138,27 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.CONFLICT)
                 .body(ApiResponse.error(HttpStatus.CONFLICT, ex.getMessage()));
     }
+
     //JwtUtil에서 사용
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<ApiResponse<Void>> handleForbidden(ForbiddenException e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(ApiResponse.error(HttpStatus.FORBIDDEN, e.getMessage()));
+    }
+
+    // 회원이 존재하지 않을 때 사용합니다.
+    @ExceptionHandler(MemberNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMemberNotFoundException(MemberNotFoundException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(HttpStatus.NOT_FOUND, ex.getMessage()));
+    }
+
+    // 이미 탈퇴한 회원일 경우 사용합니다.
+    @ExceptionHandler(MemberAlreadyDeletedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUserAlreadyDeletedException(MemberAlreadyDeletedException ex) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error(HttpStatus.FORBIDDEN, ex.getMessage()));
     }
 }

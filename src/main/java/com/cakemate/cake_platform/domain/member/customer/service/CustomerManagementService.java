@@ -2,6 +2,8 @@ package com.cakemate.cake_platform.domain.member.customer.service;
 
 import com.cakemate.cake_platform.common.config.PasswordValidator;
 import com.cakemate.cake_platform.common.dto.ApiResponse;
+import com.cakemate.cake_platform.common.exception.MemberAlreadyDeletedException;
+import com.cakemate.cake_platform.common.exception.MemberNotFoundException;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.auth.exception.BadRequestException;
@@ -42,10 +44,10 @@ public class CustomerManagementService {
      */
     public CustomerProfileResponseDto getCustomerProfileService(Long customerId) {
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
 
         if (customer.isDeleted()) {
-            throw new IllegalArgumentException("이미 탈퇴한 회원입니다.");
+            throw new MemberAlreadyDeletedException("이미 탈퇴한 회원입니다.");
         }
 
         CustomerProfileResponseDto responseDto = new CustomerProfileResponseDto(
