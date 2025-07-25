@@ -39,9 +39,6 @@ public class ProposalForm {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Column(name = "manager_name")
-    private String managerName;
-
     @Column
     private int proposedPrice;
 
@@ -68,7 +65,7 @@ public class ProposalForm {
 
     //아래 추가함
     public ProposalForm(RequestForm requestForm, Store store, Owner owner, String title, String content,
-                        int proposedPrice, LocalDateTime proposedPickupDate, String image, ProposalFormStatus status) {
+                        int proposedPrice, LocalDateTime proposedPickupDate, ProposalFormStatus status) {
         this.requestForm = requestForm;
         this.store = store;
         this.owner = owner;
@@ -76,34 +73,27 @@ public class ProposalForm {
         this.content = content;
         this.proposedPrice = proposedPrice;
         this.proposedPickupDate = proposedPickupDate;
-        this.image = image;
         this.status = status;
     }
-
-//    public ProposalForm(String title, String content,
-//                        ProposalFormStatus status, RequestForm requestForm) {
+//    public ProposalForm(RequestForm requestForm, Store store, Owner owner, String title, String content,
+//                        int proposalPrice, LocalDateTime pickupDate, ProposalFormStatus status) {
 //        this.requestForm = requestForm;
+//        this.store = store;
+//        this.owner = owner;
 //        this.title = title;
 //        this.content = content;
 //        this.status = status;
 //    }
 
-    public void updateStatus(ProposalFormStatus status) {
+    public ProposalForm(String title, String content,
+                        ProposalFormStatus status, RequestForm requestForm) {
+        this.requestForm = requestForm;
+        this.title = title;
+        this.content = content;
         this.status = status;
     }
 
-    //기능
-    public void update(String title, String content, String managerName, int price, LocalDateTime pickupDate, String image) {
-        this.title = title;
-        this.content = content;
-        this.managerName = managerName;
-        this.proposedPrice = price;
-        this.proposedPickupDate = pickupDate;
-        this.image = image;
+    public void updateStatus(ProposalFormStatus status) {
+        this.status = status;
     }
-
-    public void delete() {
-        this.isDeleted = true;
-    }
-
 }
