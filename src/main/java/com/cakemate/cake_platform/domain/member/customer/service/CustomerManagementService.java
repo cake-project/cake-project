@@ -116,4 +116,28 @@ public class CustomerManagementService {
         );
     }
 
+    /**
+     * 소비자 회원 탈퇴
+     */
+    @Transactional
+    public CustomerProfileResponseDto deleteCustomerProfileService(Long customerId) {
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        if (customer.isDeleted()) {
+            throw new IllegalArgumentException("이미 탈퇴한 회원입니다.");
+        }
+
+        // soft delete 처리
+        customer.delete();
+        customerRepository.save(customer);
+
+        CustomerProfileResponseDto responseDto = new CustomerProfileResponseDto(
+                customer.getName(),
+                customer.getEmail(),
+                customer.getPhoneNumber()
+        );
+
+        return responseDto;
+    }
 }
