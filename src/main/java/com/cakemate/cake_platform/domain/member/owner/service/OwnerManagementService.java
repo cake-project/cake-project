@@ -7,6 +7,7 @@ import com.cakemate.cake_platform.common.exception.MemberNotFoundException;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.auth.exception.BadRequestException;
 import com.cakemate.cake_platform.domain.auth.signup.owner.repository.OwnerRepository;
+import com.cakemate.cake_platform.domain.member.customer.dto.CustomerProfileResponseDto;
 import com.cakemate.cake_platform.domain.member.owner.dto.request.UpdateOwnerProfileRequestDto;
 import com.cakemate.cake_platform.domain.member.owner.dto.response.OwnerProfileResponseDto;
 import com.cakemate.cake_platform.domain.member.owner.dto.response.UpdateOwnerProfileResponseDto;
@@ -113,4 +114,31 @@ public class OwnerManagementService {
                 HttpStatus.OK, "점주 정보가 성공적으로 수정되었습니다.", updateOwnerProfileResponseDto
                 );
     }
+
+    /**
+     * 점주 회원 탈퇴
+     */
+    @Transactional
+    public OwnerProfileResponseDto deleteOwnerProfileService(Long ownerId) {
+        Owner owner = ownerRepository.findByIdAndIsDeletedFalse(ownerId)
+                .orElseThrow(() -> new NotFoundOwnerException("점주 정보를 찾을 수 없습니다."));
+
+        // 이미 삭제되었으면 예외 던지기 (optional)
+        if (owner.isDeleted()) {
+            throw new IllegalStateException("이미 탈퇴한 점주입니다.");
+        }
+
+        // soft delete 처리
+        owner.delete();
+        ownerRepository.save(owner);
+
+        // 응답 DTO 생성 (필요에 따라 필드 추가)
+        OwnerProfileResponseDto responseDto = new OwnerProfileResponseDto(
+                owner.getName(),
+                owner.getEmail(),
+                owner.getPhoneNumber()
+        );
+
+        return responseDto;
+}
 }

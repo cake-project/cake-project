@@ -33,39 +33,39 @@ public class ProposalForm {
     @JoinColumn(name = "owner_id")
     private Owner owner;
 
+    @Column(name = "manager_name")
+    private String managerName;
+
     @Column(nullable = false)
     private String title;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Column
+    @Column(nullable = false)
     private int proposedPrice;
 
     private String image;
 
     @Column(nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm") // 문자열 방식으로 출력
     private LocalDateTime proposedPickupDate;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
 
-    @Column(nullable = false, name = "status")
+    @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private ProposalFormStatus status = ProposalFormStatus.AWAITING;  // 디폴트 값;
 
     @Column(nullable = false)
     private boolean isDeleted = false;
 
-    protected ProposalForm() {
-    }
+    //생성자
+    public ProposalForm() {}
 
-    //아래 추가함
     public ProposalForm(RequestForm requestForm, Store store, Owner owner, String title, String content,
-                        int proposedPrice, LocalDateTime proposedPickupDate, ProposalFormStatus status) {
+                        int proposedPrice, LocalDateTime proposedPickupDate, String image, ProposalFormStatus status) {
         this.requestForm = requestForm;
         this.store = store;
         this.owner = owner;
@@ -73,27 +73,75 @@ public class ProposalForm {
         this.content = content;
         this.proposedPrice = proposedPrice;
         this.proposedPickupDate = proposedPickupDate;
+        this.image = image;
         this.status = status;
     }
-//    public ProposalForm(RequestForm requestForm, Store store, Owner owner, String title, String content,
-//                        int proposalPrice, LocalDateTime pickupDate, ProposalFormStatus status) {
-//        this.requestForm = requestForm;
-//        this.store = store;
-//        this.owner = owner;
-//        this.title = title;
-//        this.content = content;
-//        this.status = status;
-//    }
 
-    public ProposalForm(String title, String content,
-                        ProposalFormStatus status, RequestForm requestForm) {
-        this.requestForm = requestForm;
+    //게터
+    public Long getId() {
+        return id;
+    }
+
+    public RequestForm getRequestForm() {
+        return requestForm;
+    }
+
+    public Store getStore() {
+        return store;
+    }
+
+    public Owner getOwner() {
+        return owner;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public int getProposedPrice() {
+        return proposedPrice;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public LocalDateTime getProposedPickupDate() {
+        return proposedPickupDate;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public ProposalFormStatus getStatus() {
+        return status;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    //기능
+    public void update(String title, String content, String managerName, int price, LocalDateTime pickupDate, String image) {
         this.title = title;
         this.content = content;
-        this.status = status;
+        this.managerName = managerName;
+        this.proposedPrice = price;
+        this.proposedPickupDate = pickupDate;
+        this.image = image;
     }
 
     public void updateStatus(ProposalFormStatus status) {
         this.status = status;
     }
+
+    public void delete() {
+        this.isDeleted = true;
+    }
+
 }
