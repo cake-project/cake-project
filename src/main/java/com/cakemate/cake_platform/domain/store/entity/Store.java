@@ -3,12 +3,8 @@ package com.cakemate.cake_platform.domain.store.entity;
 import com.cakemate.cake_platform.common.entity.BaseTimeEntity;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.store.owner.dto.StoreUpdateRequestDto;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
-import org.springframework.data.annotation.CreatedDate;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -46,11 +42,6 @@ public class Store extends BaseTimeEntity {
 
     @Column(nullable = false)
     private boolean isActive;
-
-    @CreatedDate
-    @Column(nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDateTime createdAt;
 
     @Column(nullable = false)
     private boolean isDeleted = false;
