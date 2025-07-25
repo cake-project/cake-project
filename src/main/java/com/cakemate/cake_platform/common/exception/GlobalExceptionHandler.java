@@ -2,6 +2,7 @@ package com.cakemate.cake_platform.common.exception;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.domain.auth.exception.BadRequestException;
+import com.cakemate.cake_platform.domain.proposalForm.exception.*;
 import com.cakemate.cake_platform.domain.requestForm.exception.RequestFormAccessDeniedException;
 import com.cakemate.cake_platform.domain.order.exception.MismatchedRequestAndProposalException;
 import com.cakemate.cake_platform.domain.order.exception.UnauthorizedRequestFormAccessException;
@@ -167,6 +168,48 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleCustomerNotFoundException(CustomerNotFoundException ex) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(HttpStatus.NOT_FOUND, ex.getMessage()));
+    }
+
+    @ExceptionHandler(OwnerNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleOwnerNotFound(OwnerNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(HttpStatus.NOT_FOUND, ex.getMessage()));
+    }
+
+    @ExceptionHandler(ProposalFormAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleProposalFormAlreadyExists(ProposalFormAlreadyExistsException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error(HttpStatus.CONFLICT, ex.getMessage()));
+    }
+
+    @ExceptionHandler(ProposalFormDeleteAccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleDeleteAccessDenied(ProposalFormDeleteAccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error(HttpStatus.FORBIDDEN, ex.getMessage()));
+    }
+
+    @ExceptionHandler(ProposalFormDeleteInvalidStatusException.class)
+    public ResponseEntity<ApiResponse<Void>> handleDeleteInvalidStatus(ProposalFormDeleteInvalidStatusException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    @ExceptionHandler(ProposalFormUpdateAccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUpdateAccessDenied(ProposalFormUpdateAccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error(HttpStatus.FORBIDDEN, ex.getMessage()));
+    }
+
+    @ExceptionHandler(ProposalFormUpdateInvalidStatusException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUpdateInvalidStatus(ProposalFormUpdateInvalidStatusException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleResourceNotFound(ResourceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.error(HttpStatus.NOT_FOUND, ex.getMessage()));
     }
 }

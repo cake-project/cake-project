@@ -117,8 +117,9 @@ public class CustomerManagementService {
     }
 
     /**
-     * 회원 탈퇴
+     * 소비자 회원 탈퇴
      */
+    @Transactional
     public CustomerProfileResponseDto deleteCustomerProfileService(Long customerId) {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
@@ -127,7 +128,8 @@ public class CustomerManagementService {
             throw new IllegalArgumentException("이미 탈퇴한 회원입니다.");
         }
 
-        customer.setDeleted(true);
+        // soft delete 처리
+        customer.delete();
         customerRepository.save(customer);
 
         CustomerProfileResponseDto responseDto = new CustomerProfileResponseDto(
@@ -138,5 +140,4 @@ public class CustomerManagementService {
 
         return responseDto;
     }
-
 }
