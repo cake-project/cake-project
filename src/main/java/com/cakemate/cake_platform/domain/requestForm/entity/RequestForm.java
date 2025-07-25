@@ -62,6 +62,10 @@ public class RequestForm {
     @Column(nullable = false)
     private Boolean isDeleted = false;
 
+
+    /**
+     * 아래는 JPA 에서 쓰는 기본 생성자 입니다.
+     */
     protected RequestForm() {
     }
 

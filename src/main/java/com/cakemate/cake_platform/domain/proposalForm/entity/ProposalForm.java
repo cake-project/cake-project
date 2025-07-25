@@ -96,4 +96,6 @@ public class ProposalForm {
     public void updateStatus(ProposalFormStatus status) {
         this.status = status;
     }
+
+
 }

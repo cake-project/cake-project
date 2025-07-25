@@ -31,9 +31,27 @@ public class ProposalFormComment extends BaseTimeEntity {
     @Column(nullable = false)
     private String content;
 
+    @Column(nullable = false)
+    private boolean isDeleted = false;
+
+
+    /**
+     * 아래는 JPA 에서 쓰는 기본 생성자 입니다.
+     */
     protected ProposalFormComment() {
 
     }
 
+    /**
+     * 아래는 댓글 생성을 위한 메소드 입니다.
+     */
+    public static ProposalFormComment create(ProposalForm proposalForm, Customer customer, Owner owner, String content) {
+        ProposalFormComment comment = new ProposalFormComment(); // 기본 생성자로 객체 만듦
+        comment.proposalForm = proposalForm;  // 어떤 견적서에 달린 댓글인지 연결
+        comment.customer = customer;          // 작성자가 고객이면 넣음
+        comment.owner = owner;                // 작성자가 사장이면 넣음
+        comment.content = content;            // 댓글 내용
+        return comment;                       // 완성된 댓글 객체 반환
+    }
 
 }
