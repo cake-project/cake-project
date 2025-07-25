@@ -161,4 +161,12 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.FORBIDDEN)
                 .body(ApiResponse.error(HttpStatus.FORBIDDEN, ex.getMessage()));
     }
+
+    // 소비자가 존재하지 않을 때 사용합니다.
+    @ExceptionHandler(CustomerNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleCustomerNotFoundException(CustomerNotFoundException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(HttpStatus.NOT_FOUND, ex.getMessage()));
+    }
 }
