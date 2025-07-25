@@ -75,6 +75,7 @@ public class ProposalFormService {
                 requestForm,
                 store,
                 owner,
+                requestDto.getStoreName(),
                 requestDto.getTitle(),
                 requestDto.getContent(),
                 requestDto.getProposedPrice(),
@@ -252,6 +253,7 @@ public class ProposalFormService {
 
         //수정
         foundProposalForm.update(
+                requestDto.getStoreName(),
                 requestDto.getTitle(),
                 requestDto.getContent(),
                 requestDto.getManagerName(),
@@ -266,6 +268,7 @@ public class ProposalFormService {
         //응답 DTO 만들기
         ProposalFormDataDto responseDto = new ProposalFormDataDto(
                 updatedProposalForm.getId(),
+                updatedProposalForm.getStoreName(),
                 updatedProposalForm.getTitle(),
                 updatedProposalForm.getContent(),
                 updatedProposalForm.getManagerName(),

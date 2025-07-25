@@ -10,6 +10,7 @@ import com.cakemate.cake_platform.domain.member.owner.dto.request.UpdateOwnerPro
 import com.cakemate.cake_platform.domain.member.owner.dto.response.UpdateOwnerProfileResponseDto;
 import io.jsonwebtoken.Claims;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -59,4 +60,18 @@ public class CustomerManagementController {
         );
     }
 
+    /**
+     * (소비자) 회원 탈퇴 API
+     */
+    @DeleteMapping("/me")
+    public ResponseEntity<ApiResponse<CustomerProfileResponseDto>> deleteCustomerProfile(
+            @RequestHeader("Authorization") String bearerJwtToken
+    ) {
+        String jwtToken = jwtUtil.substringToken(bearerJwtToken);
+        Claims claims = jwtUtil.verifyToken(jwtToken);
+        Long customerId = jwtUtil.subjectMemberId(claims);
+
+        CustomerProfileResponseDto dto = customerManagementService.deleteCustomerProfileService(customerId);
+        return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "소비자 탈퇴 성공", dto));
+    }
 }
