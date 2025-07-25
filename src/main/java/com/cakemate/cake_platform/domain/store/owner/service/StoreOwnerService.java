@@ -11,20 +11,20 @@ import com.cakemate.cake_platform.domain.store.customer.command.StoreOwnerComman
 import com.cakemate.cake_platform.domain.store.entity.Store;
 import com.cakemate.cake_platform.domain.store.owner.dto.*;
 import com.cakemate.cake_platform.domain.store.owner.exception.*;
-import com.cakemate.cake_platform.domain.store.owner.repository.StoreOwnerRepository;
+import com.cakemate.cake_platform.domain.store.repository.StoreRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StoreOwnerService {
-    private final StoreOwnerRepository storeOwnerRepository;
+    private final com.cakemate.cake_platform.domain.store.repository.StoreRepository storeRepository;
     private final OwnerRepository ownerRepository;
 
     public StoreOwnerService(
-            StoreOwnerRepository storeOwnerRepository,
+            StoreRepository storeRepository,
             OwnerRepository ownerRepository
     ) {
-        this.storeOwnerRepository = storeOwnerRepository;
+        this.storeRepository = storeRepository;
         this.ownerRepository = ownerRepository;
     }
 
@@ -37,12 +37,12 @@ public class StoreOwnerService {
         Owner owner = ownerRepository.findById(command.getOwnerId())
                 .orElseThrow(() -> new NotFoundOwnerException("해당 점주가 존재하지 않습니다."));
         //필수값 검증
-        boolean exist = storeOwnerRepository.existsByBusinessNumber(requestDto.getBusinessNumber());
+        boolean exist = storeRepository.existsByBusinessNumber(requestDto.getBusinessNumber());
         if (exist) {
             throw new DuplicateBusinessNumberException("이미 등록된 사업자번호입니다.");
         }
         // 2. 이미 가게가 존재하는지 확인
-        boolean exists = storeOwnerRepository.existsByOwnerId(command.getOwnerId());
+        boolean exists = storeRepository.existsByOwnerId(command.getOwnerId());
         if (exists) {
             throw new DuplicatedStoreException("이미 등록된 가게가 존재합니다.");
         }
@@ -57,7 +57,7 @@ public class StoreOwnerService {
                 requestDto.getImage()
         );
         //store 저장
-        Store savedStore = storeOwnerRepository.save(store);
+        Store savedStore = storeRepository.save(store);
 
         // 4. 응답 DTO 생성해서 반환
         return new StoreCreateResponseDto(savedStore);
@@ -66,7 +66,7 @@ public class StoreOwnerService {
     @Transactional(readOnly = true)
     public StoreDetailResponseDto getStoreDetail(StoreOwnerCommand command) {
 
-        Store store = storeOwnerRepository.findByOwnerId(command.getOwnerId())
+        Store store = storeRepository.findByOwnerIdAndIsDeletedFalse(command.getOwnerId())
                 .orElseThrow(() -> new StoreNotFoundException("가게 정보가 존재하지 않습니다."));
         //권한 조회
         if (!store.getOwner().getId().equals(command.getOwnerId())) {
@@ -86,8 +86,8 @@ public class StoreOwnerService {
         }
 
 
-        Store store = storeOwnerRepository.findById(command.getStoreId())
-                .orElseThrow(() -> new StoreNotFoundException("해당 가게가 존재하지 않습니다."));
+        Store store = storeRepository.findByIdAndIsDeletedFalse(command.getStoreId())
+                .orElseThrow(() -> new StoreNotFoundException("해당 가게가 존재하지 않거나 이미 삭제되었습니다."));
 
         if (!store.getOwner().getId().equals(command.getOwnerId())) {
             throw new AccessDeniedException("본인의 가게만 수정할 수 있습니다.");
@@ -107,7 +107,7 @@ public class StoreOwnerService {
         }
 
         // 2. Owner Store 조회
-        Store store = storeOwnerRepository.findById(command.getStoreId())
+        Store store = storeRepository.findById(command.getStoreId())
                 .orElseThrow(() -> new StoreNotFoundException("해당 가게가 존재하지 않습니다."));
 
         // 3. 이미 삭제된 가게인지 확인
@@ -123,7 +123,6 @@ public class StoreOwnerService {
         //Soft delete 처리
         store.setIsDeleted(true);
 
-        // 영속성 컨텍스트 반영 위해 저장 (Optional, 영속 상태라면 자동 반영)
-        storeOwnerRepository.save(store);
+        storeRepository.save(store);
     }
 }
