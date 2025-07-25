@@ -1,4 +1,4 @@
-package com.cakemate.cake_platform.domain.proposalFormComment.servise;
+package com.cakemate.cake_platform.domain.proposalFormComment.service;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.common.exception.MemberAlreadyDeletedException;
@@ -12,6 +12,7 @@ import com.cakemate.cake_platform.domain.proposalForm.repository.ProposalFormRep
 import com.cakemate.cake_platform.domain.proposalFormComment.dto.request.CommentCreateRequestDto;
 import com.cakemate.cake_platform.domain.proposalFormComment.dto.response.CommentCreateResponseDto;
 import com.cakemate.cake_platform.domain.proposalFormComment.entity.ProposalFormComment;
+
 import com.cakemate.cake_platform.domain.proposalFormComment.repository.ProposalFormCommentRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

@@ -2,10 +2,9 @@ package com.cakemate.cake_platform.domain.proposalFormComment.controller;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.common.jwt.utll.JwtUtil;
-import com.cakemate.cake_platform.domain.proposalForm.service.ProposalFormService;
 import com.cakemate.cake_platform.domain.proposalFormComment.dto.request.CommentCreateRequestDto;
 import com.cakemate.cake_platform.domain.proposalFormComment.dto.response.CommentCreateResponseDto;
-import com.cakemate.cake_platform.domain.proposalFormComment.servise.ProposalFormCommentService;
+import com.cakemate.cake_platform.domain.proposalFormComment.service.ProposalFormCommentService;
 import io.jsonwebtoken.Claims;
 import org.springframework.web.bind.annotation.*;
 
