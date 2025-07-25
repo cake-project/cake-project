@@ -1,6 +1,7 @@
 package com.cakemate.cake_platform.domain.proposalForm.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.core.JsonToken;
 
 import java.time.LocalDateTime;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 public class ProposalFormDataDto {
     //속성
     private Long id;
+    private String storeName;
     private String title;
     private String content;
     private String managerName;
@@ -20,10 +22,11 @@ public class ProposalFormDataDto {
     private String image;
 
     //owner 전용 생성자(모든 정보 다룸)
-    public ProposalFormDataDto(Long id, String title, String content, String managerName, int proposedPrice, LocalDateTime proposedPickupDate, LocalDateTime createdAt, String status, String image) {
+    public ProposalFormDataDto(Long id, String storeName, String title, String content, String managerName, int proposedPrice, LocalDateTime proposedPickupDate, LocalDateTime createdAt, String status, String image) {
         this.id = id;
         this.title = title;
         this.content = content;
+        this.storeName = storeName;
         this.managerName = managerName;
         this.proposedPrice = proposedPrice;
         this.proposedPickupDate = proposedPickupDate;
@@ -32,8 +35,9 @@ public class ProposalFormDataDto {
         this.image = image;
     }
     //customer 전용 생성자(담당자 정보 제외)
-    public ProposalFormDataDto(Long id, String title, String content, int proposedPrice, LocalDateTime proposedPickupDate, LocalDateTime createdAt, String status, String image) {
+    public ProposalFormDataDto(Long id, String storeName, String title, String content, int proposedPrice, LocalDateTime proposedPickupDate, LocalDateTime createdAt, String status, String image) {
         this.id = id;
+        this.storeName = storeName;
         this.title = title;
         this.content = content;
         this.proposedPrice = proposedPrice;
@@ -78,6 +82,10 @@ public class ProposalFormDataDto {
 
     public String getManagerName() {
         return managerName;
+    }
+
+    public String getStoreName() {
+        return storeName;
     }
 }
 
