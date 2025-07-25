@@ -144,4 +144,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(ApiResponse.error(HttpStatus.FORBIDDEN, e.getMessage()));
     }
+    @ExceptionHandler(AlreadyDeletedStoreException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAlreadyDeletedStoreException(AlreadyDeletedStoreException ex) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error(HttpStatus.FORBIDDEN, ex.getMessage()));
+    }
 }

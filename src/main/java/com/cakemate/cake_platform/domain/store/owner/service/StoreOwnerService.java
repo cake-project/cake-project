@@ -105,11 +105,16 @@ public class StoreOwnerService {
             throw new NotFoundOwnerException("해당 점주가 존재하지 않습니다.");
         }
 
-
         // 2. Owner Store 조회
         Store store = storeOwnerRepository.findById(command.getStoreId())
                 .orElseThrow(() -> new StoreNotFoundException("해당 가게가 존재하지 않습니다."));
-        //3.권한 조회
+
+        // 3. 이미 삭제된 가게인지 확인
+        if (store.isDeleted()) {
+            throw new AlreadyDeletedStoreException("이미 삭제된 가게입니다.");
+        }
+
+        //4.권한 확인
         if (!store.getOwner().getId().equals(command.getOwnerId())) {
             throw new AccessDeniedException("본인의 가게만 삭제할 수 있습니다.");
         }
