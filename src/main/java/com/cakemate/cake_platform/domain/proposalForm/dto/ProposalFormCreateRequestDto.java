@@ -1,37 +1,26 @@
 package com.cakemate.cake_platform.domain.proposalForm.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import java.time.LocalDateTime;
+import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
 
 public class ProposalFormCreateRequestDto {
     //속성
     private Long requestFormId;
     private String title;
     private String content;
-    private int proposedPrice;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
-    private LocalDateTime proposedPickupDate;
-
-    private String image;
     private String proposalFormStatus;
 
     //생성자
     public ProposalFormCreateRequestDto() {
     }
 
-    public ProposalFormCreateRequestDto(Long requestFormId, String title, String content, int proposedPrice, LocalDateTime proposedPickupDate, String image, String proposalFormStatus) {
+    public ProposalFormCreateRequestDto(Long requestFormId, String title, String content, String proposalFormStatus) {
         this.requestFormId = requestFormId;
         this.title = title;
         this.content = content;
-        this.proposedPrice = proposedPrice;
-        this.proposedPickupDate = proposedPickupDate;
-        this.image = image;
         this.proposalFormStatus = proposalFormStatus;
     }
 
-    //게터
+    //기능
     public Long getRequestFormId() {
         return requestFormId;
     }
@@ -44,20 +33,12 @@ public class ProposalFormCreateRequestDto {
         return content;
     }
 
-    public int getProposedPrice() {
-        return proposedPrice;
-    }
-
-    public LocalDateTime getProposedPickupDate() {
-        return proposedPickupDate;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
     public String getProposalFormStatus() {
         return proposalFormStatus;
+    }
+
+    public ProposalFormStatus toEnumStatus() {
+        return ProposalFormStatus.fromString(this.proposalFormStatus);
     }
 }
 
