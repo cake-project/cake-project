@@ -2,6 +2,8 @@ package com.cakemate.cake_platform.domain.member.owner.service;
 
 import com.cakemate.cake_platform.common.config.PasswordValidator;
 import com.cakemate.cake_platform.common.dto.ApiResponse;
+import com.cakemate.cake_platform.common.exception.MemberAlreadyDeletedException;
+import com.cakemate.cake_platform.common.exception.MemberNotFoundException;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.auth.exception.BadRequestException;
 import com.cakemate.cake_platform.domain.auth.signup.owner.repository.OwnerRepository;
@@ -38,10 +40,10 @@ public class OwnerManagementService {
      */
     public OwnerProfileResponseDto getOwnerProfileService(Long ownerId) {
         Owner owner = ownerRepository.findById(ownerId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
 
         if (owner.isDeleted()) {
-            throw new IllegalArgumentException("이미 탈퇴한 회원입니다.");
+            throw new MemberAlreadyDeletedException("이미 탈퇴한 회원입니다.");
         }
 
         OwnerProfileResponseDto responseDto = new OwnerProfileResponseDto(

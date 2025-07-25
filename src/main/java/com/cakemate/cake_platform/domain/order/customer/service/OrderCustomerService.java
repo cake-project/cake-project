@@ -1,14 +1,12 @@
-package com.cakemate.cake_platform.domain.order.service;
+package com.cakemate.cake_platform.domain.order.customer.service;
 
-import com.cakemate.cake_platform.common.exception.RequestFormNotFoundException;
-import com.cakemate.cake_platform.common.exception.StoreNotFoundException;
-import com.cakemate.cake_platform.domain.order.dto.OrderCreateRequestDto;
-import com.cakemate.cake_platform.domain.order.dto.OrderCreateResponseDto;
-import com.cakemate.cake_platform.domain.order.dto.OrderDetailResponseDto;
-import com.cakemate.cake_platform.domain.order.dto.OrderPageResponseDto;
+import com.cakemate.cake_platform.common.exception.*;
+import com.cakemate.cake_platform.domain.auth.entity.Customer;
+import com.cakemate.cake_platform.domain.auth.signup.customer.repository.CustomerRepository;
+import com.cakemate.cake_platform.domain.order.common.OrderNumberGenerator;
+import com.cakemate.cake_platform.domain.order.customer.dto.*;
 import com.cakemate.cake_platform.domain.order.entity.Order;
 import com.cakemate.cake_platform.domain.order.enums.OrderStatus;
-import com.cakemate.cake_platform.common.exception.ProposalFormNotFoundException;
 import com.cakemate.cake_platform.domain.order.exception.MismatchedRequestAndProposalException;
 import com.cakemate.cake_platform.domain.order.exception.UnauthorizedRequestFormAccessException;
 import com.cakemate.cake_platform.domain.order.repository.OrderRepository;
@@ -24,7 +22,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.cakemate.cake_platform.domain.order.common.OrderNumberGenerator;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,23 +30,24 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
-public class OrderService {
-
+public class OrderCustomerService {
     private final OrderRepository orderRepository;
     private final RequestFormRepository requestFormRepository;
     private final ProposalFormRepository proposalFormRepository;
+    private final CustomerRepository customerRepository;
 
-    public OrderService(OrderRepository orderRepository, RequestFormRepository requestFormRepository, ProposalFormRepository proposalFormRepository) {
+    public OrderCustomerService(OrderRepository orderRepository, RequestFormRepository requestFormRepository, ProposalFormRepository proposalFormRepository, CustomerRepository customerRepository) {
         this.orderRepository = orderRepository;
         this.requestFormRepository = requestFormRepository;
         this.proposalFormRepository = proposalFormRepository;
+        this.customerRepository = customerRepository;
     }
 
-    @Transactional
     /**
-     * 주문 생성 Service
+     * 소비자 -> 주문 생성 Service
      */
-    public OrderCreateResponseDto createOrderService(Long customerId, Long requestFormId, Long proposalFormId, OrderCreateRequestDto requestDto) {
+    @Transactional
+    public CustomerOrderCreateResponseDto createOrderService(Long customerId, Long requestFormId, Long proposalFormId, CustomerOrderCreateRequestDto requestDto) {
         ProposalForm proposalForm = proposalFormRepository.findById(proposalFormId)
                 .orElseThrow(() -> new ProposalFormNotFoundException("견적서가 존재하지 않습니다."));
 
@@ -80,18 +78,23 @@ public class OrderService {
         Store store = Optional.ofNullable(proposalForm.getStore())
                 .orElseThrow(() -> new StoreNotFoundException("견적서에 가게가 존재하지 않습니다."));
 
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new CustomerNotFoundException("존재하지 않는 회원입니다."));
+
         // 주문 번호 생성
-        String orderId = OrderNumberGenerator.generateOrderNumber();
+        String orderNumber = OrderNumberGenerator.generateOrderNumber();
 
         // 주문 생성
         Order order = Order.builder()
-                .orderId(orderId)
+                .orderNumber(orderNumber)
+                .customer(customer)
                 .requestForm(requestForm)
                 .proposalForm(proposalForm)
                 .status(OrderStatus.MAKE_WAITING)
                 .customerName(requestDto.getCustomerName())
                 .storeBusinessName(store.getBusinessName())
                 .storeName(store.getName())
+                .productName(null)
                 .storePhoneNumber(store.getPhoneNumber())
                 .storeAddress(store.getAddress())
                 .agreedPrice(proposalForm.getProposedPrice())
@@ -101,27 +104,65 @@ public class OrderService {
 
         orderRepository.save(order);
 
-        OrderCreateResponseDto responseDto = new OrderCreateResponseDto(orderId, OrderStatus.MAKE_WAITING, LocalDateTime.now());
+        CustomerOrderCreateResponseDto responseDto = new CustomerOrderCreateResponseDto(orderNumber, OrderStatus.MAKE_WAITING, LocalDateTime.now());
         return responseDto;
     }
 
-    // 소비자 -> 주문 목록 조회 Service
-    public OrderPageResponseDto<OrderDetailResponseDto> getCustomerOrderPageService(Long customerId, Pageable pageable) {
+    /**
+     * 소비자 -> 주문 상세 조회 Service
+     */
+    public CustomerOrderDetailResponseDto getCustomerOrderDetailService(Long customerId, Long orderId) {
+        Order order = orderRepository.findByCustomerIdAndId(customerId, orderId)
+                .orElseThrow(() -> new OrderNotFoundException("주문 내역이 존재하지 않습니다."));
+
+        CustomerOrderDetailResponseDto responseDto = new CustomerOrderDetailResponseDto(
+                order.getOrderNumber(),
+                order.getRequestForm().getId(),
+                order.getProposalForm().getId(),
+                order.getStatus().toString(),
+                order.getCustomerName(),
+                order.getStoreBusinessName(),
+                order.getStoreName(),
+                Optional.ofNullable(order.getProductName()).orElse("상품 정보 없음"),
+                order.getStorePhoneNumber(),
+                order.getStoreAddress(),
+                order.getAgreedPrice(),
+                order.getAgreedPickupDate(),
+                Optional.ofNullable(order.getFinalCakeImage()).orElse("케이크 이미지 없음")
+        );
+
+        return responseDto;
+    }
+
+    /**
+     * 소비자 -> 주문 목록 조회 Service
+     *
+     * @param customerId
+     * @param pageable
+     * @return
+     */
+    public CustomerOrderPageResponseDto<CustomerOrderSummaryResponseDto> getCustomerOrderPageService(Long customerId, Pageable pageable) {
         Page<Order> orderPage = orderRepository.findByRequestFormCustomerId(customerId, pageable);
 
         if (orderPage.isEmpty()) {
-            throw new StoreNotFoundException("주문 내역이 존재하지 않습니다.");
+            throw new OrderNotFoundException("주문 내역이 존재하지 않습니다.");
         }
-        List<OrderDetailResponseDto> responseDtoList = orderPage.stream()
-                .map(order -> new OrderDetailResponseDto(
-                        order.getId(),
-                        order.getStatus().toString(),
-                        order.getRequestForm().getCustomer().getName(),
-                        order.getProposalForm().getStore().getName(),
-                        order.getRequestForm().getTitle(),
-                        order.getRequestForm().getRegion(),
-                        order.getRequestForm().getDesiredPrice()
-                )).collect(Collectors.toList());
+
+        List<CustomerOrderSummaryResponseDto> responseDtoList = orderPage.stream()
+                .map(order -> {
+                    String orderNumber = order.getOrderNumber();
+                    String status = order.getStatus().toString();
+                    String storeName = order.getStoreName();
+                    LocalDateTime agreedPickupDate = order.getAgreedPickupDate();
+
+                    return new CustomerOrderSummaryResponseDto(
+                            orderNumber,
+                            status,
+                            storeName,
+                            agreedPickupDate
+                    );
+                })
+                .collect(Collectors.toList());
 
         PageDto pageDto = new PageDto(
                 orderPage.getNumber() + 1,
@@ -130,7 +171,7 @@ public class OrderService {
                 orderPage.getTotalElements()
         );
 
-        OrderPageResponseDto<OrderDetailResponseDto> responseDto = new OrderPageResponseDto<>(responseDtoList, pageDto);
+        CustomerOrderPageResponseDto<CustomerOrderSummaryResponseDto> responseDto = new CustomerOrderPageResponseDto<>(responseDtoList, pageDto);
         return responseDto;
     }
 }

@@ -1,0 +1,94 @@
+package com.cakemate.cake_platform.domain.order.customer.controller;
+
+import com.cakemate.cake_platform.common.dto.ApiResponse;
+import com.cakemate.cake_platform.common.jwt.utll.JwtUtil;
+import com.cakemate.cake_platform.domain.order.customer.dto.*;
+import com.cakemate.cake_platform.domain.order.customer.service.OrderCustomerService;
+import io.jsonwebtoken.Claims;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api")
+public class OrderCustomerController {
+
+    private final OrderCustomerService orderService;
+    private final JwtUtil jwtUtil;
+
+    public OrderCustomerController(OrderCustomerService orderService, JwtUtil jwtUtil) {
+        this.orderService = orderService;
+        this.jwtUtil = jwtUtil;
+    }
+
+    /**
+     * 주문 생성 API
+     *
+     * @param requestFormId  주문 대상 의뢰서 ID
+     * @param proposalFormId 주문 대상 견적서 ID
+     * @param requestDto     소비자에게 주문 정보 입력받는 DTO
+     * @return
+     */
+    @PostMapping("request-forms/{requestFormId}/proposal-forms/{proposalFormId}/accept")
+    public ApiResponse<CustomerOrderCreateResponseDto> createOrderAPI(
+            @RequestHeader("Authorization") String bearerJwtToken,
+            @PathVariable Long requestFormId,
+            @PathVariable Long proposalFormId,
+            @RequestBody CustomerOrderCreateRequestDto requestDto
+    ) {
+        // 토큰에서 customerId 가져오기
+        String jwtToken = jwtUtil.substringToken(bearerJwtToken);
+        Claims claims = jwtUtil.verifyToken(jwtToken);
+        Long customerId = jwtUtil.subjectMemberId(claims);
+
+        CustomerOrderCreateResponseDto responseDto = orderService.createOrderService(customerId, requestFormId, proposalFormId, requestDto);
+        ApiResponse<CustomerOrderCreateResponseDto> response = ApiResponse.success(HttpStatus.CREATED, "주문이 생성되었습니다.", responseDto);
+        return response;
+    }
+
+    /**
+     * 소비자 -> 주문 상세 조회 API
+     */
+    @GetMapping("/customers/orders/{orderId}")
+    public ApiResponse<CustomerOrderDetailResponseDto> getCustomerOrderDetailAPI(
+            @RequestHeader("Authorization") String bearerJwtToken,
+            @PathVariable Long orderId
+    ) {
+        String jwtToken = jwtUtil.substringToken(bearerJwtToken);
+        Claims claims = jwtUtil.verifyToken(jwtToken);
+        Long customerId = jwtUtil.subjectMemberId(claims);
+
+        CustomerOrderDetailResponseDto responseDto = orderService.getCustomerOrderDetailService(customerId, orderId);
+        ApiResponse<CustomerOrderDetailResponseDto> response = ApiResponse.success(HttpStatus.OK, "주문 상세 조회가 완료되었습니다.", responseDto);
+        return response;
+    }
+
+    /**
+     * 소비자 -> 주문 목록 조회 API
+     *
+     * @param bearerJwtToken
+     * @param page
+     * @param size
+     * @return
+     */
+    @GetMapping("/customers/orders")
+    public ApiResponse<CustomerOrderPageResponseDto<CustomerOrderSummaryResponseDto>> getCustomerOrderPageAPI(
+            @RequestHeader("Authorization") String bearerJwtToken,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        String jwtToken = jwtUtil.substringToken(bearerJwtToken);
+        Claims claims = jwtUtil.verifyToken(jwtToken);
+        Long customerId = jwtUtil.subjectMemberId(claims);
+
+        int adjustedPage = Math.max(page - 1, 0);
+
+        Pageable pageable = PageRequest.of(adjustedPage, size);
+
+        CustomerOrderPageResponseDto<CustomerOrderSummaryResponseDto> responseDto = orderService.getCustomerOrderPageService(customerId, pageable);
+        ApiResponse<CustomerOrderPageResponseDto<CustomerOrderSummaryResponseDto>> response = ApiResponse.success(HttpStatus.OK, "주문 내역 조회가 완료되었습니다.", responseDto);
+        return response;
+    }
+}
+
