@@ -4,27 +4,24 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
 
-public class ProposalFormCreateRequestDto {
+public class ProposalFormUpdateRequestDto {
     //속성
-    private Long requestFormId;
     private String title;
     private String content;
+    private String managerName;
     private int proposedPrice;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime proposedPickupDate;
 
     private String image;
     private String proposalFormStatus;
 
     //생성자
-    public ProposalFormCreateRequestDto() {
-    }
-
-    public ProposalFormCreateRequestDto(Long requestFormId, String title, String content, int proposedPrice, LocalDateTime proposedPickupDate, String image, String proposalFormStatus) {
-        this.requestFormId = requestFormId;
+    public ProposalFormUpdateRequestDto(String title, String content, String managerName, int proposedPrice, LocalDateTime proposedPickupDate, String image, String proposalFormStatus) {
         this.title = title;
         this.content = content;
+        this.managerName = managerName;
         this.proposedPrice = proposedPrice;
         this.proposedPickupDate = proposedPickupDate;
         this.image = image;
@@ -32,16 +29,16 @@ public class ProposalFormCreateRequestDto {
     }
 
     //게터
-    public Long getRequestFormId() {
-        return requestFormId;
-    }
-
     public String getTitle() {
         return title;
     }
 
     public String getContent() {
         return content;
+    }
+
+    public String getManagerName() {
+        return managerName;
     }
 
     public int getProposedPrice() {
@@ -60,4 +57,3 @@ public class ProposalFormCreateRequestDto {
         return proposalFormStatus;
     }
 }
-
