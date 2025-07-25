@@ -55,11 +55,8 @@ public class ProposalFormUpdateRequestDto {
         return image;
     }
 
-    public String getProposalFormStatus() {
-        return proposalFormStatus;
-    }
-
     public String getStoreName() {
         return storeName;
     }
+
 }

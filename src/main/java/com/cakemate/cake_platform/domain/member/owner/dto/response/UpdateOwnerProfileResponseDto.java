@@ -10,7 +10,7 @@ public class UpdateOwnerProfileResponseDto {
     private String name;
     private String phoneNumber;
 
-    public UpdateOwnerProfileResponseDto(Long ownerId, String email, String name, String phoneNumber) {
+    public UpdateOwnerProfileResponseDto(Long ownerId, String name, String email, String phoneNumber) {
         this.ownerId = ownerId;
         this.email = email;
         this.name = name;

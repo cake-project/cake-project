@@ -33,7 +33,6 @@ public class ProposalFormCreateRequestDto {
         this.image = image;
         this.proposalFormStatus = proposalFormStatus;
     }
-
     //게터
     public Long getRequestFormId() {
         return requestFormId;

@@ -64,8 +64,8 @@ public class ProposalForm {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
-    //생성자
-    public ProposalForm() {}
+    protected ProposalForm() {
+    }
 
     public ProposalForm(RequestForm requestForm, Store store, Owner owner, String storeName, String title, String content,
                         int proposedPrice, LocalDateTime proposedPickupDate, String image, ProposalFormStatus status) {
@@ -79,6 +79,23 @@ public class ProposalForm {
         this.proposedPickupDate = proposedPickupDate;
         this.image = image;
         this.status = status;
+    }
+//    public ProposalForm(RequestForm requestForm, Store store, Owner owner, String title, String content,
+//                        int proposalPrice, LocalDateTime pickupDate, ProposalFormStatus status) {
+//        this.requestForm = requestForm;
+//        this.store = store;
+//        this.owner = owner;
+//        this.title = title;
+//        this.content = content;
+//        this.status = status;
+//    }
+
+    public ProposalFormStatus getStatus() {
+        return status;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
     }
 
     //기능

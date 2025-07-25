@@ -6,8 +6,8 @@ import com.cakemate.cake_platform.domain.proposalForm.dto.CustomerProposalFormDe
 import com.cakemate.cake_platform.domain.proposalForm.dto.ProposalFormDataDto;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.proposalForm.repository.ProposalFormRepository;
-import com.cakemate.cake_platform.domain.proposalFormComment.Repository.ProposalFormCommentRepository;
 import com.cakemate.cake_platform.domain.proposalFormComment.entity.ProposalFormComment;
+import com.cakemate.cake_platform.domain.proposalFormComment.repository.ProposalFormCommentRepository;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
