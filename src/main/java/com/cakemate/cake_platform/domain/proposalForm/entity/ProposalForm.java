@@ -33,6 +33,9 @@ public class ProposalForm {
     @JoinColumn(name = "owner_id")
     private Owner owner;
 
+    @Column(nullable = false)
+    private String name;
+
     @Column(name = "manager_name")
     private String managerName;
 
@@ -75,55 +78,6 @@ public class ProposalForm {
         this.proposedPickupDate = proposedPickupDate;
         this.image = image;
         this.status = status;
-    }
-
-    //게터
-    public Long getId() {
-        return id;
-    }
-
-    public RequestForm getRequestForm() {
-        return requestForm;
-    }
-
-    public Store getStore() {
-        return store;
-    }
-
-    public Owner getOwner() {
-        return owner;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public int getProposedPrice() {
-        return proposedPrice;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public LocalDateTime getProposedPickupDate() {
-        return proposedPickupDate;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public ProposalFormStatus getStatus() {
-        return status;
-    }
-
-    public boolean isDeleted() {
-        return isDeleted;
     }
 
     //기능

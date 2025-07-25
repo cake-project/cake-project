@@ -8,6 +8,7 @@ import com.cakemate.cake_platform.domain.member.owner.dto.response.UpdateOwnerPr
 import com.cakemate.cake_platform.domain.member.owner.service.OwnerManagementService;
 import io.jsonwebtoken.Claims;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -53,5 +54,20 @@ public class  OwnerManagementController {
         return ownerManagementService.putUpdateOwnerService(
                 ownerId, updateOwnerProfileRequestDto
         );
+    }
+
+    /**
+     * 점주 회원 탈퇴
+     */
+    @DeleteMapping("/me")
+    public ResponseEntity<ApiResponse<OwnerProfileResponseDto>> deleteOwnerProfile(
+            @RequestHeader("Authorization") String bearerJwtToken
+    ) {
+        String jwtToken = jwtUtil.substringToken(bearerJwtToken);
+        Claims claims = jwtUtil.verifyToken(jwtToken);
+        Long ownerId = jwtUtil.subjectMemberId(claims);
+
+        OwnerProfileResponseDto dto = ownerManagementService.deleteOwnerProfileService(ownerId);
+        return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "점주 탈퇴 성공", dto));
     }
 }
