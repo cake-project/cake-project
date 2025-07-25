@@ -33,6 +33,9 @@ public class ProposalForm {
     @JoinColumn(name = "owner_id")
     private Owner owner;
 
+    @Column(nullable = false)
+    private String storeName;
+
     @Column(name = "manager_name")
     private String managerName;
 
@@ -67,11 +70,12 @@ public class ProposalForm {
     }
 
     //아래 추가함
-    public ProposalForm(RequestForm requestForm, Store store, Owner owner, String title, String content,
+    public ProposalForm(RequestForm requestForm, Store store, Owner owner, String storeName, String title, String content,
                         int proposedPrice, LocalDateTime proposedPickupDate, String image, ProposalFormStatus status) {
         this.requestForm = requestForm;
         this.store = store;
         this.owner = owner;
+        this.storeName = storeName;
         this.title = title;
         this.content = content;
         this.proposedPrice = proposedPrice;
@@ -98,7 +102,8 @@ public class ProposalForm {
     }
 
     //기능
-    public void update(String title, String content, String managerName, int price, LocalDateTime pickupDate, String image) {
+    public void update(String storeName, String title, String content, String managerName, int price, LocalDateTime pickupDate, String image) {
+        this.storeName = storeName;
         this.title = title;
         this.content = content;
         this.managerName = managerName;
@@ -106,7 +111,6 @@ public class ProposalForm {
         this.proposedPickupDate = pickupDate;
         this.image = image;
     }
-
     public void updateStatus(ProposalFormStatus status) {
         this.status = status;
     }

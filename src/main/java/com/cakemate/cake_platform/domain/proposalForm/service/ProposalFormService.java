@@ -75,6 +75,7 @@ public class ProposalFormService {
                 requestForm,
                 store,
                 owner,
+                requestDto.getStoreName(),
                 requestDto.getTitle(),
                 requestDto.getContent(),
                 requestDto.getProposedPrice(),
@@ -252,6 +253,7 @@ public class ProposalFormService {
 
         //수정
         foundProposalForm.update(
+                requestDto.getStoreName(),
                 requestDto.getTitle(),
                 requestDto.getContent(),
                 requestDto.getManagerName(),
