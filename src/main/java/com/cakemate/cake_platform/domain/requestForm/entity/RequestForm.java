@@ -84,6 +84,7 @@ public class RequestForm {
         this.desiredPickupDate = desiredPickupDate;
         this.status = status;
     }
+
     public RequestForm(ProposalForm proposalForm, Customer customer, String title, String region,
                        String content, int desiredPrice, String image, LocalDateTime desiredPickupDate,
                        RequestFormStatus status) {

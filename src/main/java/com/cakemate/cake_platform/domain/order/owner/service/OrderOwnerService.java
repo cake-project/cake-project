@@ -7,7 +7,7 @@ import com.cakemate.cake_platform.domain.order.entity.Order;
 import com.cakemate.cake_platform.domain.order.owner.dto.OwnerOrderDetailResponseDto;
 import com.cakemate.cake_platform.domain.order.owner.dto.OwnerOrderPageResponseDto;
 import com.cakemate.cake_platform.domain.order.owner.dto.OwnerOrderSummaryResponseDto;
-import com.cakemate.cake_platform.domain.order.owner.exception.UnauthorizedAccessException;
+import com.cakemate.cake_platform.common.exception.UnauthorizedAccessException;
 import com.cakemate.cake_platform.domain.order.repository.OrderRepository;
 import com.cakemate.cake_platform.domain.store.entity.Store;
 import com.cakemate.cake_platform.domain.store.repository.StoreRepository;
