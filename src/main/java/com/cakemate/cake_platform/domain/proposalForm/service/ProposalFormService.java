@@ -70,6 +70,9 @@ public class ProposalFormService {
         if (exists) {
             throw new ProposalFormAlreadyExistsException("이미 이 의뢰서에 대한 견적서가 존재합니다.");
         }
+//        // 견적서가 생성되면 의뢰서 상태 변경이 필요하면 사용
+//        long count = proposalFormRepository.countByRequestForm(requestForm);
+
         //엔티티 만들기
         ProposalForm proposalForm = new ProposalForm(
                 requestForm,
@@ -81,10 +84,10 @@ public class ProposalFormService {
                 requestDto.getProposedPrice(),
                 requestDto.getProposedPickupDate(),
                 requestDto.getImage(),
-                ProposalFormStatus.fromString(requestDto.getProposalFormStatus())
+                ProposalFormStatus.AWAITING  // 기본 상태
         );
 
-        // 최초 견적서 등록 시 의뢰서 상태 변경
+        //최초 견적서 등록 시 의뢰서 상태 변경
         long count = proposalFormRepository.countByRequestForm(requestForm);
 
         //저장
@@ -93,6 +96,8 @@ public class ProposalFormService {
         //DTO 만들기
         ProposalFormDataDto dataDto = new ProposalFormDataDto(
                 savedProposalForm.getId(),
+                savedProposalForm.getRequestForm().getId(),
+                savedProposalForm.getStoreName(),
                 savedProposalForm.getTitle(),
                 savedProposalForm.getContent(),
                 savedProposalForm.getManagerName(),
@@ -129,7 +134,8 @@ public class ProposalFormService {
         //ProposalFormDto 만들기
         ProposalFormDataDto proposalFormDataDto = new ProposalFormDataDto(
                 foundProposalForm.getId(),
-                foundProposalForm.getTitle(),
+                requestForm.getId(),
+                foundProposalForm.getStore().getName(),
                 foundProposalForm.getContent(),
                 foundProposalForm.getManagerName(),
                 foundProposalForm.getProposedPrice(),
@@ -144,11 +150,12 @@ public class ProposalFormService {
                 requestForm.getId(),
                 requestForm.getTitle(),
                 requestForm.getRegion(),
+                requestForm.getContent(),
                 requestForm.getDesiredPrice(),
+                requestForm.getImage(),
                 requestForm.getDesiredPickupDate(),
                 requestForm.getStatus().name(),
-                requestForm.getCreatedAt(),
-                requestForm.getImage()
+                requestForm.getCreatedAt()
         );
 
         //commentFormDto 리스트 만들기
@@ -197,10 +204,11 @@ public class ProposalFormService {
                 .map(proposalForm -> {
                     RequestForm requestForm = proposalForm.getRequestForm();
 
+                    //proposalForm DTO 만들기
                     ProposalFormDataDto proposalDto = new ProposalFormDataDto(
                             proposalForm.getId(),
-                            proposalForm.getTitle(),
-                            proposalForm.getContent(),
+                            requestForm.getId(),
+                            proposalForm.getStore().getName(),                        proposalForm.getContent(),
                             proposalForm.getManagerName(),
                             proposalForm.getProposedPrice(),
                             proposalForm.getProposedPickupDate(),
@@ -209,15 +217,17 @@ public class ProposalFormService {
                             proposalForm.getImage()
                     );
 
+                    //requestForm DTO 만들기
                     RequestFormDataDto requestDto = new RequestFormDataDto(
                             requestForm.getId(),
                             requestForm.getTitle(),
                             requestForm.getRegion(),
+                            requestForm.getContent(),
                             requestForm.getDesiredPrice(),
+                            requestForm.getImage(),
                             requestForm.getDesiredPickupDate(),
                             requestForm.getStatus().name(),
-                            requestForm.getCreatedAt(),
-                            requestForm.getImage()
+                            requestForm.getCreatedAt()
                     );
 
                     return new ProposalFormContainsRequestFormDataDto(requestDto, proposalDto);
@@ -240,10 +250,14 @@ public class ProposalFormService {
         //조회
         Member foundOwner = memberRepository.findById(ownerId)
                 .orElseThrow(() -> new OwnerNotFoundException("해당 점주를 찾을 수 없습니다."));
+        Owner owner = foundOwner.getOwner();
+        if (owner == null) {
+            throw new OwnerNotFoundException("해당 회원은 점주 정보가 없습니다.");
+        }
         ProposalForm foundProposalForm = proposalFormRepository.findById(proposalFormId)
                 .orElseThrow(() -> new ProposalFormNotFoundException("해당 견적서가 존재하지 않습니다."));
         //검증 로직(해당 점주가 작성한 견적서인지 확인)
-        if (!foundProposalForm.getOwner().getId().equals(foundOwner.getId())) {
+        if (!foundProposalForm.getOwner().getId().equals(owner.getId())) {
             throw new ProposalFormUpdateAccessDeniedException("견적서에 대한 수정 권한이 없습니다.");
         }
         //status 검증(AWAITING일 때만 수정 가능)
@@ -268,6 +282,7 @@ public class ProposalFormService {
         //응답 DTO 만들기
         ProposalFormDataDto responseDto = new ProposalFormDataDto(
                 updatedProposalForm.getId(),
+                updatedProposalForm.getRequestForm().getId(),
                 updatedProposalForm.getStoreName(),
                 updatedProposalForm.getTitle(),
                 updatedProposalForm.getContent(),

@@ -10,7 +10,8 @@ import java.time.LocalDateTime;
  */
 public class ProposalFormDataDto {
     //속성
-    private Long id;
+    private Long proposalFormId;
+    private Long requestFormId;
     private String storeName;
     private String title;
     private String content;
@@ -22,11 +23,12 @@ public class ProposalFormDataDto {
     private String image;
 
     //owner 전용 생성자(모든 정보 다룸)
-    public ProposalFormDataDto(Long id, String storeName, String title, String content, String managerName, int proposedPrice, LocalDateTime proposedPickupDate, LocalDateTime createdAt, String status, String image) {
-        this.id = id;
+    public ProposalFormDataDto(Long proposalFormId, Long requestFormId, String storeName, String title, String content, String managerName, int proposedPrice, LocalDateTime proposedPickupDate, LocalDateTime createdAt, String status, String image) {
+        this.proposalFormId = proposalFormId;
+        this.requestFormId = requestFormId;
+        this.storeName = storeName;
         this.title = title;
         this.content = content;
-        this.storeName = storeName;
         this.managerName = managerName;
         this.proposedPrice = proposedPrice;
         this.proposedPickupDate = proposedPickupDate;
@@ -35,8 +37,9 @@ public class ProposalFormDataDto {
         this.image = image;
     }
     //customer 전용 생성자(담당자 정보 제외)
-    public ProposalFormDataDto(Long id, String storeName, String title, String content, int proposedPrice, LocalDateTime proposedPickupDate, LocalDateTime createdAt, String status, String image) {
-        this.id = id;
+    public ProposalFormDataDto(Long proposalFormId, Long requestFormId, String storeName, String title, String content, int proposedPrice, LocalDateTime proposedPickupDate, LocalDateTime createdAt, String status, String image) {
+        this.proposalFormId = proposalFormId;
+        this.requestFormId = requestFormId;
         this.storeName = storeName;
         this.title = title;
         this.content = content;
@@ -48,8 +51,13 @@ public class ProposalFormDataDto {
     }
 
     //게터
-    public Long getId() {
-        return id;
+
+    public Long getProposalFormId() {
+        return proposalFormId;
+    }
+
+    public Long getRequestFormId() {
+        return requestFormId;
     }
 
     public String getTitle() {

@@ -4,6 +4,7 @@ import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.domain.proposalForm.dto.CommentDataDto;
 import com.cakemate.cake_platform.domain.proposalForm.dto.CustomerProposalFormDetailDto;
 import com.cakemate.cake_platform.domain.proposalForm.dto.ProposalFormDataDto;
+import com.cakemate.cake_platform.domain.proposalForm.dto.RequestFormDataDto;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.proposalForm.repository.ProposalFormRepository;
 import com.cakemate.cake_platform.domain.proposalFormComment.Repository.ProposalFormCommentRepository;
@@ -44,12 +45,27 @@ public class CustomerProposalFormService {
             throw new RuntimeException("조회 권한이 없습니다.");
         }
 
-        // ProposalForm DTO 변환 (필요하면 별도 메서드로 분리)
+        // 의뢰서 DTO 만들기
+        RequestFormDataDto requestFormDto = new RequestFormDataDto(
+                requestForm.getId(),
+                requestForm.getTitle(),
+                requestForm.getRegion(),
+                requestForm.getContent(),
+                requestForm.getDesiredPrice(),
+                requestForm.getImage(),
+                requestForm.getDesiredPickupDate(),
+                requestForm.getStatus().name(),
+                requestForm.getCreatedAt()
+        );
+
+        //견적서 DTO 만들기
         ProposalFormDataDto proposalFormDto = new ProposalFormDataDto(
                 proposalForm.getId(),
+                proposalForm.getRequestForm().getId(),
                 proposalForm.getStoreName(),
                 proposalForm.getTitle(),
                 proposalForm.getContent(),
+                proposalForm.getManagerName(),
                 proposalForm.getProposedPrice(),
                 proposalForm.getProposedPickupDate(),
                 proposalForm.getCreatedAt(),
@@ -57,6 +73,7 @@ public class CustomerProposalFormService {
                 proposalForm.getImage()
         );
 
+        //댓글 리스트 DTO 만들기
         List<ProposalFormComment> comments = proposalFormCommentRepository.findByProposalForm(proposalForm);
 
         List<CommentDataDto> commentDataDtos = comments.stream()
@@ -79,7 +96,7 @@ public class CustomerProposalFormService {
                 })
                 .collect(Collectors.toList());
 
-        CustomerProposalFormDetailDto responseDto = new CustomerProposalFormDetailDto(proposalFormDto, commentDataDtos);
+        CustomerProposalFormDetailDto responseDto = new CustomerProposalFormDetailDto(requestFormDto, proposalFormDto, commentDataDtos);
 
         return ApiResponse.success(HttpStatus.OK, "success", responseDto);
     }
