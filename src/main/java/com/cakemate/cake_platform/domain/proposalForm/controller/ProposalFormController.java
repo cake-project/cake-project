@@ -47,7 +47,10 @@ public class ProposalFormController {
      * proposalForm 단건 상세 조회 API
      */
     @GetMapping("/{proposalFormId}")
-    public ApiResponse<ProposalFormContainsRequestFormDataDto> getProposalFormDetailAPI(@PathVariable("proposalFormId") Long proposalFormId, @RequestHeader("Authorization") String bearerToken) {
+    public ApiResponse<ProposalFormContainsRequestFormDataDto> getProposalFormDetailAPI(
+            @PathVariable("proposalFormId") Long proposalFormId,
+            @RequestHeader("Authorization") String bearerToken
+    ) {
         String token = jwtUtil.substringToken(bearerToken);
         Claims claims = jwtUtil.verifyToken(token);
         Long ownerId = jwtUtil.subjectMemberId(claims);

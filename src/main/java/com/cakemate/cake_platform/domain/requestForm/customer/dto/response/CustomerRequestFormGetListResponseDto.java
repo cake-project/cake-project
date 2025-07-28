@@ -7,15 +7,15 @@ import java.time.LocalDateTime;
 
 @Getter
 public class CustomerRequestFormGetListResponseDto {
-    private Long RequestFormId;
+    private Long requestFormId;
     private String title;
     private RequestFormStatus requestStatus;
     private LocalDateTime createdAt;
 
     public CustomerRequestFormGetListResponseDto(
-            Long RequestFormId, String title, RequestFormStatus requestStatus, LocalDateTime createdAt
+            Long requestFormId, String title, RequestFormStatus requestStatus, LocalDateTime createdAt
     ) {
-        this.RequestFormId = RequestFormId;
+        this.requestFormId = requestFormId;
         this.title = title;
         this.requestStatus = requestStatus;
         this.createdAt = createdAt;

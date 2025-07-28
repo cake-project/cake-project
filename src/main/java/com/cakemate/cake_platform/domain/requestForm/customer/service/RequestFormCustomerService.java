@@ -2,6 +2,8 @@ package com.cakemate.cake_platform.domain.requestForm.customer.service;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
+import com.cakemate.cake_platform.domain.auth.entity.Owner;
+import com.cakemate.cake_platform.domain.auth.exception.BadRequestException;
 import com.cakemate.cake_platform.domain.auth.signup.customer.repository.CustomerRepository;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.proposalForm.repository.ProposalFormRepository;
@@ -13,7 +15,10 @@ import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
 import com.cakemate.cake_platform.domain.requestForm.exception.RequestFormAccessDeniedException;
 import com.cakemate.cake_platform.domain.requestForm.exception.NotFoundRequestFormException;
+import com.cakemate.cake_platform.domain.store.owner.exception.DuplicateBusinessNumberException;
+import com.cakemate.cake_platform.domain.store.owner.exception.DuplicatedStoreException;
 import com.cakemate.cake_platform.domain.store.owner.exception.NotFoundCustomerException;
+import com.cakemate.cake_platform.domain.store.owner.exception.NotFoundOwnerException;
 import org.springframework.http.HttpStatus;
 import com.cakemate.cake_platform.domain.requestForm.repository.RequestFormRepository;
 import org.springframework.stereotype.Service;
@@ -47,7 +52,7 @@ public class RequestFormCustomerService {
      */
     @Transactional
     public ApiResponse<CustomerRequestFormCreateResponseDto> createRequestFormService(
-            CustomerRequestFormCreateRequestDto requestFormCustomerRequestDto
+            CustomerRequestFormCreateRequestDto requestFormCustomerRequestDto,  Long customerId
     ) {
         //데이터 준비
         String foundTitle = requestFormCustomerRequestDto.getTitle();
@@ -59,12 +64,14 @@ public class RequestFormCustomerService {
         RequestFormStatus requestFormStatus = RequestFormStatus.REQUESTED;
 
         //검증로직 작성 필요시
-
+        // 검증.-> 본인 여부 검증
+        if (customerId == null) {
+            throw new BadRequestException("유효한 사용자 정보가 아닙니다.");
+        }
 
         //고객(커스터머)아이디가 존재하면 통과, 아니면 예외 발생
-        Customer customer = customerRepository.findById(
-                requestFormCustomerRequestDto.getCustomer().getId()
-        ).orElseThrow(() -> new NotFoundCustomerException("존재하지 않는 고객입니다."));
+        Customer customer = customerRepository.findByIdAndIsDeletedFalse(customerId)
+                .orElseThrow(() -> new NotFoundCustomerException("존재하지 않는 고객입니다."));
 
         //엔티티만들기
         RequestForm newRequestForm = new RequestForm(
@@ -89,11 +96,17 @@ public class RequestFormCustomerService {
      */
     @Transactional
     public ApiResponse<CustomerRequestFormGetDetailResponseDto> getDetailRequestFormService(
-            Long requestFormId
+            Long requestFormId, Long customerId
     ) {
         //삭제되지 않은 의뢰서 조회 & 검증
         RequestForm requestForm = requestFormRepository.findByIdAndIsDeletedFalse(requestFormId)
-                .orElseThrow(() -> new NotFoundRequestFormException("존재하지 않는 의뢰서입니다."));
+                .orElseThrow(() -> new NotFoundRequestFormException("조회할 의뢰서를 찾을 수 없습니다."));
+
+        // 검증.-> 본인 여부 검증
+        if (!requestForm.getCustomer().getId().equals(customerId)) {
+            // 작성자가 아니면 예외 발생
+            throw new RequestFormAccessDeniedException("본인이 작성한 의뢰서만 조회할 수 있습니다.");
+        }
 
         //해당 의뢰서에 연결된 견적서 목록 조회 & 검증
         //proposalForm 은 없을 수도 있고, 있을 수도 있는 필드 ->널 허용: 없으면 빈 리스트
@@ -122,7 +135,7 @@ public class RequestFormCustomerService {
                         responseProposalForm ->
                                 new CustomerRequestFormGetDetailResponseDto.ProposalGetListInternalDto(
                                         responseProposalForm.getId(),
-                                        responseProposalForm.getStore().getBusinessName(),
+                                        responseProposalForm.getStoreName(),
                                         responseProposalForm.getTitle(),
                                         responseProposalForm.getContent(),
                                         responseProposalForm.getProposedPrice(),
@@ -147,13 +160,25 @@ public class RequestFormCustomerService {
      * 고객 의뢰 다건조회 서비스
      */
     @Transactional
-    public ApiResponse<List<CustomerRequestFormGetListResponseDto>> getListRequestFormService() {
+    public ApiResponse<List<CustomerRequestFormGetListResponseDto>> getListRequestFormService(
+            Long requestFormId, Long customerId
+            ) {
         //조회 & 검증
+        RequestForm requestForm = requestFormRepository.findByIdAndIsDeletedFalse(requestFormId)
+                .orElseThrow(() -> new NotFoundRequestFormException("조회할 의뢰서를 찾을 수 없습니다."));
+
+        // 검증.-> 본인 여부 검증
+        if (!requestForm.getCustomer().getId().equals(customerId)) {
+            // 작성자가 아니면 예외 발생
+            throw new RequestFormAccessDeniedException("본인이 작성한 의뢰서만 조회할 수 있습니다.");
+        }
+
         List<RequestForm> allRequestForm = requestFormRepository.findAllByIsDeletedFalse();
+
         List<CustomerRequestFormGetListResponseDto> list = allRequestForm.stream()
-                .map(requestForm -> new CustomerRequestFormGetListResponseDto(
-                        requestForm.getId(), requestForm.getTitle(),
-                        requestForm.getStatus(), requestForm.getCreatedAt()
+                .map(newRequestForm -> new CustomerRequestFormGetListResponseDto(
+                        newRequestForm.getId(), newRequestForm.getTitle(),
+                        newRequestForm.getStatus(), newRequestForm.getCreatedAt()
                 )).toList();
         return ApiResponse.success(
                 HttpStatus.OK, "의뢰서 목록을 성공적으로 조회했습니다.", list
