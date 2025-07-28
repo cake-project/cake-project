@@ -33,12 +33,7 @@ public class ProposalFormController {
      */
     @PostMapping
     public ApiResponse<ProposalFormDataDto> createProposalFormAPI(@RequestHeader("Authorization") String bearerToken, @RequestBody ProposalFormCreateRequestDto requestDto) {
-        String token = jwtUtil.substringToken(bearerToken);
-        Claims claims = jwtUtil.verifyToken(token);
-        Long ownerId = jwtUtil.subjectMemberId(claims);
-
-        System.out.println("ownerId = " + ownerId);  // << 이 부분 꼭 확인
-
+        Long ownerId = jwtUtil.extractOwnerId(bearerToken);
         ApiResponse<ProposalFormDataDto> response = proposalFormService.createProposal(ownerId, requestDto);
         return response;
     }
@@ -48,9 +43,7 @@ public class ProposalFormController {
      */
     @GetMapping("/{proposalFormId}")
     public ApiResponse<ProposalFormContainsRequestFormDataDto> getProposalFormDetailAPI(@PathVariable("proposalFormId") Long proposalFormId, @RequestHeader("Authorization") String bearerToken) {
-        String token = jwtUtil.substringToken(bearerToken);
-        Claims claims = jwtUtil.verifyToken(token);
-        Long ownerId = jwtUtil.subjectMemberId(claims);
+        Long ownerId = jwtUtil.extractOwnerId(bearerToken);
         ApiResponse<ProposalFormContainsRequestFormDataDto> response = proposalFormService.getProposalFormDetail(proposalFormId, ownerId);
         return response;
     }
@@ -60,9 +53,7 @@ public class ProposalFormController {
      */
     @GetMapping
     public ApiResponse<List<ProposalFormContainsRequestFormDataDto>> getProposalFormsAPI(@RequestHeader("Authorization") String bearerToken) {
-        String token = jwtUtil.substringToken(bearerToken);
-        Claims claims = jwtUtil.verifyToken(token);
-        Long ownerId = jwtUtil.subjectMemberId(claims);
+        Long ownerId = jwtUtil.extractOwnerId(bearerToken);
         ApiResponse<List<ProposalFormContainsRequestFormDataDto>> response = proposalFormService.getProposalFormList(ownerId);
         return response;
     }
@@ -74,9 +65,7 @@ public class ProposalFormController {
     public ApiResponse<ProposalFormDataDto> updateProposalFormAPI(@PathVariable Long proposalFormId,
                                                                   @RequestBody ProposalFormUpdateRequestDto requestDto,
                                                                   @RequestHeader("Authorization") String bearerToken) {
-        String token = jwtUtil.substringToken(bearerToken);
-        Claims claims = jwtUtil.verifyToken(token);
-        Long ownerId = jwtUtil.subjectMemberId(claims);
+        Long ownerId = jwtUtil.extractOwnerId(bearerToken);
         ApiResponse<ProposalFormDataDto> response = proposalFormService.updateProposalForm(proposalFormId, ownerId, requestDto);
         return response;
     }
@@ -87,9 +76,7 @@ public class ProposalFormController {
     @DeleteMapping("/{proposalFormId}")
     public ApiResponse<String> deleteProposalFormAPI(@PathVariable Long proposalFormId,
                                                      @RequestHeader("Authorization") String bearerToken) {
-        String token = jwtUtil.substringToken(bearerToken);
-        Claims claims = jwtUtil.verifyToken(token);
-        Long ownerId = jwtUtil.subjectMemberId(claims);
+        Long ownerId = jwtUtil.extractOwnerId(bearerToken);
         ApiResponse<String> response = proposalFormService.deleteProposalForm(proposalFormId, ownerId);
         return response;
     }

@@ -30,9 +30,7 @@ public class CustomerProposalFormController {
     public ApiResponse<CustomerProposalFormDetailDto> getCustomerProposalFormDetail(
             @PathVariable Long proposalFormId,
             @RequestHeader("Authorization") String bearerToken) {
-        String token = jwtUtil.substringToken(bearerToken);
-        Claims claims = jwtUtil.verifyToken(token);
-        Long customerId = jwtUtil.subjectMemberId(claims);
+        Long customerId = jwtUtil.extractCustomerId(bearerToken);
         ApiResponse<CustomerProposalFormDetailDto> response = customerProposalFormService.getProposalFormDetailForCustomer(proposalFormId, customerId);
         return response;
     }
