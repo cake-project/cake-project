@@ -14,7 +14,6 @@ public class CustomerProposalFormController {
     //속성
     private final ProposalFormService proposalFormService;
     private final CustomerProposalFormService customerProposalFormService;
-
     private final JwtUtil jwtUtil;
 
     //생성자
@@ -30,11 +29,10 @@ public class CustomerProposalFormController {
     @GetMapping("/{proposalFormId}")
     public ApiResponse<CustomerProposalFormDetailDto> getCustomerProposalFormDetail(
             @PathVariable Long proposalFormId,
-            @RequestParam Long customerId,
             @RequestHeader("Authorization") String bearerToken) {
         String token = jwtUtil.substringToken(bearerToken);
         Claims claims = jwtUtil.verifyToken(token);
-        Long ownerId = jwtUtil.subjectMemberId(claims);
+        Long customerId = jwtUtil.subjectMemberId(claims);
         ApiResponse<CustomerProposalFormDetailDto> response = customerProposalFormService.getProposalFormDetailForCustomer(proposalFormId, customerId);
         return response;
     }

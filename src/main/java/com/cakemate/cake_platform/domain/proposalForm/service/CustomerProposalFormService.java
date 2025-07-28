@@ -1,6 +1,8 @@
 package com.cakemate.cake_platform.domain.proposalForm.service;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
+import com.cakemate.cake_platform.common.exception.ProposalFormNotFoundException;
+import com.cakemate.cake_platform.common.exception.UnauthorizedAccessException;
 import com.cakemate.cake_platform.domain.proposalForm.dto.CommentDataDto;
 import com.cakemate.cake_platform.domain.proposalForm.dto.CustomerProposalFormDetailDto;
 import com.cakemate.cake_platform.domain.proposalForm.dto.ProposalFormDataDto;
@@ -36,13 +38,13 @@ public class CustomerProposalFormService {
     @Transactional(readOnly = true)
     public ApiResponse<CustomerProposalFormDetailDto> getProposalFormDetailForCustomer(Long proposalFormId, Long customerId) {
         ProposalForm proposalForm = proposalFormRepository.findById(proposalFormId)
-                .orElseThrow(() -> new RuntimeException("해당 견적서가 존재하지 않습니다."));
+                .orElseThrow(() -> new ProposalFormNotFoundException("해당 견적서가 존재하지 않습니다."));
 
         RequestForm requestForm = proposalForm.getRequestForm();
 
         //검증 로직
         if (!requestForm.getCustomer().getId().equals(customerId)) {
-            throw new RuntimeException("조회 권한이 없습니다.");
+            throw new UnauthorizedAccessException("조회 권한이 없습니다.");
         }
 
         // 의뢰서 DTO 만들기

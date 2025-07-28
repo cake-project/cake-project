@@ -51,7 +51,7 @@ public class ProposalFormController {
         String token = jwtUtil.substringToken(bearerToken);
         Claims claims = jwtUtil.verifyToken(token);
         Long ownerId = jwtUtil.subjectMemberId(claims);
-        ApiResponse<ProposalFormContainsRequestFormDataDto> response = proposalFormService.getProposalFormDetail(proposalFormId);
+        ApiResponse<ProposalFormContainsRequestFormDataDto> response = proposalFormService.getProposalFormDetail(proposalFormId, ownerId);
         return response;
     }
 
@@ -63,7 +63,7 @@ public class ProposalFormController {
         String token = jwtUtil.substringToken(bearerToken);
         Claims claims = jwtUtil.verifyToken(token);
         Long ownerId = jwtUtil.subjectMemberId(claims);
-        ApiResponse<List<ProposalFormContainsRequestFormDataDto>> response = proposalFormService.getProposalFormList();
+        ApiResponse<List<ProposalFormContainsRequestFormDataDto>> response = proposalFormService.getProposalFormList(ownerId);
         return response;
     }
 
