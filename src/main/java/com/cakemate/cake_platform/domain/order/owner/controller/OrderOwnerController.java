@@ -1,7 +1,7 @@
 package com.cakemate.cake_platform.domain.order.owner.controller;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
-import com.cakemate.cake_platform.common.jwt.utll.JwtUtil;
+import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
 import com.cakemate.cake_platform.domain.order.owner.dto.OwnerOrderDetailResponseDto;
 import com.cakemate.cake_platform.domain.order.owner.dto.OwnerOrderPageResponseDto;
 import com.cakemate.cake_platform.domain.order.owner.dto.OwnerOrderSummaryResponseDto;
@@ -35,9 +35,7 @@ public class OrderOwnerController {
             @PathVariable Long storeId,
             @PathVariable Long orderId
     ) {
-        String jwtToken = jwtUtil.substringToken(bearerJwtToken);
-        Claims claims = jwtUtil.verifyToken(jwtToken);
-        Long ownerId = jwtUtil.subjectMemberId(claims);
+        Long ownerId = jwtUtil.extractOwnerId(bearerJwtToken);
 
         OwnerOrderDetailResponseDto responseDto = orderOwnerService.getOwnerOrderDetailService(storeId, ownerId, orderId);
         ApiResponse<OwnerOrderDetailResponseDto> response = ApiResponse.success(HttpStatus.OK, "주문 상세 조회가 완료되었습니다.", responseDto);
@@ -54,9 +52,7 @@ public class OrderOwnerController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        String jwtToken = jwtUtil.substringToken(bearerJwtToken);
-        Claims claims = jwtUtil.verifyToken(jwtToken);
-        Long ownerId = jwtUtil.subjectMemberId(claims);
+        Long ownerId = jwtUtil.extractOwnerId(bearerJwtToken);
 
         int adjustedPage = Math.max(page - 1, 0);
         Pageable pageable = PageRequest.of(adjustedPage, size);

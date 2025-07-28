@@ -1,14 +1,11 @@
 package com.cakemate.cake_platform.domain.member.customer.controller;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
-import com.cakemate.cake_platform.common.jwt.utll.JwtUtil;
+import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
 import com.cakemate.cake_platform.domain.member.customer.dto.CustomerProfileResponseDto;
 import com.cakemate.cake_platform.domain.member.customer.dto.reponse.UpdateCustomerProfileResponseDto;
 import com.cakemate.cake_platform.domain.member.customer.dto.request.UpdateCustomerProfileRequestDto;
 import com.cakemate.cake_platform.domain.member.customer.service.CustomerManagementService;
-import com.cakemate.cake_platform.domain.member.owner.dto.request.UpdateOwnerProfileRequestDto;
-import com.cakemate.cake_platform.domain.member.owner.dto.response.UpdateOwnerProfileResponseDto;
-import io.jsonwebtoken.Claims;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,10 +30,7 @@ public class CustomerManagementController {
     @GetMapping("/me")
     public ApiResponse<CustomerProfileResponseDto> getCustomerProfileAPI(@RequestHeader("Authorization") String bearerJwtToken) {
 
-        // 헤더에서 토큰 추출 후 customerId 꺼내기
-        String jwtToken = jwtUtil.substringToken(bearerJwtToken);
-        Claims claims = jwtUtil.verifyToken(jwtToken);
-        Long customerId = jwtUtil.subjectMemberId(claims);
+        Long customerId = jwtUtil.extractCustomerId(bearerJwtToken);
 
         CustomerProfileResponseDto responseDto = customerManagementService.getCustomerProfileService(customerId);
         ApiResponse<CustomerProfileResponseDto> response = ApiResponse.success(HttpStatus.OK, "회원 정보 조회가 완료되었습니다.", responseDto);
@@ -50,10 +44,7 @@ public class CustomerManagementController {
             @RequestHeader("Authorization") String bearerJwtToken,
             @RequestBody UpdateCustomerProfileRequestDto updateCustomerProfileRequestDto
     ) {
-        // JWT 토큰에서 customerId 추출
-        String jwtToken = jwtUtil.substringToken(bearerJwtToken);
-        Claims claims = jwtUtil.verifyToken(jwtToken);
-        Long customerId = jwtUtil.subjectMemberId(claims);
+        Long customerId = jwtUtil.extractCustomerId(bearerJwtToken);
 
         return customerManagementService.putUpdateCustomerService(
                 customerId, updateCustomerProfileRequestDto
@@ -67,9 +58,7 @@ public class CustomerManagementController {
     public ResponseEntity<ApiResponse<CustomerProfileResponseDto>> deleteCustomerProfile(
             @RequestHeader("Authorization") String bearerJwtToken
     ) {
-        String jwtToken = jwtUtil.substringToken(bearerJwtToken);
-        Claims claims = jwtUtil.verifyToken(jwtToken);
-        Long customerId = jwtUtil.subjectMemberId(claims);
+        Long customerId = jwtUtil.extractCustomerId(bearerJwtToken);
 
         CustomerProfileResponseDto dto = customerManagementService.deleteCustomerProfileService(customerId);
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "소비자 탈퇴 성공", dto));

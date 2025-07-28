@@ -2,11 +2,13 @@ package com.cakemate.cake_platform.domain.proposalForm.repository;
 
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
+import com.cakemate.cake_platform.domain.proposalFormComment.entity.ProposalFormComment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProposalFormRepository extends JpaRepository<ProposalForm, Long> {
     // 특정 의뢰서에 연결된 견적서 목록 조회
@@ -24,5 +26,8 @@ public interface ProposalFormRepository extends JpaRepository<ProposalForm, Long
 
     //견적서 최초 등록 시 의뢰서의 상태 ESTIMATING으로 자동 변경
     long countByRequestForm(RequestForm requestForm);
+
+    // 삭제되지 않은 특정 견적서 조회
+    Optional<ProposalForm> findByIdAndIsDeletedFalse(Long id);
 
 }

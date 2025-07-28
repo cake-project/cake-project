@@ -2,6 +2,8 @@ package com.cakemate.cake_platform.domain.auth.signup.owner.service;
 
 import com.cakemate.cake_platform.common.command.SearchCommand;
 import com.cakemate.cake_platform.common.dto.ApiResponse;
+import com.cakemate.cake_platform.common.exception.OwnerNotFoundException;
+import com.cakemate.cake_platform.domain.auth.exception.EmailAlreadyExistsException;
 import com.cakemate.cake_platform.domain.auth.signup.owner.dto.response.OwnerSignUpResponse;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.auth.signup.owner.repository.OwnerRepository;
@@ -38,7 +40,7 @@ public class OwnerService {
 
         boolean existsByOwnerEmail = ownerRepository.existsByEmail(email);
         if (existsByOwnerEmail) {
-            throw new IllegalArgumentException("이미 등록된 이메일 입니다");
+            throw new EmailAlreadyExistsException("이미 등록된 이메일 입니다.");
         }
 
         String passwordEncode = passwordEncoder.encode(password);
@@ -49,7 +51,7 @@ public class OwnerService {
         Long ownerId = ownerInfo.getId();
         Owner owner = ownerRepository
                 .findById(ownerId)
-                .orElseThrow(() -> new RuntimeException("OwnerId가 존재하지 않습니다"));
+                .orElseThrow(() -> new OwnerNotFoundException("OwnerId가 존재하지 않습니다."));
         Member ownerMember = new Member(owner);
         memberRepository.save(ownerMember);
 

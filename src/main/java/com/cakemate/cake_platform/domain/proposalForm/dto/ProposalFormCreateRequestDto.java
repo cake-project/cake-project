@@ -31,7 +31,6 @@ public class ProposalFormCreateRequestDto {
         this.proposedPickupDate = proposedPickupDate;
         this.image = image;
     }
-
     //게터
     public Long getRequestFormId() {
         return requestFormId;

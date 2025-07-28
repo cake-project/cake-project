@@ -1,7 +1,7 @@
 package com.cakemate.cake_platform.domain.store.customer.service;
 
 import com.cakemate.cake_platform.common.exception.StoreNotFoundException;
-import com.cakemate.cake_platform.common.jwt.utll.JwtUtil;
+import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
 import com.cakemate.cake_platform.domain.store.customer.command.StoreDetailCommand;
 import com.cakemate.cake_platform.domain.store.customer.command.StoreSearchCommand;
 import com.cakemate.cake_platform.domain.store.customer.dto.StoreCustomerDetailResponseDto;

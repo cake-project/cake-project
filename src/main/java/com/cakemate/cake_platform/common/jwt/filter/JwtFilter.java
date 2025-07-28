@@ -1,6 +1,6 @@
 package com.cakemate.cake_platform.common.jwt.filter;
 
-import com.cakemate.cake_platform.common.jwt.utll.JwtUtil;
+import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.*;
@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Set;
 
-public class jwtFilter implements Filter {
+public class JwtFilter implements Filter {
     private final JwtUtil jwtUtil;
     private final Set<String> WHITE_LIST = Set.of(
             "/api/signup/*",
@@ -18,7 +18,7 @@ public class jwtFilter implements Filter {
 
     );
 
-    public jwtFilter(JwtUtil jwtUtil) {
+    public JwtFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
 

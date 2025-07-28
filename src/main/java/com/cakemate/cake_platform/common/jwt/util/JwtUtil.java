@@ -1,4 +1,4 @@
-package com.cakemate.cake_platform.common.jwt.utll;
+package com.cakemate.cake_platform.common.jwt.util;
 
 import com.cakemate.cake_platform.domain.member.entity.Member;
 import com.cakemate.cake_platform.domain.store.owner.exception.ForbiddenException;
