@@ -306,10 +306,10 @@ public class ProposalFormService {
     public ApiResponse<String> deleteProposalForm(Long proposalFormId, Long ownerId) {
         //조회
         Member foundOwner = memberRepository.findById(ownerId)
-                .orElseThrow(() -> new RuntimeException("해당 점주를 찾을 수 없습니다."));
+                .orElseThrow(() -> new OwnerNotFoundException("해당 점주를 찾을 수 없습니다."));
 
         ProposalForm foundProposalForm = proposalFormRepository.findById(proposalFormId)
-                .orElseThrow(() -> new RuntimeException("해당 제안서가 존재하지 않습니다."));
+                .orElseThrow(() -> new OwnerNotFoundException("해당 제안서가 존재하지 않습니다."));
 
         //권한 확인
         if (!foundProposalForm.getOwner().getId().equals(foundOwner.getId())) {
