@@ -1,5 +1,7 @@
 package com.cakemate.cake_platform.common.command;
 
+import com.cakemate.cake_platform.domain.auth.exception.InvalidPasswordFormatException;
+import com.cakemate.cake_platform.domain.auth.exception.PasswordMismatchException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -62,7 +64,7 @@ public class SearchCommand {
         if (this.password.equals(this.passwordConfirm)) {
             return true;
         } else {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
         }
     }
 
@@ -73,7 +75,7 @@ public class SearchCommand {
         if (matches) {
             return true;
         } else {
-            throw new IllegalArgumentException("비밀번호는 최소8자 이상, 하나 이상의 영문 대,소문자와 숫자+특수문자 조합이어야 합니다");
+            throw new InvalidPasswordFormatException("비밀번호는 최소8자 이상, 하나 이상의 영문 대,소문자와 숫자+특수문자 조합이어야 합니다");
         }
 
     }

@@ -8,14 +8,14 @@ import java.time.LocalDateTime;
 
 @Getter
 public class CustomerSignUpResponse {
-    private final Long id;
+    private final Long customerId;
     private final String email;
     private final String name;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private final LocalDateTime createdAt;
 
     public CustomerSignUpResponse(Customer customer) {
-        this.id = customer.getId();
+        this.customerId = customer.getId();
         this.email = customer.getEmail();
         this.name = customer.getName();
         this.createdAt = customer.getCreatedAt();

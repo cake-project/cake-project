@@ -17,21 +17,19 @@ public class ProposalFormCreateRequestDto {
     private LocalDateTime proposedPickupDate;
 
     private String image;
-    private String proposalFormStatus;
 
     //생성자
     public ProposalFormCreateRequestDto() {
     }
 
-    public ProposalFormCreateRequestDto(Long requestFormId, String storeName, String title, String content, int proposedPrice, LocalDateTime proposedPickupDate, String image, String proposalFormStatus) {
+    public ProposalFormCreateRequestDto(Long requestFormId, String title, String storeName, String content, int proposedPrice, LocalDateTime proposedPickupDate, String image) {
         this.requestFormId = requestFormId;
-        this.storeName = storeName;
         this.title = title;
+        this.storeName = storeName;
         this.content = content;
         this.proposedPrice = proposedPrice;
         this.proposedPickupDate = proposedPickupDate;
         this.image = image;
-        this.proposalFormStatus = proposalFormStatus;
     }
     //게터
     public Long getRequestFormId() {
@@ -56,10 +54,6 @@ public class ProposalFormCreateRequestDto {
 
     public String getImage() {
         return image;
-    }
-
-    public String getProposalFormStatus() {
-        return proposalFormStatus;
     }
 
     public String getStoreName() {
