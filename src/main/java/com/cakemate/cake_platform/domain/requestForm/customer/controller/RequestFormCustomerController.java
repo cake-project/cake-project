@@ -32,26 +32,48 @@ public class RequestFormCustomerController {
      */
     @PostMapping("/customers")
     public ApiResponse<CustomerRequestFormCreateResponseDto>  createRequestForm(
-            @RequestBody @Valid CustomerRequestFormCreateRequestDto requestFormCustomerRequestDto
+            @RequestBody @Valid CustomerRequestFormCreateRequestDto requestFormCustomerRequestDto,
+            @RequestHeader("Authorization") String bearerJwtToken
     ) {
-       return requestFormCustomerService.createRequestFormService(requestFormCustomerRequestDto);
+        // 토큰 파싱 및 인증 처리
+        Long customerId = jwtUtil.extractCustomerId(bearerJwtToken);
 
+        ApiResponse<CustomerRequestFormCreateResponseDto> requestFormService
+                = requestFormCustomerService.createRequestFormService(
+                requestFormCustomerRequestDto, customerId
+        );
+        return requestFormService;
     }
+
     /**
      *고객 의뢰 단건 조회 API
      */
     @GetMapping("/customers/{requestFormId}")
     public ApiResponse<CustomerRequestFormGetDetailResponseDto> getDetailRequestForm(
+            @RequestHeader("Authorization") String bearerJwtToken,
             @PathVariable("requestFormId") Long requestFormId
     ) {
-        return requestFormCustomerService.getDetailRequestFormService(requestFormId);
+
+        // 토큰 파싱 및 인증 처리
+        Long customerId = jwtUtil.extractCustomerId(bearerJwtToken);
+        return requestFormCustomerService.getDetailRequestFormService(
+                requestFormId, customerId
+        );
     }
     /**
      * 고객 의뢰 다건 조회 API
      */
-    @GetMapping("/customers")
-    public ApiResponse<List<CustomerRequestFormGetListResponseDto>> getListRequestForm() {
-        return requestFormCustomerService.getListRequestFormService();
+    @GetMapping("/customers/request-forms/check/{requestFormId}")
+    public ApiResponse<List<CustomerRequestFormGetListResponseDto>> getListRequestForm(
+            @RequestHeader("Authorization") String bearerJwtToken,
+            @PathVariable("requestFormId") Long requestFormId
+    ) {
+        // 토큰 파싱 및 인증 처리
+        Long customerId = jwtUtil.extractCustomerId(bearerJwtToken);
+
+        return requestFormCustomerService.getListRequestFormService(
+                requestFormId, customerId
+        );
     }
     /**
      * 고객 의뢰 삭제 API
@@ -61,12 +83,11 @@ public class RequestFormCustomerController {
             @RequestHeader("Authorization") String bearerJwtToken,
             @PathVariable("requestFormId") Long requestFormId
     ) {
-        String jwtToken = jwtUtil.substringToken(bearerJwtToken);
-        Claims claims = jwtUtil.verifyToken(jwtToken);
-        Long authenticatedCustomerId = jwtUtil.subjectMemberId(claims);
+        // 토큰 파싱 및 인증 처리
+        Long customerId = jwtUtil.extractCustomerId(bearerJwtToken);
 
         return requestFormCustomerService.deleteListRequestFormService(
-                requestFormId, authenticatedCustomerId
+                requestFormId, customerId
         );
     }
 
