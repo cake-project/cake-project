@@ -1,12 +1,12 @@
 package com.cakemate.cake_platform.domain.proposalForm.entity;
 
+import com.cakemate.cake_platform.common.entity.BaseTimeEntity;
 import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.Getter;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "proposal_forms")
 @EntityListeners(AuditingEntityListener.class)
-public class ProposalForm {
+public class ProposalForm extends BaseTimeEntity {
     //속성
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,10 +53,6 @@ public class ProposalForm {
 
     @Column(nullable = false)
     private LocalDateTime proposedPickupDate;
-
-    @CreatedDate
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
