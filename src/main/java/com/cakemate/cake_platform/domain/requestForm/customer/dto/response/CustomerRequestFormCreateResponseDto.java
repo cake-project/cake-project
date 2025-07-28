@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 public class CustomerRequestFormCreateResponseDto {
-    private Long id;
+    private Long requestFormId;
     private String title;
     private RequestFormStatus requestStatus;
 
@@ -19,10 +19,10 @@ public class CustomerRequestFormCreateResponseDto {
     private LocalDateTime pickupDate;
 
     public CustomerRequestFormCreateResponseDto(
-            Long id, String title, RequestFormStatus requestStatus,
+            Long requestFormId, String title, RequestFormStatus requestStatus,
             LocalDateTime pickupDate, LocalDateTime createdAt
     ) {
-        this.id = id;
+        this.requestFormId = requestFormId;
         this.title = title;
         this.requestStatus = requestStatus;
         this.pickupDate = pickupDate;
