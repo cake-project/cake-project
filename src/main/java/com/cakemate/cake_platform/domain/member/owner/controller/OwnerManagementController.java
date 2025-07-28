@@ -6,7 +6,6 @@ import com.cakemate.cake_platform.domain.member.owner.dto.request.UpdateOwnerPro
 import com.cakemate.cake_platform.domain.member.owner.dto.response.OwnerProfileResponseDto;
 import com.cakemate.cake_platform.domain.member.owner.dto.response.UpdateOwnerProfileResponseDto;
 import com.cakemate.cake_platform.domain.member.owner.service.OwnerManagementService;
-import io.jsonwebtoken.Claims;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

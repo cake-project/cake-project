@@ -6,7 +6,6 @@ import com.cakemate.cake_platform.domain.member.customer.dto.CustomerProfileResp
 import com.cakemate.cake_platform.domain.member.customer.dto.reponse.UpdateCustomerProfileResponseDto;
 import com.cakemate.cake_platform.domain.member.customer.dto.request.UpdateCustomerProfileRequestDto;
 import com.cakemate.cake_platform.domain.member.customer.service.CustomerManagementService;
-import io.jsonwebtoken.Claims;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
