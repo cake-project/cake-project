@@ -18,12 +18,13 @@ public class ProposalFormContainsRequestFormDataDto {
         this.proposalForm = proposalForm;
         this.comments = comments;
     }
-
-    // 목록 조회용 생성자 (commentList 없이)
+    //점주용 견적서 목록 조회 생성자
     public ProposalFormContainsRequestFormDataDto(RequestFormDataDto requestForm, ProposalFormDataDto proposalForm) {
         this.requestForm = requestForm;
         this.proposalForm = proposalForm;
+        this.comments = null;
     }
+
 
     //게터
     public RequestFormDataDto getRequestForm() { return requestForm; }
