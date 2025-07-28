@@ -25,6 +25,9 @@ public class Member {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
+    /**
+     * 아래는 JPA 에서 쓰는 기본 생성자 입니다.
+     */
     protected Member() {
     }
 
@@ -35,4 +38,6 @@ public class Member {
     public Member(Owner ownerId) {
         this.owner = ownerId;
     }
+
+
 }

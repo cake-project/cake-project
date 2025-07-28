@@ -1,14 +1,23 @@
 package com.cakemate.cake_platform.domain.order.repository;
 
 import com.cakemate.cake_platform.domain.order.entity.Order;
-import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
+    // 소비자의 주문 목록 조회에서 사용합니다.
     Page<Order> findByRequestFormCustomerId(Long customerId, Pageable pageable);
 
-    boolean existsByRequestForm(RequestForm requestForm);
+    // 소비자의 주문 상세 조회에서 사용합니다.
+    Optional<Order> findByCustomerIdAndId(Long customerId, Long orderId);
+
+    // 가게의 주문 목록 조회에서 사용합니다.
+    Page<Order> findByStoreId(Long storeId, Pageable pageable);
+
+    // 가게의 주문 상세 조회에서 사용합니다.
+    Optional<Order> findByStoreIdAndId(Long storeId, Long OrderId);
 }

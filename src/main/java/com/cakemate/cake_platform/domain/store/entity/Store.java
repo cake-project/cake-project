@@ -2,12 +2,9 @@ package com.cakemate.cake_platform.domain.store.entity;
 
 import com.cakemate.cake_platform.common.entity.BaseTimeEntity;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.cakemate.cake_platform.domain.store.owner.dto.StoreUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
-import org.springframework.data.annotation.CreatedDate;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -41,15 +38,11 @@ public class Store extends BaseTimeEntity {
     @Column(nullable = false)
     private String phoneNumber;
 
+    @Column(columnDefinition = "TEXT")
     private String image;
 
     @Column(nullable = false)
-    private boolean isActive = false;
-
-    @CreatedDate
-    @Column(nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDateTime createdAt;
+    private boolean isActive;
 
     @Column(nullable = false)
     private boolean isDeleted = false;
@@ -62,7 +55,7 @@ public class Store extends BaseTimeEntity {
     }
 
     public Store(Owner owner, String businessName, String name, String address,
-                 String businessNumber, String phoneNumber, String image, boolean isActive) {
+                 String businessNumber, String phoneNumber, String image) {
         this.businessName = businessName;
         this.owner = owner;
         this.name = name;
@@ -70,9 +63,20 @@ public class Store extends BaseTimeEntity {
         this.businessNumber = businessNumber;
         this.phoneNumber = phoneNumber;
         this.image = image;
-        this.isActive = isActive;
+        this.isActive = false;
     }
-
+    //가게 수정 서비스에서 사용
+    public void update(StoreUpdateRequestDto dto) {
+        if (dto.getName() != null) this.name = dto.getName();
+        if (dto.getAddress() != null) this.address = dto.getAddress();
+        if (dto.getPhoneNumber() != null) this.phoneNumber = dto.getPhoneNumber();
+        if (dto.getImage() != null) this.image = dto.getImage();
+        if (dto.getIsActive() != null) this.isActive = dto.getIsActive();
+    }
+    //가게 삭제 서비스에 사용
+    public void setIsDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
     /**
      * 연관관계 편의 메소드 - 반대쪽에는 연관관계 편의 메소드가 없도록 주의합니다.
      */

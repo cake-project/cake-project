@@ -3,8 +3,10 @@ package com.cakemate.cake_platform.domain.auth.signin.customer.service;
 
 import com.cakemate.cake_platform.common.command.SearchCommand;
 import com.cakemate.cake_platform.common.dto.ApiResponse;
-import com.cakemate.cake_platform.common.jwt.utll.JwtUtil;
+import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
+import com.cakemate.cake_platform.domain.auth.exception.EmailNotFoundException;
+import com.cakemate.cake_platform.domain.auth.exception.PasswordMismatchException;
 import com.cakemate.cake_platform.domain.auth.signin.customer.dto.response.CustomerSignInResponse;
 import com.cakemate.cake_platform.domain.auth.signup.customer.repository.CustomerRepository;
 import com.cakemate.cake_platform.domain.member.entity.Member;
@@ -32,15 +34,15 @@ public class CustomerSignInService {
         String password = signInRequest.getPassword();
 
         Customer customer = customerRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("이메일이 존재하지 않습니다"));
+                .orElseThrow(() -> new EmailNotFoundException("고객 이메일이 존재하지 않습니다."));
 
         boolean isMatched = passwordEncoder.matches(password, customer.getPassword());
         if (!isMatched) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다");
+            throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
         }
         Member customerInMember = memberRepository
                 .findByCustomer_Email(email)
-                .orElseThrow(() -> new RuntimeException("소비자 이메일이 존재하지 않습니다."));
+                .orElseThrow(() -> new EmailNotFoundException("고객 이메일이 존재하지 않습니다."));
 
         String customerJwtToken = jwtUtil.createMemberJwtToken(customerInMember);
         CustomerSignInResponse customerSignInResponse = new CustomerSignInResponse(customerJwtToken);
@@ -51,5 +53,4 @@ public class CustomerSignInService {
                 .success(HttpStatus.OK, "환영합니다 " + customer.getName() + "님", customerSignInResponse);
         return SignInSuccess;
     }
-
 }

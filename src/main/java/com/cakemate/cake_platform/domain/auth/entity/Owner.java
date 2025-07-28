@@ -1,6 +1,7 @@
 package com.cakemate.cake_platform.domain.auth.entity;
 
 import com.cakemate.cake_platform.common.entity.BaseTimeEntity;
+import com.cakemate.cake_platform.domain.auth.exception.BadRequestException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
@@ -35,6 +36,9 @@ public class Owner extends BaseTimeEntity {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
+    /**
+     * 아래는 JPA 애서 쓰는 기본 생성자 입니다.
+     */
     protected Owner() {
     }
 
@@ -52,5 +56,50 @@ public class Owner extends BaseTimeEntity {
         this.email = email;
         this.password = password;
     }
+
+
+    /**
+     * 아래는 회원 수정 생성자 입니다.
+     */
+    public Owner(String password, String name, String phoneNumber) {
+        this.password = password;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+    }
+
+    //기능
+
+    /**
+     * 아래는 (점주)비밀번호 수정 시 쓰는 메소드 입니다.
+     */
+    public Owner changePassword(String encodedPassword) {
+        this.password = encodedPassword;
+
+        return this;
+
+    }
+    /**
+     * 아래는 (점주) 이름 & 전화번호 수정 시 쓰는 메소드 입니다.
+     */
+    public Owner updateProfile(String newName, String newPhoneNumber) {
+        // null 이 아니고 빈 문자열이 아닐 때만 저장
+        if (newName == null || newName.isBlank()) {
+            throw new BadRequestException("이름은 빈 문자열일 수 없습니다.");
+        }
+        if (newPhoneNumber == null || newPhoneNumber.isBlank()) {
+            throw new BadRequestException("전화번호는 null 이거나 빈 문자열일 수 없습니다.");
+        }
+        this.name = newName;
+        this.phoneNumber = newPhoneNumber;
+
+        return this;
+    }
+
+    //멤버(owner) 삭제 메서드
+    public void delete() {
+        this.isDeleted = true;
+    }
+
+
 
 }

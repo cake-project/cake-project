@@ -2,9 +2,11 @@ package com.cakemate.cake_platform.domain.auth.signin.owner.service;
 
 import com.cakemate.cake_platform.common.command.SearchCommand;
 
-import com.cakemate.cake_platform.common.jwt.utll.JwtUtil;
+import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
+import com.cakemate.cake_platform.domain.auth.exception.EmailNotFoundException;
+import com.cakemate.cake_platform.domain.auth.exception.PasswordMismatchException;
 import com.cakemate.cake_platform.domain.auth.signin.owner.dto.response.OwnerSignInResponse;
 import com.cakemate.cake_platform.domain.auth.signup.owner.repository.OwnerRepository;
 import com.cakemate.cake_platform.domain.member.entity.Member;
@@ -33,17 +35,17 @@ public class OwnerSignInService {
         String password = signInRequest.getPassword();
 
         Owner owner = ownerRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("이메일이 존재하지 않습니다"));
+                .orElseThrow(() -> new EmailNotFoundException("점주 이메일이 존재하지 않습니다."));
 
         boolean isMatched = passwordEncoder.matches(password, owner.getPassword());
 
         if (!isMatched) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다");
+            throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
         }
 
         Member ownerInMember = memberRepository
                 .findByOwner_Email(email)
-                .orElseThrow(() -> new RuntimeException("점주 이메일이 없습니다"));
+                .orElseThrow(() -> new EmailNotFoundException("점주 이메일이 존재하지 않습니다."));
 
         String ownerJwtToken = jwtUtil.createMemberJwtToken(ownerInMember);
 

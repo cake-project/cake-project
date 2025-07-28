@@ -1,6 +1,5 @@
 package com.cakemate.cake_platform.domain.requestForm.entity;
 
-import com.cakemate.cake_platform.domain.order.entity.Order;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
@@ -18,6 +17,8 @@ import java.time.LocalDateTime;
 //@EnableJpaAuditing 을 설정하먄 읽어 준다.-> 베이스 엔티티가 보는 상황(JpaConfig)
 @EntityListeners(AuditingEntityListener.class)
 public class RequestForm {
+
+    //속성
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,8 +52,7 @@ public class RequestForm {
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
-    private RequestFormStatus status;
-
+    private RequestFormStatus status = RequestFormStatus.REQUESTED; //디폴트 값
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -62,7 +62,27 @@ public class RequestForm {
     @Column(nullable = false)
     private Boolean isDeleted = false;
 
+
+    /**
+     * 아래는 JPA 에서 쓰는 기본 생성자 입니다.
+     */
     protected RequestForm() {
+    }
+
+    //생성자
+
+    //의뢰서 생성시에는 견적서가 없어도 생성 가능하니, proposalForm 을 뺀 생성자를 추가로 만들었습니다.
+    public RequestForm(Customer customer, String title, String region,
+                       String content, int desiredPrice, String image, LocalDateTime desiredPickupDate,
+                       RequestFormStatus status) {
+        this.customer = customer;
+        this.title = title;
+        this.region = region;
+        this.content = content;
+        this.desiredPrice = desiredPrice;
+        this.image = image;
+        this.desiredPickupDate = desiredPickupDate;
+        this.status = status;
     }
 
     public RequestForm(ProposalForm proposalForm, Customer customer, String title, String region,
@@ -77,5 +97,14 @@ public class RequestForm {
         this.image = image;
         this.desiredPickupDate = desiredPickupDate;
         this.status = status;
+    }
+
+    public void updateStatus(RequestFormStatus status) {
+        this.status = status;
+    }
+
+    //가능
+    public void softDelete() {
+        this.isDeleted = true;
     }
 }

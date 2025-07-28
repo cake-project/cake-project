@@ -10,4 +10,7 @@ import java.util.Optional;
 public interface OwnerRepository extends JpaRepository<Owner, Long> {
     boolean existsByEmail(@Email(message = "email 형식을 지켜주십시오(ex. cake@gmail.com)") String email);
     Optional<Owner> findByEmail(@Email(message = "email 형식을 지켜주십시오(ex. cake@gmail.com)") String email);
+
+    //삭제 되지 않은 점주 식별자를 조회할 떄 사용합니다.
+    Optional<Owner> findByIdAndIsDeletedFalse(Long id);
 }
