@@ -7,9 +7,9 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 @Getter
 public class StoreCustomerDetailResponseDto {
-    private Long id;
+    private Long storeId;
     private String businessName;
-    private String name;
+    private String storeName;
     private String address;
     private String businessNumber;
     private String phoneNumber;
@@ -22,9 +22,9 @@ public class StoreCustomerDetailResponseDto {
     public StoreCustomerDetailResponseDto() {}
 
     public StoreCustomerDetailResponseDto(Store store) {
-        this.id = store.getId();
+        this.storeId = store.getId();
         this.businessName = store.getBusinessName();
-        this.name = store.getName();
+        this.storeName = store.getName();
         this.address = store.getAddress();
         this.businessNumber = store.getBusinessNumber();
         this.phoneNumber = store.getPhoneNumber();
