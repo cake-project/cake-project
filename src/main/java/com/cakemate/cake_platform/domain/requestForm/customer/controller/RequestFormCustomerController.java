@@ -1,8 +1,7 @@
 package com.cakemate.cake_platform.domain.requestForm.customer.controller;
 
-import com.cakemate.cake_platform.common.config.PasswordValidator;
 import com.cakemate.cake_platform.common.dto.ApiResponse;
-import com.cakemate.cake_platform.common.jwt.utll.JwtUtil;
+import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
 import com.cakemate.cake_platform.domain.requestForm.customer.dto.request.CustomerRequestFormCreateRequestDto;
 import com.cakemate.cake_platform.domain.requestForm.customer.dto.response.CustomerRequestFormCreateResponseDto;
 import com.cakemate.cake_platform.domain.requestForm.customer.dto.response.CustomerRequestFormGetDetailResponseDto;
@@ -10,7 +9,6 @@ import com.cakemate.cake_platform.domain.requestForm.customer.dto.response.Custo
 import com.cakemate.cake_platform.domain.requestForm.customer.service.RequestFormCustomerService;
 import io.jsonwebtoken.Claims;
 import jakarta.validation.Valid;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

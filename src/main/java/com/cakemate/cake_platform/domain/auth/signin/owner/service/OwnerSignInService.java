@@ -2,7 +2,7 @@ package com.cakemate.cake_platform.domain.auth.signin.owner.service;
 
 import com.cakemate.cake_platform.common.command.SearchCommand;
 
-import com.cakemate.cake_platform.common.jwt.utll.JwtUtil;
+import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.auth.signin.owner.dto.response.OwnerSignInResponse;

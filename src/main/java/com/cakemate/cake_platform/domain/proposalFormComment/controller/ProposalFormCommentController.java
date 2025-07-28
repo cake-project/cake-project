@@ -1,7 +1,7 @@
 package com.cakemate.cake_platform.domain.proposalFormComment.controller;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
-import com.cakemate.cake_platform.common.jwt.utll.JwtUtil;
+import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
 import com.cakemate.cake_platform.domain.proposalFormComment.dto.request.CommentCreateRequestDto;
 import com.cakemate.cake_platform.domain.proposalFormComment.dto.response.CommentCreateResponseDto;
 import com.cakemate.cake_platform.domain.proposalFormComment.service.ProposalFormCommentService;
