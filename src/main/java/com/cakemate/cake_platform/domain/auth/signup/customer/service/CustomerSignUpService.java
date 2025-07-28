@@ -3,6 +3,8 @@ package com.cakemate.cake_platform.domain.auth.signup.customer.service;
 import com.cakemate.cake_platform.common.command.SearchCommand;
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 
+import com.cakemate.cake_platform.common.exception.CustomerNotFoundException;
+import com.cakemate.cake_platform.domain.auth.exception.EmailAlreadyExistsException;
 import com.cakemate.cake_platform.domain.auth.signup.customer.dto.response.CustomerSignUpResponse;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import com.cakemate.cake_platform.domain.auth.signup.customer.repository.CustomerRepository;
@@ -41,7 +43,7 @@ public class CustomerSignUpService {
 
         boolean existsByCustomerEmail = customerRepository.existsByEmail(email);
         if (existsByCustomerEmail) {
-            throw new IllegalArgumentException("이미 등록된 이메일 입니다");
+            throw new EmailAlreadyExistsException("이미 등록된 이메일 입니다.");
         }
 
         String passwordEncode = passwordEncoder.encode(password);
@@ -52,7 +54,7 @@ public class CustomerSignUpService {
         Long customerId = customerInfo.getId();
         Customer customer = customerRepository
                 .findById(customerId)
-                .orElseThrow(() -> new RuntimeException("CustomerId가 존재하지 않습니다"));
+                .orElseThrow(() -> new CustomerNotFoundException("CustomerId가 존재하지 않습니다."));
         Member custmerMember = new Member(customer);
         memberRepository.save(custmerMember);
 
