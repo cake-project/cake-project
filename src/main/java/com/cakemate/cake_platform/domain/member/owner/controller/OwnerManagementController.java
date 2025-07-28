@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/owners")
-public class  OwnerManagementController {
+public class OwnerManagementController {
 
     private final OwnerManagementService ownerManagementService;
     private final JwtUtil jwtUtil;
@@ -25,14 +25,14 @@ public class  OwnerManagementController {
 
     /**
      * 점주 -> 내 정보 조회 API
+     *
      * @param bearerJwtToken
      * @return
      */
     @GetMapping("/me")
     public ApiResponse<OwnerProfileResponseDto> getOwnerProfileAPI(@RequestHeader("Authorization") String bearerJwtToken) {
-        String jwtToken = jwtUtil.substringToken(bearerJwtToken);
-        Claims claims = jwtUtil.verifyToken(jwtToken);
-        Long ownerId = jwtUtil.subjectMemberId(claims);
+
+        Long ownerId = jwtUtil.extractOwnerId(bearerJwtToken);
 
         OwnerProfileResponseDto responseDto = ownerManagementService.getOwnerProfileService(ownerId);
         ApiResponse<OwnerProfileResponseDto> response = ApiResponse.success(HttpStatus.OK, "회원 정보 조회가 완료되었습니다.", responseDto);
@@ -46,10 +46,8 @@ public class  OwnerManagementController {
     public ApiResponse<UpdateOwnerProfileResponseDto> putOwnerProfileAPI(
             @RequestHeader("Authorization") String bearerJwtToken,
             @RequestBody UpdateOwnerProfileRequestDto updateOwnerProfileRequestDto
-            ) {
-        String jwtToken = jwtUtil.substringToken(bearerJwtToken);
-        Claims claims = jwtUtil.verifyToken(jwtToken);
-        Long ownerId = jwtUtil.subjectMemberId(claims);
+    ) {
+        Long ownerId = jwtUtil.extractOwnerId(bearerJwtToken);
 
         return ownerManagementService.putUpdateOwnerService(
                 ownerId, updateOwnerProfileRequestDto
@@ -63,9 +61,7 @@ public class  OwnerManagementController {
     public ResponseEntity<ApiResponse<OwnerProfileResponseDto>> deleteOwnerProfile(
             @RequestHeader("Authorization") String bearerJwtToken
     ) {
-        String jwtToken = jwtUtil.substringToken(bearerJwtToken);
-        Claims claims = jwtUtil.verifyToken(jwtToken);
-        Long ownerId = jwtUtil.subjectMemberId(claims);
+        Long ownerId = jwtUtil.extractOwnerId(bearerJwtToken);
 
         OwnerProfileResponseDto dto = ownerManagementService.deleteOwnerProfileService(ownerId);
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "점주 탈퇴 성공", dto));

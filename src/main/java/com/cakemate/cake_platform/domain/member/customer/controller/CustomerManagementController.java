@@ -31,10 +31,7 @@ public class CustomerManagementController {
     @GetMapping("/me")
     public ApiResponse<CustomerProfileResponseDto> getCustomerProfileAPI(@RequestHeader("Authorization") String bearerJwtToken) {
 
-        // 헤더에서 토큰 추출 후 customerId 꺼내기
-        String jwtToken = jwtUtil.substringToken(bearerJwtToken);
-        Claims claims = jwtUtil.verifyToken(jwtToken);
-        Long customerId = jwtUtil.subjectMemberId(claims);
+        Long customerId = jwtUtil.extractCustomerId(bearerJwtToken);
 
         CustomerProfileResponseDto responseDto = customerManagementService.getCustomerProfileService(customerId);
         ApiResponse<CustomerProfileResponseDto> response = ApiResponse.success(HttpStatus.OK, "회원 정보 조회가 완료되었습니다.", responseDto);
@@ -48,10 +45,7 @@ public class CustomerManagementController {
             @RequestHeader("Authorization") String bearerJwtToken,
             @RequestBody UpdateCustomerProfileRequestDto updateCustomerProfileRequestDto
     ) {
-        // JWT 토큰에서 customerId 추출
-        String jwtToken = jwtUtil.substringToken(bearerJwtToken);
-        Claims claims = jwtUtil.verifyToken(jwtToken);
-        Long customerId = jwtUtil.subjectMemberId(claims);
+        Long customerId = jwtUtil.extractCustomerId(bearerJwtToken);
 
         return customerManagementService.putUpdateCustomerService(
                 customerId, updateCustomerProfileRequestDto
@@ -65,9 +59,7 @@ public class CustomerManagementController {
     public ResponseEntity<ApiResponse<CustomerProfileResponseDto>> deleteCustomerProfile(
             @RequestHeader("Authorization") String bearerJwtToken
     ) {
-        String jwtToken = jwtUtil.substringToken(bearerJwtToken);
-        Claims claims = jwtUtil.verifyToken(jwtToken);
-        Long customerId = jwtUtil.subjectMemberId(claims);
+        Long customerId = jwtUtil.extractCustomerId(bearerJwtToken);
 
         CustomerProfileResponseDto dto = customerManagementService.deleteCustomerProfileService(customerId);
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "소비자 탈퇴 성공", dto));
