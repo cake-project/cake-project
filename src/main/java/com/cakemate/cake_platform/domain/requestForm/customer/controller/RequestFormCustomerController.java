@@ -63,7 +63,7 @@ public class RequestFormCustomerController {
     /**
      * 고객 의뢰 다건 조회 API
      */
-    @GetMapping("/customers/request-forms/check/{requestFormId}")
+    @GetMapping("/customers/request-forms")
     public ApiResponse<List<CustomerRequestFormGetListResponseDto>> getListRequestForm(
             @RequestHeader("Authorization") String bearerJwtToken,
             @PathVariable("requestFormId") Long requestFormId
