@@ -38,6 +38,7 @@ public class Store extends BaseTimeEntity {
     @Column(nullable = false)
     private String phoneNumber;
 
+    @Column(columnDefinition = "TEXT")
     private String image;
 
     @Column(nullable = false)
