@@ -69,13 +69,14 @@ public class ProposalForm {
     }
 
     public ProposalForm(RequestForm requestForm, Store store, Owner owner, String storeName, String title, String content,
-                        int proposedPrice, LocalDateTime proposedPickupDate, String image, ProposalFormStatus status) {
+                        String managerName, int proposedPrice, LocalDateTime proposedPickupDate, String image, ProposalFormStatus status) {
         this.requestForm = requestForm;
         this.store = store;
         this.owner = owner;
         this.storeName = storeName;
         this.title = title;
         this.content = content;
+        this.managerName = managerName;
         this.proposedPrice = proposedPrice;
         this.proposedPickupDate = proposedPickupDate;
         this.image = image;

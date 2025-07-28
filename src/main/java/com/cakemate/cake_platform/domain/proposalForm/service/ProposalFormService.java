@@ -1,10 +1,7 @@
 package com.cakemate.cake_platform.domain.proposalForm.service;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
-import com.cakemate.cake_platform.common.exception.OwnerNotFoundException;
-import com.cakemate.cake_platform.common.exception.ProposalFormNotFoundException;
-import com.cakemate.cake_platform.common.exception.RequestFormNotFoundException;
-import com.cakemate.cake_platform.common.exception.StoreNotFoundException;
+import com.cakemate.cake_platform.common.exception.*;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.member.entity.Member;
 import com.cakemate.cake_platform.domain.member.repository.MemberRepository;
@@ -81,6 +78,7 @@ public class ProposalFormService {
                 requestDto.getStoreName(),
                 requestDto.getTitle(),
                 requestDto.getContent(),
+                requestDto.getManagerName(),  // managerName 추가
                 requestDto.getProposedPrice(),
                 requestDto.getProposedPickupDate(),
                 requestDto.getImage(),
@@ -117,12 +115,18 @@ public class ProposalFormService {
      * proposalForm 단건 상세 조회 서비스
      */
     @Transactional(readOnly = true)
-    public ApiResponse<ProposalFormContainsRequestFormDataDto> getProposalFormDetail(Long proposalFormId) {
+    public ApiResponse<ProposalFormContainsRequestFormDataDto> getProposalFormDetail(Long proposalFormId, Long ownerId) {
         //데이터 준비
 
         //조회
         ProposalForm foundProposalForm = proposalFormRepository.findById(proposalFormId)
-                .orElseThrow(() -> new ProposalFormNotFoundException("해당 제안서가 존재하지 않습니다."));
+                .orElseThrow(() -> new ProposalFormNotFoundException("해당 견적서가 존재하지 않습니다."));
+
+
+        //권한 검증 추가
+        if (!foundProposalForm.getStore().getOwner().getId().equals(ownerId)) {
+            throw new UnauthorizedAccessException("조회 권한이 없습니다.");
+        }
 
         //RequestForm 조회
         RequestForm requestForm = foundProposalForm.getRequestForm();
@@ -131,11 +135,12 @@ public class ProposalFormService {
         List<ProposalFormComment> commentList = proposalFormCommentRepository.findByProposalForm_IdOrderByCreatedAtAsc(proposalFormId);
 
         //DTO 만들기(ProposalForm, RequestForm, Comment 데이터를 합쳐 DTO 생성)
-        //ProposalFormDto 만들기
+        //ProposalForm  Dto 만들기
         ProposalFormDataDto proposalFormDataDto = new ProposalFormDataDto(
                 foundProposalForm.getId(),
                 requestForm.getId(),
                 foundProposalForm.getStore().getName(),
+                foundProposalForm.getTitle(),
                 foundProposalForm.getContent(),
                 foundProposalForm.getManagerName(),
                 foundProposalForm.getProposedPrice(),
@@ -167,15 +172,16 @@ public class ProposalFormService {
                         customerId = comment.getCustomer().getId();
                     }
                     //comment에 연결된 owner가 있으면 ID 추출
-                    Long ownerId = null;
+                    Long commentOwnerId = null;
                     if (comment.getOwner() != null) {
-                        ownerId = comment.getOwner().getId();
+                        commentOwnerId = comment.getOwner().getId();
                     }
+
                     //CommentDataDto 생성 및 반환
                     return new CommentDataDto(
                             comment.getId(),
                             customerId,
-                            ownerId,
+                            commentOwnerId,
                             comment.getContent(),
                             comment.getCreatedAt()
                     );
@@ -194,10 +200,11 @@ public class ProposalFormService {
      * proposalForm 목록 조회 서비스
      */
     @Transactional(readOnly = true)
-    public ApiResponse<List<ProposalFormContainsRequestFormDataDto>> getProposalFormList() {
+    public ApiResponse<List<ProposalFormContainsRequestFormDataDto>> getProposalFormList(Long ownerId) {
         //데이터 준비
-        //조회
-        List<ProposalForm> proposalFormList = proposalFormRepository.findAll();
+
+        //조회 권한 확인(점주 본인이 작성한 견적서 목록 조회)
+        List<ProposalForm> proposalFormList = proposalFormRepository.findByStore_Owner_Id(ownerId);
 
         //DTO 만들기( ProposalForm과 RequestForm 데이터를 합쳐 DTO 생성)
         List<ProposalFormContainsRequestFormDataDto> dataList = proposalFormList.stream()
@@ -209,6 +216,7 @@ public class ProposalFormService {
                             proposalForm.getId(),
                             requestForm.getId(),
                             proposalForm.getStore().getName(),
+                            proposalForm.getTitle(),
                             proposalForm.getContent(),
                             proposalForm.getManagerName(),
                             proposalForm.getProposedPrice(),
