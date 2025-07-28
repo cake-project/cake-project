@@ -78,6 +78,7 @@ public class ProposalFormService {
                 requestDto.getStoreName(),
                 requestDto.getTitle(),
                 requestDto.getContent(),
+                requestDto.getManagerName(),  // managerName 추가
                 requestDto.getProposedPrice(),
                 requestDto.getProposedPickupDate(),
                 requestDto.getImage(),
@@ -139,6 +140,7 @@ public class ProposalFormService {
                 foundProposalForm.getId(),
                 requestForm.getId(),
                 foundProposalForm.getStore().getName(),
+                foundProposalForm.getTitle(),
                 foundProposalForm.getContent(),
                 foundProposalForm.getManagerName(),
                 foundProposalForm.getProposedPrice(),
@@ -201,7 +203,7 @@ public class ProposalFormService {
     public ApiResponse<List<ProposalFormContainsRequestFormDataDto>> getProposalFormList(Long ownerId) {
         //데이터 준비
 
-        //조회 권한 확(점주 본인이 작성한 견적서 목록 조회)
+        //조회 권한 확인(점주 본인이 작성한 견적서 목록 조회)
         List<ProposalForm> proposalFormList = proposalFormRepository.findByStore_Owner_Id(ownerId);
 
         //DTO 만들기( ProposalForm과 RequestForm 데이터를 합쳐 DTO 생성)
@@ -214,6 +216,7 @@ public class ProposalFormService {
                             proposalForm.getId(),
                             requestForm.getId(),
                             proposalForm.getStore().getName(),
+                            proposalForm.getTitle(),
                             proposalForm.getContent(),
                             proposalForm.getManagerName(),
                             proposalForm.getProposedPrice(),

@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public class CommentDataDto {
     //속성
-    private Long id;
+    private Long commentId;
     private Long customerId;
     private Long ownerId;
     private String content;
@@ -12,8 +12,8 @@ public class CommentDataDto {
 
     //생성자
 
-    public CommentDataDto(Long id, Long customerId, Long ownerId, String content, LocalDateTime createdAt) {
-        this.id = id;
+    public CommentDataDto(Long commentId, Long customerId, Long ownerId, String content, LocalDateTime createdAt) {
+        this.commentId = commentId;
         this.customerId = customerId;
         this.ownerId = ownerId;
         this.content = content;
@@ -21,8 +21,8 @@ public class CommentDataDto {
     }
 
     //게터
-    public Long getId() {
-        return id;
+    public Long getCommentId() {
+        return commentId;
     }
 
     public Long getCustomerId() {
