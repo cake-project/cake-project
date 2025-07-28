@@ -34,13 +34,8 @@ public class ProposalFormCommentController {
             @PathVariable("proposalFormId") Long proposalFormId,
             @RequestBody CommentCreateRequestDto commentCreateRequestDto
             ) {
-        // 토큰에서 memberId 추출
-        String jwtToken = jwtUtil.substringToken(bearerJwtToken);
-        Claims claims = jwtUtil.verifyToken(jwtToken);
-        Long memberId = jwtUtil.subjectMemberId(claims);
-
         return proposalFormCommentService.createRequestFormCommentService(
-                commentCreateRequestDto, proposalFormId, memberId
+                commentCreateRequestDto, proposalFormId
                 );
     }
 
