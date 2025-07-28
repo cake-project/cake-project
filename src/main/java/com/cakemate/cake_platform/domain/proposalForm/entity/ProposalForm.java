@@ -48,6 +48,7 @@ public class ProposalForm {
     @Column(nullable = false)
     private int proposedPrice;
 
+    @Column(columnDefinition = "TEXT")
     private String image;
 
     @Column(nullable = false)
@@ -80,15 +81,6 @@ public class ProposalForm {
         this.image = image;
         this.status = status;
     }
-//    public ProposalForm(RequestForm requestForm, Store store, Owner owner, String title, String content,
-//                        int proposalPrice, LocalDateTime pickupDate, ProposalFormStatus status) {
-//        this.requestForm = requestForm;
-//        this.store = store;
-//        this.owner = owner;
-//        this.title = title;
-//        this.content = content;
-//        this.status = status;
-//    }
 
     public ProposalFormStatus getStatus() {
         return status;
