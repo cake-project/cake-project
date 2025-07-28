@@ -32,7 +32,7 @@ public class CustomerRequestFormGetDetailResponseDto {
     @Getter
     public static class RequestFormGetDetailDto {
         //속성
-        private Long id;
+        private Long requestFormId;
         private String title;
         private String region;
         private String content;
@@ -48,13 +48,13 @@ public class CustomerRequestFormGetDetailResponseDto {
 
         //생성자
         public RequestFormGetDetailDto(
-                Long id, String title, String region,
+                Long requestFormId, String title, String region,
                 String content, Integer desiredPrice,
                 String image, LocalDateTime pickupDate,
                 RequestFormStatus requestStatus,
                 LocalDateTime createdAt
         ) {
-            this.id = id;
+            this.requestFormId = requestFormId;
             this.title = title;
             this.region = region;
             this.content = content;
@@ -77,7 +77,7 @@ public class CustomerRequestFormGetDetailResponseDto {
     public static class ProposalGetListInternalDto {
         //속성
         @Column(nullable = false)
-        private Long id;
+        private Long proposalFormId;
 
         @Column(nullable = false)
         private String storeName;
@@ -109,12 +109,12 @@ public class CustomerRequestFormGetDetailResponseDto {
         //생성자
 
         public ProposalGetListInternalDto(
-                Long id, String storeName, String title,
+                Long proposalFormId, String storeName, String title,
                 String content, Integer proposedPrice,
                 LocalDateTime proposedPickupDate, String image,
                 ProposalFormStatus status, LocalDateTime createdAt
         ) {
-            this.id = id;
+            this.proposalFormId = proposalFormId;
             this.storeName = storeName;
             this.title = title;
             this.content = content;
