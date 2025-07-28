@@ -208,7 +208,8 @@ public class ProposalFormService {
                     ProposalFormDataDto proposalDto = new ProposalFormDataDto(
                             proposalForm.getId(),
                             requestForm.getId(),
-                            proposalForm.getStore().getName(),                        proposalForm.getContent(),
+                            proposalForm.getStore().getName(),
+                            proposalForm.getContent(),
                             proposalForm.getManagerName(),
                             proposalForm.getProposedPrice(),
                             proposalForm.getProposedPickupDate(),
