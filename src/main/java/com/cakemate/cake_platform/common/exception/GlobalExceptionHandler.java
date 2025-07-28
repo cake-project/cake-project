@@ -1,10 +1,7 @@
 package com.cakemate.cake_platform.common.exception;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
-import com.cakemate.cake_platform.domain.auth.exception.BadRequestException;
-import com.cakemate.cake_platform.domain.auth.exception.EmailAlreadyExistsException;
-import com.cakemate.cake_platform.domain.auth.exception.EmailNotFoundException;
-import com.cakemate.cake_platform.domain.auth.exception.PasswordMismatchException;
+import com.cakemate.cake_platform.domain.auth.exception.*;
 import com.cakemate.cake_platform.domain.proposalForm.exception.*;
 import com.cakemate.cake_platform.domain.requestForm.exception.RequestFormAccessDeniedException;
 import com.cakemate.cake_platform.domain.order.customer.exception.MismatchedRequestAndProposalException;
@@ -258,5 +255,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(ApiResponse.error(HttpStatus.CONFLICT, ex.getMessage()));
+    }
+
+    // 비밀번호 형식이 유효하지 않을 때 발생하는 예외입니다.
+    @ExceptionHandler(InvalidPasswordFormatException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidPasswordFormatException(InvalidPasswordFormatException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
 }
