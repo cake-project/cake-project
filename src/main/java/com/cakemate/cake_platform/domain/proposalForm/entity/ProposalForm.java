@@ -4,7 +4,6 @@ import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.store.entity.Store;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
@@ -14,6 +13,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
+@Table(name = "proposal_forms")
 @EntityListeners(AuditingEntityListener.class)
 public class ProposalForm {
     //속성
@@ -80,10 +80,6 @@ public class ProposalForm {
         this.proposedPickupDate = proposedPickupDate;
         this.image = image;
         this.status = status;
-    }
-
-    public ProposalFormStatus getStatus() {
-        return status;
     }
 
     public boolean isDeleted() {
