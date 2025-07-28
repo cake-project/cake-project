@@ -5,7 +5,6 @@ import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
 import com.cakemate.cake_platform.domain.requestForm.owner.dto.RequestFormDetailOwnerResponseDto;
 import com.cakemate.cake_platform.domain.requestForm.owner.dto.RequestFormPageOwnerResponseDto;
 import com.cakemate.cake_platform.domain.requestForm.owner.service.RequestFormOwnerService;
-import io.jsonwebtoken.Claims;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -35,9 +34,7 @@ public class RequestFormOwnerController {
             @RequestHeader("Authorization") String bearerJwtToken,
             @PathVariable Long requestFormId
     ) {
-        String jwtToken = jwtUtil.substringToken(bearerJwtToken);
-        Claims claims = jwtUtil.verifyToken(jwtToken);
-        Long ownerId = jwtUtil.subjectMemberId(claims);
+        Long ownerId = jwtUtil.extractOwnerId(bearerJwtToken);
 
         RequestFormDetailOwnerResponseDto responseDto = requestFormOwnerService.getRequestDetailOwnerService(ownerId, requestFormId);
         ApiResponse<RequestFormDetailOwnerResponseDto> response = ApiResponse.success(HttpStatus.OK, "의뢰서 단건 조회가 완료되었습니다.", responseDto);
@@ -59,9 +56,7 @@ public class RequestFormOwnerController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        String jwtToken = jwtUtil.substringToken(bearerJwtToken);
-        Claims claims = jwtUtil.verifyToken(jwtToken);
-        Long ownerId = jwtUtil.subjectMemberId(claims);
+        Long ownerId = jwtUtil.extractOwnerId(bearerJwtToken);
 
         int adjustedPage = Math.max(page - 1, 0);
 

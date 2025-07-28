@@ -4,7 +4,6 @@ import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
 import com.cakemate.cake_platform.domain.order.customer.dto.*;
 import com.cakemate.cake_platform.domain.order.customer.service.OrderCustomerService;
-import io.jsonwebtoken.Claims;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -37,10 +36,7 @@ public class OrderCustomerController {
             @PathVariable Long proposalFormId,
             @RequestBody CustomerOrderCreateRequestDto requestDto
     ) {
-        // 토큰에서 customerId 가져오기
-        String jwtToken = jwtUtil.substringToken(bearerJwtToken);
-        Claims claims = jwtUtil.verifyToken(jwtToken);
-        Long customerId = jwtUtil.subjectMemberId(claims);
+        Long customerId = jwtUtil.extractCustomerId(bearerJwtToken);
 
         CustomerOrderCreateResponseDto responseDto = orderService.createOrderService(customerId, requestFormId, proposalFormId, requestDto);
         ApiResponse<CustomerOrderCreateResponseDto> response = ApiResponse.success(HttpStatus.CREATED, "주문이 생성되었습니다.", responseDto);
@@ -55,9 +51,7 @@ public class OrderCustomerController {
             @RequestHeader("Authorization") String bearerJwtToken,
             @PathVariable Long orderId
     ) {
-        String jwtToken = jwtUtil.substringToken(bearerJwtToken);
-        Claims claims = jwtUtil.verifyToken(jwtToken);
-        Long customerId = jwtUtil.subjectMemberId(claims);
+        Long customerId = jwtUtil.extractCustomerId(bearerJwtToken);
 
         CustomerOrderDetailResponseDto responseDto = orderService.getCustomerOrderDetailService(customerId, orderId);
         ApiResponse<CustomerOrderDetailResponseDto> response = ApiResponse.success(HttpStatus.OK, "주문 상세 조회가 완료되었습니다.", responseDto);
@@ -78,9 +72,7 @@ public class OrderCustomerController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        String jwtToken = jwtUtil.substringToken(bearerJwtToken);
-        Claims claims = jwtUtil.verifyToken(jwtToken);
-        Long customerId = jwtUtil.subjectMemberId(claims);
+        Long customerId = jwtUtil.extractCustomerId(bearerJwtToken);
 
         int adjustedPage = Math.max(page - 1, 0);
 
