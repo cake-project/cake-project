@@ -1,7 +1,7 @@
 package com.cakemate.cake_platform.domain.member.owner.controller;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
-import com.cakemate.cake_platform.common.jwt.utll.JwtUtil;
+import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
 import com.cakemate.cake_platform.domain.member.owner.dto.request.UpdateOwnerProfileRequestDto;
 import com.cakemate.cake_platform.domain.member.owner.dto.response.OwnerProfileResponseDto;
 import com.cakemate.cake_platform.domain.member.owner.dto.response.UpdateOwnerProfileResponseDto;

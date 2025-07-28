@@ -1,7 +1,7 @@
 package com.cakemate.cake_platform.domain.requestForm.owner.controller;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
-import com.cakemate.cake_platform.common.jwt.utll.JwtUtil;
+import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
 import com.cakemate.cake_platform.domain.requestForm.owner.dto.RequestFormDetailOwnerResponseDto;
 import com.cakemate.cake_platform.domain.requestForm.owner.dto.RequestFormPageOwnerResponseDto;
 import com.cakemate.cake_platform.domain.requestForm.owner.service.RequestFormOwnerService;

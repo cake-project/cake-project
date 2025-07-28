@@ -1,13 +1,11 @@
 package com.cakemate.cake_platform.domain.member.customer.controller;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
-import com.cakemate.cake_platform.common.jwt.utll.JwtUtil;
+import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
 import com.cakemate.cake_platform.domain.member.customer.dto.CustomerProfileResponseDto;
 import com.cakemate.cake_platform.domain.member.customer.dto.reponse.UpdateCustomerProfileResponseDto;
 import com.cakemate.cake_platform.domain.member.customer.dto.request.UpdateCustomerProfileRequestDto;
 import com.cakemate.cake_platform.domain.member.customer.service.CustomerManagementService;
-import com.cakemate.cake_platform.domain.member.owner.dto.request.UpdateOwnerProfileRequestDto;
-import com.cakemate.cake_platform.domain.member.owner.dto.response.UpdateOwnerProfileResponseDto;
 import io.jsonwebtoken.Claims;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

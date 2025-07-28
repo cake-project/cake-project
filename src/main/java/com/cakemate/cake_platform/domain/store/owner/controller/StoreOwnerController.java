@@ -1,7 +1,7 @@
 package com.cakemate.cake_platform.domain.store.owner.controller;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
-import com.cakemate.cake_platform.common.jwt.utll.JwtUtil;
+import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
 import com.cakemate.cake_platform.domain.store.customer.command.StoreOwnerCommand;
 import com.cakemate.cake_platform.domain.store.owner.dto.*;
 import com.cakemate.cake_platform.domain.store.owner.service.StoreOwnerService;

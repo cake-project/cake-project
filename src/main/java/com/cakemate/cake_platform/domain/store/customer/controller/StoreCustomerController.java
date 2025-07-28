@@ -1,14 +1,12 @@
 package com.cakemate.cake_platform.domain.store.customer.controller;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
-import com.cakemate.cake_platform.common.jwt.utll.JwtUtil;
+import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
 import com.cakemate.cake_platform.domain.store.customer.command.StoreDetailCommand;
 import com.cakemate.cake_platform.domain.store.customer.command.StoreSearchCommand;
 import com.cakemate.cake_platform.domain.store.customer.dto.StoreCustomerDetailResponseDto;
 import com.cakemate.cake_platform.domain.store.customer.dto.StoreSummaryResponseDto;
 import com.cakemate.cake_platform.domain.store.customer.service.StoreCustomerService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwt;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
