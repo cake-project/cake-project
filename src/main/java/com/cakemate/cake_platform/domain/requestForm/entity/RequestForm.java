@@ -26,10 +26,6 @@ public class RequestForm {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "proposal_form_id")
-    private ProposalForm proposalForm;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
@@ -86,20 +82,6 @@ public class RequestForm {
         this.status = status;
     }
 
-    public RequestForm(ProposalForm proposalForm, Customer customer, String title, String region,
-                       String content, int desiredPrice, String image, LocalDateTime desiredPickupDate,
-                       RequestFormStatus status) {
-        this.proposalForm = proposalForm;
-        this.customer = customer;
-        this.title = title;
-        this.region = region;
-        this.content = content;
-        this.desiredPrice = desiredPrice;
-        this.image = image;
-        this.desiredPickupDate = desiredPickupDate;
-        this.status = status;
-    }
-
     public void updateStatus(RequestFormStatus status) {
         this.status = status;
     }
@@ -107,5 +89,10 @@ public class RequestForm {
     //가능
     public void softDelete() {
         this.isDeleted = true;
+    }
+
+    //견적서 최초 등록 시 - 의뢰서 상태 변경
+    public void updateStatusToHasProposal() {
+        this.status = RequestFormStatus.ESTIMATING;
     }
 }
