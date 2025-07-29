@@ -6,6 +6,7 @@ import com.cakemate.cake_platform.domain.proposalForm.exception.*;
 import com.cakemate.cake_platform.domain.requestForm.exception.RequestFormAccessDeniedException;
 import com.cakemate.cake_platform.domain.order.customer.exception.MismatchedRequestAndProposalException;
 import com.cakemate.cake_platform.domain.order.customer.exception.UnauthorizedRequestFormAccessException;
+import com.cakemate.cake_platform.domain.requestForm.exception.RequestFormDeletionNotAllowedException;
 import com.cakemate.cake_platform.domain.store.owner.exception.*;
 import com.cakemate.cake_platform.domain.store.owner.exception.NotFoundCustomerException;
 import com.cakemate.cake_platform.domain.store.owner.exception.NotFoundOwnerException;
@@ -121,6 +122,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body(ApiResponse.error(HttpStatus.FORBIDDEN, ex.getMessage()));
+    }
+    // 견적서가 달린 의뢰서는 삭제할 수 없을 때 발생
+    @ExceptionHandler(RequestFormDeletionNotAllowedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleRequestFormDeletionNotAllowed(
+            RequestFormDeletionNotAllowedException ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
 
     // 주문을 찾을 수 없을 때 사용합니다.

@@ -26,6 +26,10 @@ public class RequestForm {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "proposal_form_id")
+    private ProposalForm proposalForm;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
@@ -105,7 +109,7 @@ public class RequestForm {
         this.isDeleted = true;
     }
 
-    //최초 견적서 등록 시- 의뢰서 상태 변경 전용 메서드
+    //견적서 최초 등록 시 - 의뢰서 상태 변경
     public void updateStatusToHasProposal() {
         this.status = RequestFormStatus.ESTIMATING;
     }

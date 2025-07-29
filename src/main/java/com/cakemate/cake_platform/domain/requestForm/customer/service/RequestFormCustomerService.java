@@ -15,10 +15,8 @@ import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
 import com.cakemate.cake_platform.domain.requestForm.exception.RequestFormAccessDeniedException;
 import com.cakemate.cake_platform.domain.requestForm.exception.NotFoundRequestFormException;
-import com.cakemate.cake_platform.domain.store.owner.exception.DuplicateBusinessNumberException;
-import com.cakemate.cake_platform.domain.store.owner.exception.DuplicatedStoreException;
+import com.cakemate.cake_platform.domain.requestForm.exception.RequestFormDeletionNotAllowedException;
 import com.cakemate.cake_platform.domain.store.owner.exception.NotFoundCustomerException;
-import com.cakemate.cake_platform.domain.store.owner.exception.NotFoundOwnerException;
 import org.springframework.http.HttpStatus;
 import com.cakemate.cake_platform.domain.requestForm.repository.RequestFormRepository;
 import org.springframework.stereotype.Service;
@@ -81,8 +79,11 @@ public class RequestFormCustomerService {
 
         //저장
         RequestForm saveRequestForm = requestFormRepository.save(newRequestForm);
+
         CustomerRequestFormCreateResponseDto requestFormCustomerResponseDto
                 = new CustomerRequestFormCreateResponseDto(
+                        saveRequestForm.getCustomer().getId(),
+                        saveRequestForm.getCustomer().getName(),
                         saveRequestForm.getId(), saveRequestForm.getTitle(),
                 saveRequestForm.getStatus(), saveRequestForm.getCreatedAt(), saveRequestForm.getDesiredPickupDate()
         );
@@ -199,6 +200,12 @@ public class RequestFormCustomerService {
             // 작성자가 아니면 예외 발생
             throw new RequestFormAccessDeniedException("본인이 작성한 의뢰서만 삭제할 수 있습니다.");
         }
+
+        //견적서 존재 여부 확인
+        if (proposalFormRepository.existsByRequestFormIdAndIsDeletedFalse(requestFormId)) {
+            throw new RequestFormDeletionNotAllowedException( "이미 견적서가 달린 의뢰서는 삭제할 수 없습니다.");
+        }
+
         //삭제(소프트 딜리트)
         requestForm.softDelete();
 
