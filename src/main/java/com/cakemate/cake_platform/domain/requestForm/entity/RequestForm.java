@@ -90,4 +90,9 @@ public class RequestForm {
     public void softDelete() {
         this.isDeleted = true;
     }
+
+    //견적서 최초 등록 시 - 의뢰서 상태 변경
+    public void updateStatusToHasProposal() {
+        this.status = RequestFormStatus.ESTIMATING;
+    }
 }
