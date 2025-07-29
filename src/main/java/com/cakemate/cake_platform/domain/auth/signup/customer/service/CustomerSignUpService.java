@@ -46,10 +46,10 @@ public class CustomerSignUpService {
         if (existsByCustomerEmail) {
             throw new EmailAlreadyExistsException("이미 등록된 이메일 입니다.");
         }
-
         String passwordEncode = passwordEncoder.encode(password);
+        String passwordConfirmEncode = passwordEncoder.encode(passwordConfirm);
 
-        Customer customerInfo = new Customer(email, passwordEncode, passwordConfirm, name, phoneNumber);
+        Customer customerInfo = new Customer(email, passwordEncode, passwordConfirmEncode, name, phoneNumber);
         Customer customerSave = customerRepository.save(customerInfo);
         // Member 테이블에 저장
         Long customerId = customerInfo.getId();

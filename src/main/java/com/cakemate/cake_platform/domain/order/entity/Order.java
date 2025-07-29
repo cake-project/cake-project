@@ -36,11 +36,11 @@ public class Order {
     private Store store;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "requestForm_id", nullable = false)
+    @JoinColumn(name = "request_form_id", nullable = false)
     private RequestForm requestForm;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "proposalForm_id", nullable = false)
+    @JoinColumn(name = "proposal_form_id", nullable = false)
     private ProposalForm proposalForm;
 
     @Column(nullable = false)
