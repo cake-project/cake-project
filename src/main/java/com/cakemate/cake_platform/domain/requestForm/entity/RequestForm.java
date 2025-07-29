@@ -6,6 +6,7 @@ import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 //Auditing 은 감사하는 것 -> 리퀘스트 폼이라는 엔티티가 변경되면 감지를 해서 디비에 적용을 시켜주는 어노테이션
 //@EnableJpaAuditing 을 설정하먄 읽어 준다.-> 베이스 엔티티가 보는 상황(JpaConfig)
 @EntityListeners(AuditingEntityListener.class)
-public class RequestForm extends BaseTimeEntity {
+public class RequestForm {
 
     //속성
 
@@ -54,10 +55,13 @@ public class RequestForm extends BaseTimeEntity {
     @Enumerated(value = EnumType.STRING)
     private RequestFormStatus status = RequestFormStatus.REQUESTED; //디폴트 값
 
-
     //아래 추가함
     @Column(nullable = false)
     private Boolean isDeleted = false;
+
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
 
     /**
