@@ -1,8 +1,11 @@
 package com.cakemate.cake_platform.domain.proposalForm.dto;
 
+import lombok.Getter;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Getter
 public class RequestFormDataDto {
     //속성
     private Long requestFormId;
@@ -30,31 +33,5 @@ public class RequestFormDataDto {
         this.createdAt = createdAt;
     }
 
-    //게터
-    public Long getRequestFormId() {
-        return requestFormId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public String getRegion() {
-        return region;
-
-    }
-    public int getDesiredPrice() { return desiredPrice; }
-    public LocalDateTime getDesiredPickupDate() { return desiredPickupDate; }
-
-    public String getRequestFormStatus() {
-        return requestFormStatus;
-    }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public String getImage() { return image; }
-
+    //기능
 }

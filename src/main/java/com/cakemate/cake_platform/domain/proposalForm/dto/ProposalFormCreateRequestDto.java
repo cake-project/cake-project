@@ -2,13 +2,14 @@ package com.cakemate.cake_platform.domain.proposalForm.dto;
 
 import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+@Getter
 public class ProposalFormCreateRequestDto {
     //속성
     private Long requestFormId;
-    private String storeName;
     private String title;
     private String content;
     private String managerName;
@@ -23,10 +24,9 @@ public class ProposalFormCreateRequestDto {
     public ProposalFormCreateRequestDto() {
     }
 
-    public ProposalFormCreateRequestDto(Long requestFormId, String title, String storeName, String content, String managerName, int proposedPrice, LocalDateTime proposedPickupDate, String image) {
+    public ProposalFormCreateRequestDto(Long requestFormId, String title, String content, String managerName, int proposedPrice, LocalDateTime proposedPickupDate, String image) {
         this.requestFormId = requestFormId;
         this.title = title;
-        this.storeName = storeName;
         this.content = content;
         this.managerName = managerName;
         this.proposedPrice = proposedPrice;
@@ -34,37 +34,7 @@ public class ProposalFormCreateRequestDto {
         this.image = image;
     }
 
-    //게터
-    public Long getRequestFormId() {
-        return requestFormId;
-    }
+    //기능
 
-    public String getStoreName() {
-        return storeName;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public String getManagerName() {
-        return managerName;
-    }
-
-    public int getProposedPrice() {
-        return proposedPrice;
-    }
-
-    public LocalDateTime getProposedPickupDate() {
-        return proposedPickupDate;
-    }
-
-    public String getImage() {
-        return image;
-    }
 }
 

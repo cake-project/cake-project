@@ -1,5 +1,6 @@
 package com.cakemate.cake_platform.domain.proposalForm.repository;
 
+import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.proposalFormComment.entity.ProposalFormComment;
@@ -21,8 +22,8 @@ public interface ProposalFormRepository extends JpaRepository<ProposalForm, Long
             @Param("proposalFormId") Long proposalFormId
     );
 
-    //견적서 중복 방지 검증 시
-    boolean existsByRequestForm(RequestForm requestForm);
+    //하나의 의뢰서에 견적서 여러개 작성 방지
+    boolean existsByRequestFormAndOwner(RequestForm requestForm, Owner owner);
 
     //견적서 최초 등록 시 의뢰서의 상태 ESTIMATING으로 자동 변경
     long countByRequestForm(RequestForm requestForm);

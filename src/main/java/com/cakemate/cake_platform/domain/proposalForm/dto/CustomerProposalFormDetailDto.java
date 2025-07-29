@@ -1,7 +1,10 @@
 package com.cakemate.cake_platform.domain.proposalForm.dto;
 
+import lombok.Getter;
+
 import java.util.List;
 
+@Getter
 public class CustomerProposalFormDetailDto {
     //속성
     private RequestFormDataDto requestForm;
@@ -15,17 +18,5 @@ public class CustomerProposalFormDetailDto {
         this.comments = comments;
     }
 
-    //게터
-
-    public RequestFormDataDto getRequestForm() {
-        return requestForm;
-    }
-
-    public ProposalFormDataDto getProposalForm() {
-        return proposalForm;
-    }
-
-    public List<CommentDataDto> getComments() {
-        return comments;
-    }
+    //기능
 }

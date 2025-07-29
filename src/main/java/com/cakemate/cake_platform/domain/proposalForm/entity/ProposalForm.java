@@ -89,8 +89,7 @@ public class ProposalForm {
     }
 
     //기능
-    public void update(String storeName, String title, String content, String managerName, int price, LocalDateTime pickupDate, String image) {
-        this.storeName = storeName;
+    public void update(String title, String content, String managerName, int price, LocalDateTime pickupDate, String image) {
         this.title = title;
         this.content = content;
         this.managerName = managerName;
