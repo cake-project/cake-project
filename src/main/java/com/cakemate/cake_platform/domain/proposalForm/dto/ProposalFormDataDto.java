@@ -2,12 +2,14 @@ package com.cakemate.cake_platform.domain.proposalForm.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.JsonToken;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 /**
  * proposalFormCreateResponseDto에서 활용하는 객체입니다!!
  */
+@Getter
 public class ProposalFormDataDto {
     //속성
     private Long proposalFormId;
@@ -36,6 +38,7 @@ public class ProposalFormDataDto {
         this.status = status;
         this.image = image;
     }
+
     //customer 전용 생성자(담당자 정보 제외)
     public ProposalFormDataDto(Long proposalFormId, Long requestFormId, String storeName, String title, String content, int proposedPrice, LocalDateTime proposedPickupDate, LocalDateTime createdAt, String status, String image) {
         this.proposalFormId = proposalFormId;
@@ -50,50 +53,6 @@ public class ProposalFormDataDto {
         this.image = image;
     }
 
-    //게터
-
-    public Long getProposalFormId() {
-        return proposalFormId;
-    }
-
-    public Long getRequestFormId() {
-        return requestFormId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public int getProposedPrice() {
-        return proposedPrice;
-    }
-
-    public LocalDateTime getProposedPickupDate() {
-        return proposedPickupDate;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public String getManagerName() {
-        return managerName;
-    }
-
-    public String getStoreName() {
-        return storeName;
-    }
+    //기능
 }
 

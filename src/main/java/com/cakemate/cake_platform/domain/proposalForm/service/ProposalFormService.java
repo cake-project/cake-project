@@ -18,6 +18,7 @@ import com.cakemate.cake_platform.domain.requestForm.repository.RequestFormRepos
 import com.cakemate.cake_platform.domain.store.entity.Store;
 import com.cakemate.cake_platform.domain.store.repository.StoreRepository;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,14 +60,15 @@ public class ProposalFormService {
         //owner가 가진 store 가져오기
         Store store = storeRepository.findByOwnerId(ownerId)
                 .orElseThrow(() -> new StoreNotFoundException("해당 점주의 가게를 찾을 수 없습니다."));
+        String storeName = store.getName();
 
         RequestForm requestForm = requestFormRepository.findById(requestDto.getRequestFormId())
                 .orElseThrow(() -> new RequestFormNotFoundException("해당 의뢰서를 찾을 수 없습니다."));
 
         //검증 로직(견적서 중복 생성 방지)
-        boolean exists = proposalFormRepository.existsByRequestForm(requestForm);
+        boolean exists = proposalFormRepository.existsByRequestFormAndOwner(requestForm, owner);
         if (exists) {
-            throw new ProposalFormAlreadyExistsException("이미 이 의뢰서에 대한 견적서가 존재합니다.");
+            throw new ProposalFormAlreadyExistsException("해당 의뢰서에 대한 견적서가 이미 존재합니다.");
         }
         //날짜(미래만 가능), 가격(양수만 가능) 예외처리
         if (requestDto.getProposedPickupDate().isBefore(LocalDateTime.now())) {
@@ -81,18 +83,21 @@ public class ProposalFormService {
                 requestForm,
                 store,
                 owner,
-                requestDto.getStoreName(),
+                store.getName(),
                 requestDto.getTitle(),
                 requestDto.getContent(),
-                requestDto.getManagerName(),  // managerName 추가
+                requestDto.getManagerName(),
                 requestDto.getProposedPrice(),
                 requestDto.getProposedPickupDate(),
                 requestDto.getImage(),
-                ProposalFormStatus.AWAITING  // 기본 상태
+                ProposalFormStatus.AWAITING  //기본 상태
         );
 
         //최초 견적서 등록 시 의뢰서 상태 변경
         long count = proposalFormRepository.countByRequestForm(requestForm);
+        if (count == 0) {
+            requestForm.updateStatusToHasProposal();
+        }
 
         //저장
         ProposalForm savedProposalForm = proposalFormRepository.save(proposalForm);
@@ -279,12 +284,16 @@ public class ProposalFormService {
         if (foundProposalForm.getStatus() != ProposalFormStatus.AWAITING) {
             throw new ProposalFormUpdateInvalidStatusException("AWAITING 상태일 때만 수정할 수 있습니다.");
         }
-        //날짜 검증
-        //가격 검증
+        //날짜, 가격 제한(과거 날짜, 마이너스 값 불가)
+        if (requestDto.getProposedPickupDate().isBefore(LocalDateTime.now())) {
+            throw new InvalidProposedPickupDateException("픽업일은 현재 시간보다 이후여야 합니다.");
+        }
+        if (requestDto.getProposedPrice() < 0) {
+            throw new InvalidProposedPriceException("올바르지 않은 입력값입니다.");
+        }
 
         //수정
         foundProposalForm.update(
-                requestDto.getStoreName(),
                 requestDto.getTitle(),
                 requestDto.getContent(),
                 requestDto.getManagerName(),
