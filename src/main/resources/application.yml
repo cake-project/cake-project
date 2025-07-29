@@ -2,5 +2,5 @@ spring:
   profiles:
     active: prod
 
-#logging:
- # config: classpath:logback-spring-${spring.profiles.active}.xml
+logging:
+  config: classpath:logback-spring-${spring.profiles.active}.xml
