@@ -10,7 +10,7 @@ import lombok.Getter;
 @Getter
 @Entity
 @Table(name = "proposalform_comments")
-public class ProposalFormComment extends BaseTimeEntity {
+public class ProposalFormComment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

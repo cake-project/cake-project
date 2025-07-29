@@ -5,10 +5,7 @@ import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.domain.auth.signin.customer.dto.request.CustomerSignInRequest;
 import com.cakemate.cake_platform.domain.auth.signin.customer.dto.response.CustomerSignInResponse;
 import com.cakemate.cake_platform.domain.auth.signin.customer.service.CustomerSignInService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -27,6 +24,6 @@ public class CustomerSignInController {
 
         ApiResponse<CustomerSignInResponse> customerSignInProcess = customerSignInService.CustomerSignInProcess(signInRequest);
         return customerSignInProcess;
-
     }
+
 }

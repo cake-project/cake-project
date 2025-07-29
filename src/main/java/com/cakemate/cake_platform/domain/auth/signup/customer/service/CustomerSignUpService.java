@@ -12,6 +12,7 @@ import com.cakemate.cake_platform.domain.member.entity.Member;
 import com.cakemate.cake_platform.domain.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -65,6 +66,7 @@ public class CustomerSignUpService {
                 .success(HttpStatus.CREATED,
                         customerSave.getName() + "님 회원가입이 완료되었습니다.",
                         customerSignUpResponse);
+
         return signUpSuccess;
     }
 
