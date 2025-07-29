@@ -15,10 +15,7 @@ import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
 import com.cakemate.cake_platform.domain.requestForm.exception.RequestFormAccessDeniedException;
 import com.cakemate.cake_platform.domain.requestForm.exception.NotFoundRequestFormException;
-import com.cakemate.cake_platform.domain.store.owner.exception.DuplicateBusinessNumberException;
-import com.cakemate.cake_platform.domain.store.owner.exception.DuplicatedStoreException;
 import com.cakemate.cake_platform.domain.store.owner.exception.NotFoundCustomerException;
-import com.cakemate.cake_platform.domain.store.owner.exception.NotFoundOwnerException;
 import org.springframework.http.HttpStatus;
 import com.cakemate.cake_platform.domain.requestForm.repository.RequestFormRepository;
 import org.springframework.stereotype.Service;
@@ -81,6 +78,7 @@ public class RequestFormCustomerService {
 
         //저장
         RequestForm saveRequestForm = requestFormRepository.save(newRequestForm);
+
         CustomerRequestFormCreateResponseDto requestFormCustomerResponseDto
                 = new CustomerRequestFormCreateResponseDto(
                         saveRequestForm.getId(), saveRequestForm.getTitle(),
