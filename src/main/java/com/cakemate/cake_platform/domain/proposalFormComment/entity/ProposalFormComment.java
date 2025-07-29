@@ -1,6 +1,5 @@
 package com.cakemate.cake_platform.domain.proposalFormComment.entity;
 
-import com.cakemate.cake_platform.common.entity.BaseTimeEntity;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
@@ -20,7 +19,7 @@ public class ProposalFormComment {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "proposalForm_id")
+    @JoinColumn(name = "proposal_form_id")
     private ProposalForm proposalForm;
 
     @ManyToOne

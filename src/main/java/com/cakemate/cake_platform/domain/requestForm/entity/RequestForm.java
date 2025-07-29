@@ -26,7 +26,7 @@ public class RequestForm {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "proposalForm_id")
+    @JoinColumn(name = "proposal_form_id")
     private ProposalForm proposalForm;
 
     @ManyToOne(fetch = FetchType.LAZY)
