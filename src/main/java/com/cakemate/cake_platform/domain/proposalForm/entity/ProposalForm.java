@@ -7,6 +7,7 @@ import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "proposal_forms")
 @EntityListeners(AuditingEntityListener.class)
-public class ProposalForm extends BaseTimeEntity {
+public class ProposalForm {
     //속성
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,6 +61,10 @@ public class ProposalForm extends BaseTimeEntity {
 
     @Column(nullable = false)
     private boolean isDeleted = false;
+
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     protected ProposalForm() {
     }

@@ -44,9 +44,11 @@ dependencies {
 	//    implementation 'org.springframework.boot:spring-boot-starter-security'
 	// 스프링 시큐리티의 암호와 라이브러리
 	implementation 'org.springframework.security:spring-security-crypto'
+// .env 관리 라이브러리
+//	implementation 'io.github.cdimascio:dotenv-java:3.2.0'
 
 	//아래 추가(@SpringBootTest 를 인식할 수 있는 라이브러리)
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+//	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 
 
