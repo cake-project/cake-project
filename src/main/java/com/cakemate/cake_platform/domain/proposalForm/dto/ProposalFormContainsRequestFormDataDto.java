@@ -1,11 +1,14 @@
 package com.cakemate.cake_platform.domain.proposalForm.dto;
 
+import lombok.Getter;
+
 import java.util.List;
 
 /**
  * proposalFormDetailResponseDto, proposalFormListResponseDto에서 활용하는 객체입니다!!
  * 단건 상세 조회, 목록 조회 모두 사용
  */
+@Getter
 public class ProposalFormContainsRequestFormDataDto {
     //속성
     private RequestFormDataDto requestForm;
@@ -25,9 +28,5 @@ public class ProposalFormContainsRequestFormDataDto {
         this.comments = null;
     }
 
-
-    //게터
-    public RequestFormDataDto getRequestForm() { return requestForm; }
-    public ProposalFormDataDto getProposalForm() { return proposalForm; }
-    public List<CommentDataDto> getComments() { return comments; }
+    //기능
 }
