@@ -63,17 +63,14 @@ public class RequestFormCustomerController {
     /**
      * 고객 의뢰 다건 조회 API
      */
-    @GetMapping("/customers/request-forms")
+    @GetMapping("/customers/me/request-forms")
     public ApiResponse<List<CustomerRequestFormGetListResponseDto>> getListRequestForm(
-            @RequestHeader("Authorization") String bearerJwtToken,
-            @PathVariable("requestFormId") Long requestFormId
+            @RequestHeader("Authorization") String bearerJwtToken
     ) {
         // 토큰 파싱 및 인증 처리
         Long customerId = jwtUtil.extractCustomerId(bearerJwtToken);
 
-        return requestFormCustomerService.getListRequestFormService(
-                requestFormId, customerId
-        );
+        return requestFormCustomerService.getListRequestFormService( customerId );
     }
     /**
      * 고객 의뢰 삭제 API
