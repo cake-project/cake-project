@@ -33,9 +33,9 @@ public class StoreCustomerService {
         boolean hasAddress = storeSearchCommand.hasAddress();
 
         if (hasAddress) {
-            stores = storeRepository.findByAddressContainingAndIsDeletedFalse(storeSearchCommand.getAddress());
+            stores = storeRepository.findByAddressContainingAndIsDeletedFalseAndIsActiveTrue(storeSearchCommand.getAddress());
         } else {
-            stores = storeRepository.findByIsDeletedFalse();
+            stores = storeRepository.findByIsDeletedFalseAndIsActiveTrue();
         }
 
         return stores.stream()
@@ -45,7 +45,7 @@ public class StoreCustomerService {
     //가게 상세 조회 Service
     @Transactional(readOnly = true)
     public StoreCustomerDetailResponseDto getStoreDetail(StoreDetailCommand command) {
-        Store store = storeRepository.findByIdAndIsDeletedFalse(command.getStoreId())
+        Store store = storeRepository.findByIdAndIsDeletedFalseAndIsActiveTrue(command.getStoreId())
                 .orElseThrow(() -> new StoreNotFoundException("해당 가게를 찾을 수 없습니다."));
 
         return new StoreCustomerDetailResponseDto(store);
