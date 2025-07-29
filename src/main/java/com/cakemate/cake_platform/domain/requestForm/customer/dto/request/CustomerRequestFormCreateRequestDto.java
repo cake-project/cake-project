@@ -13,8 +13,6 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 public class CustomerRequestFormCreateRequestDto {
-    @NotNull(message = "고객 정보는 필수입니다.")
-    private Customer customer;
 
     private ProposalForm proposalForm;
 

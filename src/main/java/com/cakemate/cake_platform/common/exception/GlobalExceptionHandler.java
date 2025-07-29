@@ -264,4 +264,20 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
+
+    // proposalForm - 픽업 날짜가 현재 시간보다 과거인 경우 발생하는 예외입니다.
+    @ExceptionHandler(InvalidProposedPickupDateException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidProposedPickupDateException(InvalidProposedPickupDateException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    // proposalForm - 가격이 마이너스(음수)인 경우 발생하는 예외입니다.
+    @ExceptionHandler(InvalidProposedPriceException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidProposedPriceException(InvalidProposedPriceException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
 }

@@ -94,7 +94,7 @@ public class RequestFormCustomerService {
     /**
      * 고객 의뢰 단건조회 서비스
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public ApiResponse<CustomerRequestFormGetDetailResponseDto> getDetailRequestFormService(
             Long requestFormId, Long customerId
     ) {
@@ -159,27 +159,28 @@ public class RequestFormCustomerService {
     /**
      * 고객 의뢰 다건조회 서비스
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public ApiResponse<List<CustomerRequestFormGetListResponseDto>> getListRequestFormService(
-            Long requestFormId, Long customerId
+             Long customerId
             ) {
-        //조회 & 검증
-        RequestForm requestForm = requestFormRepository.findByIdAndIsDeletedFalse(requestFormId)
-                .orElseThrow(() -> new NotFoundRequestFormException("조회할 의뢰서를 찾을 수 없습니다."));
 
-        // 검증.-> 본인 여부 검증
-        if (!requestForm.getCustomer().getId().equals(customerId)) {
-            // 작성자가 아니면 예외 발생
-            throw new RequestFormAccessDeniedException("본인이 작성한 의뢰서만 조회할 수 있습니다.");
+        // 고객 ID 기준으로, 삭제되지 않은(isDeleted = false) 의뢰서만
+        // 생성일시 내림차순(createdAt DESC)으로 모두 조회한다.
+        List<RequestForm> forms =
+                requestFormRepository.findAllByCustomerIdAndIsDeletedFalseOrderByCreatedAtDesc(customerId);
+
+        // 조회 결과가 비어 있으면, 200 OK와 함께 빈 리스트를 반환한다.
+        if (forms.isEmpty()) {
+            return ApiResponse.success(HttpStatus.OK, "아직 등록된 의뢰서가 없습니다.", List.of());
         }
 
-        List<RequestForm> allRequestForm = requestFormRepository.findAllByIsDeletedFalse();
+        // 조회된 엔티티 목록을 응답 DTO 목록으로 변환한다.
+        List<CustomerRequestFormGetListResponseDto> list = forms.stream()
+                .map(form -> new CustomerRequestFormGetListResponseDto(
+                        form.getId(), form.getTitle(), form.getStatus(), form.getCreatedAt()
+                ))
+                .toList(); //불변 리스트.
 
-        List<CustomerRequestFormGetListResponseDto> list = allRequestForm.stream()
-                .map(newRequestForm -> new CustomerRequestFormGetListResponseDto(
-                        newRequestForm.getId(), newRequestForm.getTitle(),
-                        newRequestForm.getStatus(), newRequestForm.getCreatedAt()
-                )).toList();
         return ApiResponse.success(
                 HttpStatus.OK, "의뢰서 목록을 성공적으로 조회했습니다.", list
         );
