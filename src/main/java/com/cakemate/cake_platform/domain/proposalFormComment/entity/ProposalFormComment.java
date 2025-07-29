@@ -6,6 +6,9 @@ import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -34,6 +37,9 @@ public class ProposalFormComment {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     /**
      * 아래는 JPA 에서 쓰는 기본 생성자 입니다.
