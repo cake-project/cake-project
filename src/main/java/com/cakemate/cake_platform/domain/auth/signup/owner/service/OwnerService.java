@@ -44,8 +44,9 @@ public class OwnerService {
         }
 
         String passwordEncode = passwordEncoder.encode(password);
+        String passwordConfirmEncode = passwordEncoder.encode(passwordConfirm);
 
-        Owner ownerInfo = new Owner(email, passwordEncode, passwordConfirm, name, phoneNumber);
+        Owner ownerInfo = new Owner(email, passwordEncode, passwordConfirmEncode, name, phoneNumber);
         Owner ownerInfoSave = ownerRepository.save(ownerInfo);
         // 멤버 테이블에 저장
         Long ownerId = ownerInfo.getId();
