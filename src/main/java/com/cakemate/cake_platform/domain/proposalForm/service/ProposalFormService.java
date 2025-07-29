@@ -17,10 +17,12 @@ import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.requestForm.repository.RequestFormRepository;
 import com.cakemate.cake_platform.domain.store.entity.Store;
 import com.cakemate.cake_platform.domain.store.repository.StoreRepository;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,15 +49,14 @@ public class ProposalFormService {
     @Transactional
     public ApiResponse<ProposalFormDataDto> createProposal(Long ownerId, ProposalFormCreateRequestDto requestDto) {
         //데이터 준비
-        //검증 로직(requestForm 존재 여부 확인)
-        //Owner 조회 (만약 owner 엔티티가 없으면 Member 등으로 대체)
+        //멤버 조회, owner 조회
         Member member = memberRepository.findByOwnerId(ownerId)
                 .orElseThrow(() -> new OwnerNotFoundException("해당 점주를 찾을 수 없습니다."));
         Owner owner = member.getOwner();
         if (owner == null) {
             throw new ResourceNotFoundException("해당하는 점주 정보가 없습니다.");
         }
-        //Owner가 가진 Store 가져오기
+        //owner가 가진 store 가져오기
         Store store = storeRepository.findByOwnerId(ownerId)
                 .orElseThrow(() -> new StoreNotFoundException("해당 점주의 가게를 찾을 수 없습니다."));
 
@@ -67,8 +68,13 @@ public class ProposalFormService {
         if (exists) {
             throw new ProposalFormAlreadyExistsException("이미 이 의뢰서에 대한 견적서가 존재합니다.");
         }
-//        // 견적서가 생성되면 의뢰서 상태 변경이 필요하면 사용
-//        long count = proposalFormRepository.countByRequestForm(requestForm);
+        //날짜(미래만 가능), 가격(양수만 가능) 예외처리
+        if (requestDto.getProposedPickupDate().isBefore(LocalDateTime.now())) {
+            throw new InvalidProposedPickupDateException("픽업일은 현재 시간보다 이후여야 합니다.");
+        }
+        if (requestDto.getProposedPrice() < 0) {
+            throw new InvalidProposedPriceException("올바르지 않은 입력값입니다.");
+        }
 
         //엔티티 만들기
         ProposalForm proposalForm = new ProposalForm(
@@ -257,7 +263,7 @@ public class ProposalFormService {
     public ApiResponse<ProposalFormDataDto> updateProposalForm(Long proposalFormId, Long ownerId, ProposalFormUpdateRequestDto requestDto) {
         //데이터 준비
         //조회
-        Member foundOwner = memberRepository.findById(ownerId)
+        Member foundOwner = memberRepository.findByOwnerId(ownerId)
                 .orElseThrow(() -> new OwnerNotFoundException("해당 점주를 찾을 수 없습니다."));
         Owner owner = foundOwner.getOwner();
         if (owner == null) {
@@ -273,6 +279,8 @@ public class ProposalFormService {
         if (foundProposalForm.getStatus() != ProposalFormStatus.AWAITING) {
             throw new ProposalFormUpdateInvalidStatusException("AWAITING 상태일 때만 수정할 수 있습니다.");
         }
+        //날짜 검증
+        //가격 검증
 
         //수정
         foundProposalForm.update(
