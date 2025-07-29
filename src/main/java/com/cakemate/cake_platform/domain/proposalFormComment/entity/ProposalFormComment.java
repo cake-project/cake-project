@@ -20,7 +20,7 @@ public class ProposalFormComment {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "proposalForm_id")
+    @JoinColumn(name = "proposal_form_id")
     private ProposalForm proposalForm;
 
     @ManyToOne
