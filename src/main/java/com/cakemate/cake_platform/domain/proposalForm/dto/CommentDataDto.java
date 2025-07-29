@@ -1,7 +1,10 @@
 package com.cakemate.cake_platform.domain.proposalForm.dto;
 
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 
+@Getter
 public class CommentDataDto {
     //속성
     private Long commentId;
@@ -20,24 +23,5 @@ public class CommentDataDto {
         this.createdAt = createdAt;
     }
 
-    //게터
-    public Long getCommentId() {
-        return commentId;
-    }
-
-    public Long getCustomerId() {
-        return customerId;
-    }
-
-    public Long getOwnerId() {
-        return ownerId;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
+    //기능
 }
