@@ -33,5 +33,7 @@ public interface ProposalFormRepository extends JpaRepository<ProposalForm, Long
     //조회 권한이 없는 경우
     List<ProposalForm> findByStore_Owner_Id(Long ownerId);
 
+    // 의뢰서 ID로, 삭제되지 않은 견적서가 하나라도 존재하는지 확인
+    boolean existsByRequestFormIdAndIsDeletedFalse(Long requestFormId);
 
 }
