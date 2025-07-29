@@ -1,6 +1,5 @@
 package com.cakemate.cake_platform.domain.proposalFormComment.entity;
 
-import com.cakemate.cake_platform.common.entity.BaseTimeEntity;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
