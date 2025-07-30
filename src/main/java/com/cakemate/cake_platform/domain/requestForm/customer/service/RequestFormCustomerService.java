@@ -2,6 +2,7 @@ package com.cakemate.cake_platform.domain.requestForm.customer.service;
 
 import com.cakemate.cake_platform.common.commonEnum.CakeSize;
 import com.cakemate.cake_platform.common.dto.ApiResponse;
+import com.cakemate.cake_platform.common.exception.InvalidPriceException;
 import com.cakemate.cake_platform.common.exception.InvalidQuantityException;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
@@ -77,6 +78,14 @@ public class RequestFormCustomerService {
 
         if (foundQuantity < 1 || foundQuantity > 5) {
             throw new InvalidQuantityException("수량은 1개 이상 5개 이하만 가능합니다.");
+        }
+
+        // 가격 하한선 검증
+        int minTotalPrice = foundCakeSize.getMinPrice() * foundQuantity;
+        if (foundDesiredPrice < minTotalPrice) {
+            throw new InvalidPriceException(
+                    "해당 사이즈의 최소 총 금액은 " + minTotalPrice + "원입니다. (단가 " + foundCakeSize.getMinPrice() + "원 × 수량 " + foundQuantity + ")"
+            );
         }
 
         //고객(커스터머)아이디가 존재하면 통과, 아니면 예외 발생
