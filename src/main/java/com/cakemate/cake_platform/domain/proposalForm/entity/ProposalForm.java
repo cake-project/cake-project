@@ -1,7 +1,6 @@
 package com.cakemate.cake_platform.domain.proposalForm.entity;
 
-import com.cakemate.cake_platform.common.entity.BaseTimeEntity;
-import com.cakemate.cake_platform.domain.proposalForm.enums.CakeSize;
+import com.cakemate.cake_platform.common.commonEnum.CakeSize;
 import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
 import com.cakemate.cake_platform.domain.proposalForm.exception.InvalidProposalStatusException;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
@@ -48,12 +47,12 @@ public class ProposalForm {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-//    @Column(nullable = false)
-//    @Enumerated(EnumType.STRING)
-//    private CakeSize cakeSize;
-//
-//    @Column(nullable = false)
-//    private int quantity;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private CakeSize cakeSize;
+
+    @Column(nullable = false)
+    private int quantity;
 
     @Column(nullable = false)
     private int proposedPrice;
@@ -78,13 +77,15 @@ public class ProposalForm {
     protected ProposalForm() {
     }
 
-    public ProposalForm(RequestForm requestForm, Store store, Owner owner, String storeName, String title, String content,
+    public ProposalForm(RequestForm requestForm, Store store, Owner owner, String storeName, String title, CakeSize cakeSize, int quantity, String content,
                         String managerName, int proposedPrice, LocalDateTime proposedPickupDate, String image, ProposalFormStatus status) {
         this.requestForm = requestForm;
         this.store = store;
         this.owner = owner;
         this.storeName = storeName;
         this.title = title;
+        this.cakeSize = cakeSize;
+        this.quantity = quantity;
         this.content = content;
         this.managerName = managerName;
         this.proposedPrice = proposedPrice;
@@ -98,8 +99,10 @@ public class ProposalForm {
     }
 
     //기능
-    public void update(String title, String content, String managerName, int price, LocalDateTime pickupDate, String image) {
+    public void update(String title, CakeSize cakeSize, int quantity, String content, String managerName, int price, LocalDateTime pickupDate, String image) {
         this.title = title;
+        this.cakeSize = cakeSize;
+        this.quantity = quantity;
         this.content = content;
         this.managerName = managerName;
         this.proposedPrice = price;

@@ -1,8 +1,7 @@
 package com.cakemate.cake_platform.domain.requestForm.entity;
 
-import com.cakemate.cake_platform.common.entity.BaseTimeEntity;
-import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
+import com.cakemate.cake_platform.common.commonEnum.CakeSize;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -34,6 +33,13 @@ public class RequestForm {
 
     @Column(nullable = false)
     private String region;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CakeSize cakeSize;
+
+    @Column(nullable = false)
+    private int quantity;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
@@ -69,12 +75,14 @@ public class RequestForm {
     //생성자
 
     //의뢰서 생성시에는 견적서가 없어도 생성 가능하니, proposalForm 을 뺀 생성자를 추가로 만들었습니다.
-    public RequestForm(Customer customer, String title, String region,
+    public RequestForm(Customer customer, String title, String region, CakeSize cakeSize, int quantity,
                        String content, int desiredPrice, String image, LocalDateTime desiredPickupDate,
                        RequestFormStatus status) {
         this.customer = customer;
         this.title = title;
         this.region = region;
+        this.cakeSize = cakeSize;
+        this.quantity = quantity;
         this.content = content;
         this.desiredPrice = desiredPrice;
         this.image = image;

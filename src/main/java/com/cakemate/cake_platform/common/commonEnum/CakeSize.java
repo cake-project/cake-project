@@ -1,5 +1,7 @@
-package com.cakemate.cake_platform.domain.proposalForm.enums;
+package com.cakemate.cake_platform.common.commonEnum;
 
+import com.cakemate.cake_platform.common.exception.InvalidCakeSizeException;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 
 @Getter
@@ -19,12 +21,14 @@ public enum CakeSize {
         this.minPrice = minPrice;
     }
 
+    @JsonCreator
     public static CakeSize fromString(String str) {
         for (CakeSize cs : values()) {
-            if (cs.size.equalsIgnoreCase(str)) {
+            // 영문 enum 이름 (DOSIRAK 등)과 일치하거나, 한글 표기("도시락" 등)과도 일치하면 반환
+            if (cs.name().equalsIgnoreCase(str) || cs.size.equals(str)) {
                 return cs;
             }
         }
-        throw new IllegalArgumentException("일치하는 CakeSize가 없습니다: " + str);
+        throw new InvalidCakeSizeException("일치하는 CakeSize가 없습니다: " + str);
     }
 }

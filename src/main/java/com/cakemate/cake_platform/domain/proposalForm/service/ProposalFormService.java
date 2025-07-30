@@ -7,6 +7,7 @@ import com.cakemate.cake_platform.domain.member.entity.Member;
 import com.cakemate.cake_platform.domain.member.repository.MemberRepository;
 import com.cakemate.cake_platform.domain.proposalForm.dto.*;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
+import com.cakemate.cake_platform.common.commonEnum.CakeSize;
 import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
 import com.cakemate.cake_platform.domain.proposalForm.exception.*;
 import com.cakemate.cake_platform.domain.proposalForm.exception.ResourceNotFoundException;
@@ -17,6 +18,7 @@ import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.requestForm.repository.RequestFormRepository;
 import com.cakemate.cake_platform.domain.store.entity.Store;
 import com.cakemate.cake_platform.domain.store.repository.StoreRepository;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Getter
 @Service
 public class ProposalFormService {
 
@@ -69,12 +72,21 @@ public class ProposalFormService {
         if (exists) {
             throw new ProposalFormAlreadyExistsException("해당 의뢰서에 대한 견적서가 이미 존재합니다.");
         }
-        //날짜(미래만 가능), 가격(양수만 가능) 예외처리
+        //케이크 사이즈, 수량, 가격, 픽업 날짜 등 제한 사항
+        CakeSize cakeSize = requestDto.getCakeSize();
+        int quantity = requestDto.getQuantity();
+
+        if (quantity < 1 || quantity > 5) {
+            throw new InvalidQuantityException("수량은 1개 이상 5개 이하만 가능합니다. 6개 이상은 가게로 문의 주세요.");
+        }
+
+        int minTotalPrice = cakeSize.getMinPrice() * quantity;
+        if (requestDto.getProposedPrice() < minTotalPrice) {
+            throw new InvalidPriceException("케이크 사이즈(" + cakeSize.name() + ") 및 수량(" + quantity + "개)에 따른 최소 가격은 " + minTotalPrice + "원입니다.");
+        }
+
         if (requestDto.getProposedPickupDate().isBefore(LocalDateTime.now())) {
             throw new InvalidProposedPickupDateException("픽업일은 현재 시간보다 이후여야 합니다.");
-        }
-        if (requestDto.getProposedPrice() < 0) {
-            throw new InvalidProposedPriceException("올바르지 않은 입력값입니다.");
         }
 
         //엔티티 만들기
@@ -84,6 +96,8 @@ public class ProposalFormService {
                 owner,
                 store.getName(),
                 requestDto.getTitle(),
+                requestDto.getCakeSize(),
+                requestDto.getQuantity(),
                 requestDto.getContent(),
                 requestDto.getManagerName(),
                 requestDto.getProposedPrice(),
@@ -107,6 +121,8 @@ public class ProposalFormService {
                 savedProposalForm.getRequestForm().getId(),
                 savedProposalForm.getStoreName(),
                 savedProposalForm.getTitle(),
+                savedProposalForm.getCakeSize(),
+                savedProposalForm.getQuantity(),
                 savedProposalForm.getContent(),
                 savedProposalForm.getManagerName(),
                 savedProposalForm.getProposedPrice(),
@@ -151,6 +167,8 @@ public class ProposalFormService {
                 requestForm.getId(),
                 foundProposalForm.getStore().getName(),
                 foundProposalForm.getTitle(),
+                foundProposalForm.getCakeSize(),
+                foundProposalForm.getQuantity(),
                 foundProposalForm.getContent(),
                 foundProposalForm.getManagerName(),
                 foundProposalForm.getProposedPrice(),
@@ -165,6 +183,8 @@ public class ProposalFormService {
                 requestForm.getId(),
                 requestForm.getTitle(),
                 requestForm.getRegion(),
+                requestForm.getCakeSize(),
+                requestForm.getQuantity(),
                 requestForm.getContent(),
                 requestForm.getDesiredPrice(),
                 requestForm.getImage(),
@@ -225,6 +245,8 @@ public class ProposalFormService {
                         proposalForm.getRequestForm().getId(),
                         proposalForm.getStore().getName(),
                         proposalForm.getTitle(),
+                        proposalForm.getCakeSize(),
+                        proposalForm.getQuantity(),
                         proposalForm.getContent(),
                         proposalForm.getManagerName(),
                         proposalForm.getProposedPrice(),
@@ -272,6 +294,8 @@ public class ProposalFormService {
         //수정
         foundProposalForm.update(
                 requestDto.getTitle(),
+                requestDto.getCakeSize(),
+                requestDto.getQuantity(),
                 requestDto.getContent(),
                 requestDto.getManagerName(),
                 requestDto.getProposedPrice(),
@@ -288,6 +312,8 @@ public class ProposalFormService {
                 updatedProposalForm.getRequestForm().getId(),
                 updatedProposalForm.getStoreName(),
                 updatedProposalForm.getTitle(),
+                updatedProposalForm.getCakeSize(),
+                updatedProposalForm.getQuantity(),
                 updatedProposalForm.getContent(),
                 updatedProposalForm.getManagerName(),
                 updatedProposalForm.getProposedPrice(),
