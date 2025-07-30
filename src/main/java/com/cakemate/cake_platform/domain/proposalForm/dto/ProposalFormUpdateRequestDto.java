@@ -10,11 +10,13 @@ public class ProposalFormUpdateRequestDto {
     //속성
     private Long proposalFormId;
     private String title;
+//    private String cakeSize;
+//    private int quantity;
     private String content;
     private String managerName;
     private int proposedPrice;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime proposedPickupDate;
 
     private String image;

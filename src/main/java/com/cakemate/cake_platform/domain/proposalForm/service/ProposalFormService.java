@@ -17,13 +17,12 @@ import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.requestForm.repository.RequestFormRepository;
 import com.cakemate.cake_platform.domain.store.entity.Store;
 import com.cakemate.cake_platform.domain.store.repository.StoreRepository;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -211,54 +210,32 @@ public class ProposalFormService {
      * proposalForm 목록 조회 서비스
      */
     @Transactional(readOnly = true)
-    public ApiResponse<List<ProposalFormContainsRequestFormDataDto>> getProposalFormList(Long ownerId) {
-        //데이터 준비
-
+    public ApiResponse<List<ProposalFormDataDto>> getProposalFormList(Long ownerId) {
         //조회 권한 확인(점주 본인이 작성한 견적서 목록 조회)
         List<ProposalForm> proposalFormList = proposalFormRepository.findByStore_Owner_Id(ownerId);
 
-        //DTO 만들기( ProposalForm과 RequestForm 데이터를 합쳐 DTO 생성)
-        List<ProposalFormContainsRequestFormDataDto> dataList = proposalFormList.stream()
-                .map(proposalForm -> {
-                    RequestForm requestForm = proposalForm.getRequestForm();
+        if (proposalFormList.isEmpty()) {
+            return ApiResponse.success(HttpStatus.OK, "등록된 견적서가 없습니다.", Collections.emptyList());
+        }
 
-                    //proposalForm DTO 만들기
-                    ProposalFormDataDto proposalDto = new ProposalFormDataDto(
-                            proposalForm.getId(),
-                            requestForm.getId(),
-                            proposalForm.getStore().getName(),
-                            proposalForm.getTitle(),
-                            proposalForm.getContent(),
-                            proposalForm.getManagerName(),
-                            proposalForm.getProposedPrice(),
-                            proposalForm.getProposedPickupDate(),
-                            proposalForm.getCreatedAt(),
-                            proposalForm.getStatus().name(),
-                            proposalForm.getImage()
-                    );
-
-                    //requestForm DTO 만들기
-                    RequestFormDataDto requestDto = new RequestFormDataDto(
-                            requestForm.getId(),
-                            requestForm.getTitle(),
-                            requestForm.getRegion(),
-                            requestForm.getContent(),
-                            requestForm.getDesiredPrice(),
-                            requestForm.getImage(),
-                            requestForm.getDesiredPickupDate(),
-                            requestForm.getStatus().name(),
-                            requestForm.getCreatedAt()
-                    );
-
-                    return new ProposalFormContainsRequestFormDataDto(requestDto, proposalDto);
-                })
+        //DTO 만들기 (ProposalForm과 RequestForm 데이터를 합쳐 DTO 생성)
+        List<ProposalFormDataDto> dataList = proposalFormList.stream()
+                .map(proposalForm -> new ProposalFormDataDto(
+                        proposalForm.getId(),
+                        proposalForm.getRequestForm().getId(),
+                        proposalForm.getStore().getName(),
+                        proposalForm.getTitle(),
+                        proposalForm.getContent(),
+                        proposalForm.getManagerName(),
+                        proposalForm.getProposedPrice(),
+                        proposalForm.getProposedPickupDate(),
+                        proposalForm.getCreatedAt(),
+                        proposalForm.getStatus().name(),
+                        proposalForm.getImage()
+                ))
                 .collect(Collectors.toList());
 
-        //응답 DTO 만들기
-        ApiResponse<List<ProposalFormContainsRequestFormDataDto>> response = ApiResponse.success(
-                HttpStatus.OK, "success", dataList);
-        //반환
-        return response;
+        return ApiResponse.success(HttpStatus.OK, "success", dataList);
     }
 
     /**

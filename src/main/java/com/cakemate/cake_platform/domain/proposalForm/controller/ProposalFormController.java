@@ -50,9 +50,9 @@ public class ProposalFormController {
      * proposalForm 목록 조회 API
      */
     @GetMapping
-    public ApiResponse<List<ProposalFormContainsRequestFormDataDto>> getProposalFormsAPI(@RequestHeader("Authorization") String bearerToken) {
+    public ApiResponse<List<ProposalFormDataDto>> getProposalFormsAPI(@RequestHeader("Authorization") String bearerToken) {
         Long ownerId = jwtUtil.extractOwnerId(bearerToken);
-        ApiResponse<List<ProposalFormContainsRequestFormDataDto>> response = proposalFormService.getProposalFormList(ownerId);
+        ApiResponse<List<ProposalFormDataDto>> response = proposalFormService.getProposalFormList(ownerId);
         return response;
     }
 
