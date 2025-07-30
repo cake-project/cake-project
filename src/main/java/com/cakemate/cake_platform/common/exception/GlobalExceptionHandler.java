@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -292,11 +293,27 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
 
-    // 잘못된 주문 상태 값을 입력했을 때 발생하는 예외입니다.
+    // 주문 상태 변경이 유효하지 않을 때 발생하는 예외입니다.
     @ExceptionHandler(InvalidOrderStatusException.class)
     public ResponseEntity<ApiResponse<Void>> handleInvalidOrderStatusException(InvalidOrderStatusException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    // 견적서 상태 변경이 유효하지 않을 때 발생하는 예외입니다.
+    @ExceptionHandler(InvalidProposalStatusException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidProposalStatusException(InvalidProposalStatusException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    // 요청 바디가 없거나 JSON 형식이 올바르지 않을 때 발생하는 예외를 처리합니다.
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, "요청 바디가 올바르지 않습니다."));
     }
 }
