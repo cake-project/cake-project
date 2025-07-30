@@ -30,7 +30,7 @@ public class RequestFormCustomerController {
     /**
      *고객 의뢰 생성(등록) API
      */
-    @PostMapping("/customers/me/request-forms")
+    @PostMapping("/customers/request-forms")
     public ApiResponse<CustomerRequestFormCreateResponseDto>  createRequestForm(
             @RequestBody @Valid CustomerRequestFormCreateRequestDto requestFormCustomerRequestDto,
             @RequestHeader("Authorization") String bearerJwtToken
@@ -48,7 +48,7 @@ public class RequestFormCustomerController {
     /**
      *고객 의뢰 단건 조회 API
      */
-    @GetMapping("/customers/me/request-forms/{requestFormId}")
+    @GetMapping("/customers/request-forms/{requestFormId}")
     public ApiResponse<CustomerRequestFormGetDetailResponseDto> getDetailRequestForm(
             @RequestHeader("Authorization") String bearerJwtToken,
             @PathVariable("requestFormId") Long requestFormId
@@ -63,7 +63,7 @@ public class RequestFormCustomerController {
     /**
      * 고객 의뢰 다건 조회 API
      */
-    @GetMapping("/customers/me/request-forms")
+    @GetMapping("/customers/request-forms")
     public ApiResponse<List<CustomerRequestFormGetListResponseDto>> getListRequestForm(
             @RequestHeader("Authorization") String bearerJwtToken
     ) {
@@ -75,7 +75,7 @@ public class RequestFormCustomerController {
     /**
      * 고객 의뢰 삭제 API
      */
-    @DeleteMapping("/customers/me/request-forms/{requestFormId}")
+    @DeleteMapping("/customers/request-forms/{requestFormId}")
     public ApiResponse<Object> deleteRequestForm(
             @RequestHeader("Authorization") String bearerJwtToken,
             @PathVariable("requestFormId") Long requestFormId

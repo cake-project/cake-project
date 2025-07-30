@@ -5,11 +5,6 @@ import lombok.Getter;
 
 @Getter
 public class CommentCreateRequestDto {
-    private Long id;
-
-    private Long customerId;
-
-    private Long ownerId;
 
     @NotBlank(message = "댓글 내용은 비워둘 수 없습니다.")
     private String content;

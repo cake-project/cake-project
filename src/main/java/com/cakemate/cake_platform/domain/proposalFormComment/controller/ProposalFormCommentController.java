@@ -1,3 +1,4 @@
+
 package com.cakemate.cake_platform.domain.proposalFormComment.controller;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
@@ -26,17 +27,20 @@ public class ProposalFormCommentController {
 
 
     /**
-     *  댓글 생성 API
+     * 댓글 생성 API
      */
-    @GetMapping("/proposalForms/{proposalFormId}/comments")
+
+    @PostMapping("/request-forms/{proposalFormId}/comments")
     public ApiResponse<CommentCreateResponseDto> createProposalFormComment(
             @RequestHeader("Authorization") String bearerJwtToken,
             @PathVariable("proposalFormId") Long proposalFormId,
             @RequestBody CommentCreateRequestDto commentCreateRequestDto
-            ) {
+    ) {
+        Long memberId = jwtUtil.extractMemberId(bearerJwtToken); // 공통 ID
+        String role = jwtUtil.extractRole(bearerJwtToken); // "CUSTOMER" or "OWNER"
         return proposalFormCommentService.createRequestFormCommentService(
-                commentCreateRequestDto, proposalFormId
-                );
+                commentCreateRequestDto, proposalFormId, memberId, role
+        );
     }
 
 

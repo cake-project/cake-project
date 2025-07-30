@@ -10,13 +10,14 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Timer;
 
 @Getter
 @Entity
 @Table(name = "request_forms")
 //Auditing 은 감사하는 것 -> 리퀘스트 폼이라는 엔티티가 변경되면 감지를 해서 디비에 적용을 시켜주는 어노테이션
 //@EnableJpaAuditing 을 설정하먄 읽어 준다.-> 베이스 엔티티가 보는 상황(JpaConfig)
-@EntityListeners(AuditingEntityListener.class)
 public class RequestForm {
 
     //속성

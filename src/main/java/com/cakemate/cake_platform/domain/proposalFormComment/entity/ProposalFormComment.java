@@ -6,12 +6,15 @@ import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Getter
 @Entity
-@Table(name = "proposalform_comments")
+@EntityListeners(AuditingEntityListener.class)
+@Table(name = "proposal_form_comments")
 public class ProposalFormComment {
 
     @Id
@@ -36,10 +39,16 @@ public class ProposalFormComment {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
-    @CreatedDate
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+//    @CreatedDate
+//    @Column(nullable = false, updatable = false)
+//    private LocalDateTime createdAt;
 
+    // auditing 필드
+    @CreatedDate                       // INSERT 시 UTC 시각으로 자동 세팅
+    private OffsetDateTime createdAt;
+
+//    @LastModifiedDate                  // UPDATE 시 UTC 시각으로 자동 세팅
+//    private OffsetDateTime modifiedAt;
     /**
      * 아래는 JPA 에서 쓰는 기본 생성자 입니다.
      */
@@ -52,11 +61,11 @@ public class ProposalFormComment {
      */
     public static ProposalFormComment create(ProposalForm proposalForm, Customer customer, Owner owner, String content) {
         ProposalFormComment comment = new ProposalFormComment(); // 기본 생성자로 객체 만듦
-        comment.proposalForm = proposalForm;  // 어떤 견적서에 달린 댓글인지 연결
-        comment.customer = customer;          // 작성자가 고객이면 넣음
-        comment.owner = owner;                // 작성자가 사장이면 넣음
-        comment.content = content;            // 댓글 내용
-        return comment;                       // 완성된 댓글 객체 반환
+        comment.proposalForm = proposalForm; // 어떤 견적서에 달린 댓글인지 연결
+        comment.customer = customer; // 작성자가 고객이면 넣음
+        comment.owner = owner; // 작성자가 사장이면 넣음
+        comment.content = content; // 댓글 내용
+        return comment; // 완성된 댓글 객체 반환
     }
 
 }
