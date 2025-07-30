@@ -3,10 +3,10 @@ package com.cakemate.cake_platform.domain.proposalForm.controller;
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
 import com.cakemate.cake_platform.domain.proposalForm.dto.CustomerProposalFormAcceptRequestDto;
+import com.cakemate.cake_platform.domain.proposalForm.dto.CustomerProposalFormAcceptResponseDto;
 import com.cakemate.cake_platform.domain.proposalForm.dto.CustomerProposalFormDetailDto;
 import com.cakemate.cake_platform.domain.proposalForm.service.CustomerProposalFormService;
 import com.cakemate.cake_platform.domain.proposalForm.service.ProposalFormService;
-import io.jsonwebtoken.Claims;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 

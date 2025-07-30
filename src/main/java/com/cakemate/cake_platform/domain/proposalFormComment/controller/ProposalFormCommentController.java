@@ -40,17 +40,4 @@ public class ProposalFormCommentController {
     }
 
 
-//    /**
-//     * proposalForm(소비자) 단건 상세 조회 API
-//     */
-//    @GetMapping("customer/proposalForms/{proposalFormId}")
-//    public ApiResponse<ProposalFormContainsRequestFormDataDto> getProposalFormDetailAPI(
-//            @RequestHeader("Authorization") String bearerJwtToken,
-//            @PathVariable("proposalFormId") Long proposalFormId
-//    ) {
-//        // 토큰 파싱 및 인증 처리
-//
-//        Long customerId = jwtUtil.extractCustomerId(bearerJwtToken);
-//        return proposalFormService.getProposalFormDetail(proposalFormId);
-//    }
 }

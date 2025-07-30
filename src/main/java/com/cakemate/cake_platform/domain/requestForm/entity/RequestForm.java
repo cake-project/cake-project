@@ -1,5 +1,6 @@
 package com.cakemate.cake_platform.domain.requestForm.entity;
 
+import com.cakemate.cake_platform.common.entity.BaseTimeEntity;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import com.cakemate.cake_platform.common.commonEnum.CakeSize;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;

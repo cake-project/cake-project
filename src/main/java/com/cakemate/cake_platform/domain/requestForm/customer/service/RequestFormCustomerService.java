@@ -106,7 +106,7 @@ public class RequestFormCustomerService {
                         saveRequestForm.getCustomer().getId(),
                         saveRequestForm.getCustomer().getName(),
                         saveRequestForm.getId(), saveRequestForm.getTitle(), saveRequestForm.getCakeSize(), saveRequestForm.getQuantity(),
-                saveRequestForm.getStatus(), saveRequestForm.getCreatedAt(), saveRequestForm.getDesiredPickupDate()
+                saveRequestForm.getStatus(), saveRequestForm.getDesiredPickupDate(), saveRequestForm.getCreatedAt()
         );
         return ApiResponse.success(
                 HttpStatus.OK, "의뢰가 성공적으로 등록되었습니다.", requestFormCustomerResponseDto
