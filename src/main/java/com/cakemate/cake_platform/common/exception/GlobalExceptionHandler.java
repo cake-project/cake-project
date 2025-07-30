@@ -2,6 +2,8 @@ package com.cakemate.cake_platform.common.exception;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.domain.auth.exception.*;
+import com.cakemate.cake_platform.domain.order.customer.exception.ProposalAlreadyOrderedException;
+import com.cakemate.cake_platform.domain.order.customer.exception.ProposalFormNotConfirmedException;
 import com.cakemate.cake_platform.domain.order.owner.exception.InvalidOrderStatusException;
 import com.cakemate.cake_platform.domain.proposalForm.exception.*;
 import com.cakemate.cake_platform.domain.requestForm.exception.RequestFormAccessDeniedException;
@@ -315,6 +317,22 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(HttpStatus.BAD_REQUEST, "요청 바디가 올바르지 않습니다."));
+    }
+
+    // 견적서가 주문할 수 없는 상태(CONFIRMED이 아닌 상태)에 발생하는 예외입니다.
+    @ExceptionHandler(ProposalFormNotConfirmedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleProposalFormNotConfirmedException(ProposalFormNotConfirmedException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    // 이미 해당 견적서로 주문이 생성된 경우 발생하는 예외입니다.
+    @ExceptionHandler(ProposalAlreadyOrderedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleProposalAlreadyOrderedException(ProposalAlreadyOrderedException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
 
     // 이미 소비자가 선택하여 ACCEPTED 상태인 견적서가 존재할 경우 발생합니다.
