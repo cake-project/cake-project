@@ -102,7 +102,6 @@ public class OrderCustomerService {
                 .agreedPrice(proposalForm.getProposedPrice())
                 .agreedPickupDate(proposalForm.getProposedPickupDate())
                 .finalCakeImage(proposalForm.getImage())
-                .orderCreatedAt(LocalDateTime.now())
                 .build();
 
         orderRepository.save(order);
@@ -123,7 +122,7 @@ public class OrderCustomerService {
         CustomerOrderDetailResponseDto responseDto = new CustomerOrderDetailResponseDto(
                 order.getId(),
                 order.getOrderNumber(),
-                order.getOrderCreatedAt(),
+                order.getCreatedAt(),
                 order.getStatus().toString(),
                 order.getCustomerName(),
                 order.getStoreName(),
@@ -162,7 +161,7 @@ public class OrderCustomerService {
                     String status = order.getStatus().toString();
                     String storeName = order.getStoreName();
                     LocalDateTime agreedPickupDate = order.getAgreedPickupDate();
-                    LocalDateTime orderCreatedAt = order.getOrderCreatedAt();
+                    LocalDateTime orderCreatedAt = order.getCreatedAt();
 
                     return new CustomerOrderSummaryResponseDto(
                             orderId,
