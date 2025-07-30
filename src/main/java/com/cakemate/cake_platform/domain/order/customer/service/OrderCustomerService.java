@@ -5,6 +5,8 @@ import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import com.cakemate.cake_platform.domain.auth.signup.customer.repository.CustomerRepository;
 import com.cakemate.cake_platform.domain.order.common.OrderNumberGenerator;
 import com.cakemate.cake_platform.domain.order.customer.dto.*;
+import com.cakemate.cake_platform.domain.order.customer.exception.ProposalAlreadyOrderedException;
+import com.cakemate.cake_platform.domain.order.customer.exception.ProposalFormNotConfirmedException;
 import com.cakemate.cake_platform.domain.order.entity.Order;
 import com.cakemate.cake_platform.domain.order.enums.OrderStatus;
 import com.cakemate.cake_platform.domain.order.customer.exception.MismatchedRequestAndProposalException;
@@ -12,6 +14,7 @@ import com.cakemate.cake_platform.domain.order.customer.exception.UnauthorizedRe
 import com.cakemate.cake_platform.domain.order.repository.OrderRepository;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
+import com.cakemate.cake_platform.domain.proposalForm.exception.InvalidProposalStatusException;
 import com.cakemate.cake_platform.domain.proposalForm.repository.ProposalFormRepository;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
@@ -25,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -47,21 +51,26 @@ public class OrderCustomerService {
      * 소비자 -> 주문 생성 Service
      */
     @Transactional
-    public CustomerOrderCreateResponseDto createOrderService(Long customerId, Long requestFormId, Long proposalFormId, CustomerOrderCreateRequestDto requestDto) {
+    public CustomerOrderCreateResponseDto createOrderService(Long customerId, Long proposalFormId, CustomerOrderCreateRequestDto requestDto) {
         ProposalForm proposalForm = proposalFormRepository.findById(proposalFormId)
                 .orElseThrow(() -> new ProposalFormNotFoundException("견적서가 존재하지 않습니다."));
 
-        // 받아온 의뢰서 Id와 견적서에 들어있는 Id 비교
-        if (!proposalForm.getRequestForm().getId().equals(requestFormId)) {
-            throw new MismatchedRequestAndProposalException("의뢰서와 견적서가 일치하지 않습니다.");
+        boolean isAlreadyOrdered = orderRepository.existsByProposalForm(proposalForm);
+        if (isAlreadyOrdered) {
+            throw new ProposalAlreadyOrderedException("이미 주문이 생성된 견적서입니다.");
         }
 
-        RequestForm requestForm = requestFormRepository.findById(requestFormId)
-                .orElseThrow(() -> new RequestFormNotFoundException("의뢰서가 존재하지 않습니다."));
+        RequestForm requestForm = Objects.requireNonNull(proposalForm.getRequestForm(), "견적서에 연결된 의뢰서가 없습니다.");
+        Long requestFormId = requestForm.getId();
 
         // 토큰에서 가져온 소비자 Id와 의뢰서 작성한 소비자 Id 비교
         if (!requestForm.getCustomer().getId().equals(customerId)) {
             throw new UnauthorizedRequestFormAccessException("본인의 의뢰서가 아닙니다.");
+        }
+
+        // 견적서 상태 = CONFIRMED 확인
+        if (proposalForm.getStatus() != ProposalFormStatus.CONFIRMED) {
+            throw new ProposalFormNotConfirmedException("CONFIRMED 상태의 견적서에서만 주문을 생성할 수 있습니다.");
         }
 
         // 해당 의뢰서와 견적서는 완료 처리
@@ -102,7 +111,6 @@ public class OrderCustomerService {
                 .agreedPrice(proposalForm.getProposedPrice())
                 .agreedPickupDate(proposalForm.getProposedPickupDate())
                 .finalCakeImage(proposalForm.getImage())
-                .orderCreatedAt(LocalDateTime.now())
                 .build();
 
         orderRepository.save(order);
@@ -123,7 +131,7 @@ public class OrderCustomerService {
         CustomerOrderDetailResponseDto responseDto = new CustomerOrderDetailResponseDto(
                 order.getId(),
                 order.getOrderNumber(),
-                order.getOrderCreatedAt(),
+                order.getCreatedAt(),
                 order.getStatus().toString(),
                 order.getCustomerName(),
                 order.getStoreName(),
@@ -162,7 +170,7 @@ public class OrderCustomerService {
                     String status = order.getStatus().toString();
                     String storeName = order.getStoreName();
                     LocalDateTime agreedPickupDate = order.getAgreedPickupDate();
-                    LocalDateTime orderCreatedAt = order.getOrderCreatedAt();
+                    LocalDateTime orderCreatedAt = order.getCreatedAt();
 
                     return new CustomerOrderSummaryResponseDto(
                             orderId,

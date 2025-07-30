@@ -5,6 +5,7 @@ import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
 public enum ProposalFormStatus {
     AWAITING("AWAITING", "컨택 대기 중"),
     ACCEPTED("ACCEPTED", "컨택 완료"),
+    CONFIRMED("CONFIRMED", "점주 최종 확정"),
     CANCELLED("CANCELLED", "컨택 실패");
     private final String strValue;
     private final String description;

@@ -1,7 +1,8 @@
 package com.cakemate.cake_platform.domain.proposalForm.entity;
 
-import com.cakemate.cake_platform.common.entity.BaseTimeEntity;
+import com.cakemate.cake_platform.common.commonEnum.CakeSize;
 import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
+import com.cakemate.cake_platform.domain.proposalForm.exception.InvalidProposalStatusException;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.store.entity.Store;
@@ -47,6 +48,13 @@ public class ProposalForm {
     private String content;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private CakeSize cakeSize;
+
+    @Column(nullable = false)
+    private int quantity;
+
+    @Column(nullable = false)
     private int proposedPrice;
 
     @Column(columnDefinition = "TEXT")
@@ -69,13 +77,15 @@ public class ProposalForm {
     protected ProposalForm() {
     }
 
-    public ProposalForm(RequestForm requestForm, Store store, Owner owner, String storeName, String title, String content,
+    public ProposalForm(RequestForm requestForm, Store store, Owner owner, String storeName, String title, CakeSize cakeSize, int quantity, String content,
                         String managerName, int proposedPrice, LocalDateTime proposedPickupDate, String image, ProposalFormStatus status) {
         this.requestForm = requestForm;
         this.store = store;
         this.owner = owner;
         this.storeName = storeName;
         this.title = title;
+        this.cakeSize = cakeSize;
+        this.quantity = quantity;
         this.content = content;
         this.managerName = managerName;
         this.proposedPrice = proposedPrice;
@@ -89,8 +99,10 @@ public class ProposalForm {
     }
 
     //기능
-    public void update(String title, String content, String managerName, int price, LocalDateTime pickupDate, String image) {
+    public void update(String title, CakeSize cakeSize, int quantity, String content, String managerName, int price, LocalDateTime pickupDate, String image) {
         this.title = title;
+        this.cakeSize = cakeSize;
+        this.quantity = quantity;
         this.content = content;
         this.managerName = managerName;
         this.proposedPrice = price;
@@ -104,6 +116,32 @@ public class ProposalForm {
 
     public void delete() {
         this.isDeleted = true;
+    }
+
+    // 점주 -> 견적서 확정 시 사용
+    public void confirmStatus(ProposalFormStatus proposalFormStatus) {
+        if (proposalFormStatus != ProposalFormStatus.CONFIRMED) {
+            throw new InvalidProposalStatusException("견적서 상태는 CONFIRMED로만 변경할 수 있습니다.");
+        }
+
+        if (this.status != ProposalFormStatus.ACCEPTED) {
+            throw new InvalidProposalStatusException("점주는 ACCEPTED 상태에서만 CONFIRMED로만 변경할 수 있습니다.");
+        }
+
+        this.status = ProposalFormStatus.CONFIRMED;
+    }
+
+    // 소비자 -> 견적서 선택 시 사용
+    public void acceptStatus(ProposalFormStatus proposalFormStatus) {
+        if (proposalFormStatus != ProposalFormStatus.ACCEPTED) {
+            throw new InvalidProposalStatusException("견적서 상태는 ACCEPTED로만 변경할 수 있습니다.");
+        }
+
+        if (this.status != ProposalFormStatus.AWAITING) {
+            throw new InvalidProposalStatusException("소비자는 AWAITING 상태에서만 ACCEPTED로만 변경할 수 있습니다.");
+        }
+
+        this.status = ProposalFormStatus.ACCEPTED;
     }
 
 }

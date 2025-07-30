@@ -42,7 +42,7 @@ public class StoreOwnerService {
             throw new DuplicateBusinessNumberException("이미 등록된 사업자번호입니다.");
         }
         // 2. 이미 가게가 존재하는지 확인
-        boolean exists = storeRepository.existsByOwnerId(command.getOwnerId());
+        boolean exists = storeRepository.existsByOwnerIdAndIsDeletedFalse(command.getOwnerId());
         if (exists) {
             throw new DuplicatedStoreException("이미 등록된 가게가 존재합니다.");
         }

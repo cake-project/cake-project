@@ -46,15 +46,15 @@ public class ProposalFormController {
         return response;
     }
 
-//    /**
-//     * proposalForm 목록 조회 API
-//     */
-//    @GetMapping
-//    public ApiResponse<List<ProposalFormDataDto>> getProposalFormsAPI(@RequestHeader("Authorization") String bearerToken) {
-//        Long ownerId = jwtUtil.extractOwnerId(bearerToken);
-//        ApiResponse<List<ProposalFormDataDto>> response = proposalFormService.getProposalFormList(ownerId);
-//        return response;
-//    }
+    /**
+     * proposalForm 목록 조회 API
+     */
+    @GetMapping
+    public ApiResponse<List<ProposalFormDataDto>> getProposalFormsAPI(@RequestHeader("Authorization") String bearerToken) {
+        Long ownerId = jwtUtil.extractOwnerId(bearerToken);
+        ApiResponse<List<ProposalFormDataDto>> response = proposalFormService.getProposalFormList(ownerId);
+        return response;
+    }
 
     /**
      * proposalForm 수정 API
@@ -79,19 +79,19 @@ public class ProposalFormController {
         return response;
     }
 
-//    /**
-//     * proposalForm 최종 확정 API
-//     */
-//    @PatchMapping("{proposalFormId}/confirm")
-//    public ApiResponse<OwnerProposalFormConfirmResponseDto> updateProposalFormStatusAPI(@PathVariable Long proposalFormId,
-//                                                                                        @RequestBody OwnerProposalFormConfirmRequestDto ownerProposalFormConfirmRequestDto,
-//                                                                                        @RequestHeader("Authorization") String bearerToken
-//
-//    ) {
-//        Long ownerId = jwtUtil.extractOwnerId(bearerToken);
-//        OwnerProposalFormConfirmResponseDto responseDto = proposalFormService.confirmProposalForm(proposalFormId, ownerId, ownerProposalFormConfirmRequestDto);
-//        ApiResponse<OwnerProposalFormConfirmResponseDto> response = ApiResponse.success(HttpStatus.OK, "견적서 최종 확정이 완료되었습니다.", responseDto);
-//        return response;
-//
-//    }
+    /**
+     * proposalForm 최종 확정 API
+     */
+    @PatchMapping("{proposalFormId}/confirm")
+    public ApiResponse<OwnerProposalFormConfirmResponseDto> updateProposalFormStatusAPI(@PathVariable Long proposalFormId,
+                                                                                        @RequestBody OwnerProposalFormConfirmRequestDto ownerProposalFormConfirmRequestDto,
+                                                                                        @RequestHeader("Authorization") String bearerToken
+
+    ) {
+        Long ownerId = jwtUtil.extractOwnerId(bearerToken);
+        OwnerProposalFormConfirmResponseDto responseDto = proposalFormService.confirmProposalForm(proposalFormId, ownerId, ownerProposalFormConfirmRequestDto);
+        ApiResponse<OwnerProposalFormConfirmResponseDto> response = ApiResponse.success(HttpStatus.OK, "견적서 최종 확정이 완료되었습니다.", responseDto);
+        return response;
+
+    }
 }

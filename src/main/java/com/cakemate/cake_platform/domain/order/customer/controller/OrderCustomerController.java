@@ -39,6 +39,24 @@ public class OrderCustomerController {
 //        ApiResponse<CustomerOrderCreateResponseDto> response = ApiResponse.success(HttpStatus.CREATED, "주문이 생성되었습니다.", responseDto);
 //        return response;
 //    }
+    /**
+     * 주문 생성 API
+     *
+     * @param requestDto 주문자 이름, 의뢰서/견적서 정보 받아옴
+     * @return
+     */
+    @PostMapping("customers/orders")
+    public ApiResponse<CustomerOrderCreateResponseDto> createOrderAPI(
+            @RequestHeader("Authorization") String bearerJwtToken,
+            @RequestBody CustomerOrderCreateRequestDto requestDto
+    ) {
+        Long customerId = jwtUtil.extractCustomerId(bearerJwtToken);
+        Long proposalFormId = requestDto.getProposalFormId();
+
+        CustomerOrderCreateResponseDto responseDto = orderService.createOrderService(customerId, proposalFormId, requestDto);
+        ApiResponse<CustomerOrderCreateResponseDto> response = ApiResponse.success(HttpStatus.CREATED, "주문이 생성되었습니다.", responseDto);
+        return response;
+    }
 
     /**
      * 소비자 -> 주문 상세 조회 API

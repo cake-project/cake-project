@@ -6,14 +6,11 @@ import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 
 @Getter
 @Entity
-@EntityListeners(AuditingEntityListener.class)
 @Table(name = "proposal_form_comments")
 public class ProposalFormComment {
 
@@ -39,12 +36,8 @@ public class ProposalFormComment {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
-//    @CreatedDate
-//    @Column(nullable = false, updatable = false)
-//    private LocalDateTime createdAt;
-
-    // auditing 필드
-    @CreatedDate                       // INSERT 시 UTC 시각으로 자동 세팅
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
 

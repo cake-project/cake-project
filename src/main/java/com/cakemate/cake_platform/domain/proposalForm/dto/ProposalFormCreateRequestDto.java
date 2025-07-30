@@ -1,6 +1,6 @@
 package com.cakemate.cake_platform.domain.proposalForm.dto;
 
-import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
+import com.cakemate.cake_platform.common.commonEnum.CakeSize;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 
@@ -11,6 +11,8 @@ public class ProposalFormCreateRequestDto {
     //속성
     private Long requestFormId;
     private String title;
+    private CakeSize cakeSize;
+    private int quantity;
     private String content;
     private String managerName;
     private int proposedPrice;
@@ -24,9 +26,11 @@ public class ProposalFormCreateRequestDto {
     public ProposalFormCreateRequestDto() {
     }
 
-    public ProposalFormCreateRequestDto(Long requestFormId, String title, String content, String managerName, int proposedPrice, LocalDateTime proposedPickupDate, String image) {
+    public ProposalFormCreateRequestDto(Long requestFormId, String title, CakeSize cakeSize, int quantity, String content, String managerName, int proposedPrice, LocalDateTime proposedPickupDate, String image) {
         this.requestFormId = requestFormId;
         this.title = title;
+        this.cakeSize = cakeSize;
+        this.quantity = quantity;
         this.content = content;
         this.managerName = managerName;
         this.proposedPrice = proposedPrice;

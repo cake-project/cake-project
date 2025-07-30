@@ -2,8 +2,11 @@ package com.cakemate.cake_platform.domain.proposalForm.repository;
 
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
+import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.proposalFormComment.entity.ProposalFormComment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -36,5 +39,12 @@ public interface ProposalFormRepository extends JpaRepository<ProposalForm, Long
 
     // 의뢰서 ID로, 삭제되지 않은 견적서가 하나라도 존재하는지 확인
     boolean existsByRequestFormIdAndIsDeletedFalse(Long requestFormId);
+
+    //견적서 목록 조회 시 10개씩 페이징
+//    Page<ProposalForm> findByStore_Owner_IdAndIsDeletedFalse(Long ownerId, Pageable pageable);
+
+    // 해당 의뢰서에 이미 선택된 견적서가 있는지 조회
+    boolean existsByRequestFormIdAndStatus(Long requestFormId, ProposalFormStatus proposalFormStatus);
+
 
 }

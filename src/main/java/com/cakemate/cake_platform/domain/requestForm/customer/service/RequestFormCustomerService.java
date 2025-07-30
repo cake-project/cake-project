@@ -1,6 +1,9 @@
 package com.cakemate.cake_platform.domain.requestForm.customer.service;
 
+import com.cakemate.cake_platform.common.commonEnum.CakeSize;
 import com.cakemate.cake_platform.common.dto.ApiResponse;
+import com.cakemate.cake_platform.common.exception.InvalidPriceException;
+import com.cakemate.cake_platform.common.exception.InvalidQuantityException;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.auth.exception.BadRequestException;
@@ -15,6 +18,7 @@ import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
 import com.cakemate.cake_platform.domain.requestForm.exception.RequestFormAccessDeniedException;
 import com.cakemate.cake_platform.domain.requestForm.exception.NotFoundRequestFormException;
+import com.cakemate.cake_platform.domain.requestForm.exception.RequestFormDeletionNotAllowedException;
 import com.cakemate.cake_platform.domain.store.owner.exception.NotFoundCustomerException;
 import org.springframework.http.HttpStatus;
 import com.cakemate.cake_platform.domain.requestForm.repository.RequestFormRepository;
@@ -54,6 +58,8 @@ public class RequestFormCustomerService {
         //데이터 준비
         String foundTitle = requestFormCustomerRequestDto.getTitle();
         String foundRegion = requestFormCustomerRequestDto.getRegion();
+        CakeSize foundCakeSize = requestFormCustomerRequestDto.getCakeSize();
+        int foundQuantity = requestFormCustomerRequestDto.getQuantity();
         String foundContent = requestFormCustomerRequestDto.getContent();
         int foundDesiredPrice = requestFormCustomerRequestDto.getDesiredPrice();
         String foundImage = requestFormCustomerRequestDto.getImage();
@@ -61,9 +67,25 @@ public class RequestFormCustomerService {
         RequestFormStatus requestFormStatus = RequestFormStatus.REQUESTED;
 
         //검증로직 작성 필요시
-        // 검증.-> 본인 여부 검증
+        // 검증.-> 본인 여부 검증, 사이즈 및 수량 제한 검증
         if (customerId == null) {
             throw new BadRequestException("유효한 사용자 정보가 아닙니다.");
+        }
+
+        if (foundCakeSize == null) {
+            throw new BadRequestException("케이크 사이즈를 입력하세요.");
+        }
+
+        if (foundQuantity < 1 || foundQuantity > 5) {
+            throw new InvalidQuantityException("수량은 1개 이상 5개 이하만 가능합니다.");
+        }
+
+        // 가격 하한선 검증
+        int minTotalPrice = foundCakeSize.getMinPrice() * foundQuantity;
+        if (foundDesiredPrice < minTotalPrice) {
+            throw new InvalidPriceException(
+                    "해당 사이즈의 최소 총 금액은 " + minTotalPrice + "원입니다. (단가 " + foundCakeSize.getMinPrice() + "원 × 수량 " + foundQuantity + ")"
+            );
         }
 
         //고객(커스터머)아이디가 존재하면 통과, 아니면 예외 발생
@@ -72,7 +94,7 @@ public class RequestFormCustomerService {
 
         //엔티티만들기
         RequestForm newRequestForm = new RequestForm(
-                customer, foundTitle, foundRegion,
+                customer, foundTitle, foundRegion, foundCakeSize, foundQuantity,
                 foundContent, foundDesiredPrice, foundImage, foundPickupDate, requestFormStatus
         );
 
@@ -81,7 +103,9 @@ public class RequestFormCustomerService {
 
         CustomerRequestFormCreateResponseDto requestFormCustomerResponseDto
                 = new CustomerRequestFormCreateResponseDto(
-                        saveRequestForm.getId(), saveRequestForm.getTitle(),
+                        saveRequestForm.getCustomer().getId(),
+                        saveRequestForm.getCustomer().getName(),
+                        saveRequestForm.getId(), saveRequestForm.getTitle(), saveRequestForm.getCakeSize(), saveRequestForm.getQuantity(),
                 saveRequestForm.getStatus(), saveRequestForm.getCreatedAt(), saveRequestForm.getDesiredPickupDate()
         );
         return ApiResponse.success(
@@ -117,6 +141,8 @@ public class RequestFormCustomerService {
                 requestForm.getId(),
                 requestForm.getTitle(),
                 requestForm.getRegion(),
+                requestForm.getCakeSize(),
+                requestForm.getQuantity(),
                 requestForm.getContent(),
                 requestForm.getDesiredPrice(),
                 requestForm.getImage(),
@@ -135,6 +161,8 @@ public class RequestFormCustomerService {
                                         responseProposalForm.getId(),
                                         responseProposalForm.getStoreName(),
                                         responseProposalForm.getTitle(),
+                                        responseProposalForm.getCakeSize(),
+                                        responseProposalForm.getQuantity(),
                                         responseProposalForm.getContent(),
                                         responseProposalForm.getProposedPrice(),
                                         responseProposalForm.getProposedPickupDate(),
@@ -175,7 +203,7 @@ public class RequestFormCustomerService {
         // 조회된 엔티티 목록을 응답 DTO 목록으로 변환한다.
         List<CustomerRequestFormGetListResponseDto> list = forms.stream()
                 .map(form -> new CustomerRequestFormGetListResponseDto(
-                        form.getId(), form.getTitle(), form.getStatus(), form.getCreatedAt()
+                        form.getId(), form.getTitle(), form.getCakeSize(), form.getQuantity(), form.getStatus(), form.getCreatedAt()
                 ))
                 .toList(); //불변 리스트.
 
@@ -197,6 +225,12 @@ public class RequestFormCustomerService {
             // 작성자가 아니면 예외 발생
             throw new RequestFormAccessDeniedException("본인이 작성한 의뢰서만 삭제할 수 있습니다.");
         }
+
+        //견적서 존재 여부 확인
+        if (proposalFormRepository.existsByRequestFormIdAndIsDeletedFalse(requestFormId)) {
+            throw new RequestFormDeletionNotAllowedException( "이미 견적서가 달린 의뢰서는 삭제할 수 없습니다.");
+        }
+
         //삭제(소프트 딜리트)
         requestForm.softDelete();
 

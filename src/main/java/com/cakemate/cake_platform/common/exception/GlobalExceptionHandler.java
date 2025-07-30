@@ -2,6 +2,9 @@ package com.cakemate.cake_platform.common.exception;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.domain.auth.exception.*;
+import com.cakemate.cake_platform.domain.order.customer.exception.ProposalAlreadyOrderedException;
+import com.cakemate.cake_platform.domain.order.customer.exception.ProposalFormNotConfirmedException;
+import com.cakemate.cake_platform.domain.order.owner.exception.InvalidOrderStatusException;
 import com.cakemate.cake_platform.domain.proposalForm.exception.*;
 import com.cakemate.cake_platform.domain.requestForm.exception.RequestFormAccessDeniedException;
 import com.cakemate.cake_platform.domain.order.customer.exception.MismatchedRequestAndProposalException;
@@ -14,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -290,4 +294,77 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
+
+    // 주문 상태 변경이 유효하지 않을 때 발생하는 예외입니다.
+    @ExceptionHandler(InvalidOrderStatusException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidOrderStatusException(InvalidOrderStatusException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    // 견적서 상태 변경이 유효하지 않을 때 발생하는 예외입니다.
+    @ExceptionHandler(InvalidProposalStatusException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidProposalStatusException(InvalidProposalStatusException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    // 요청 바디가 없거나 JSON 형식이 올바르지 않을 때 발생하는 예외를 처리합니다.
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, "요청 바디가 올바르지 않습니다."));
+    }
+
+    // 견적서가 주문할 수 없는 상태(CONFIRMED이 아닌 상태)에 발생하는 예외입니다.
+    @ExceptionHandler(ProposalFormNotConfirmedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleProposalFormNotConfirmedException(ProposalFormNotConfirmedException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    // 이미 해당 견적서로 주문이 생성된 경우 발생하는 예외입니다.
+    @ExceptionHandler(ProposalAlreadyOrderedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleProposalAlreadyOrderedException(ProposalAlreadyOrderedException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    // 이미 소비자가 선택하여 ACCEPTED 상태인 견적서가 존재할 경우 발생합니다.
+    @ExceptionHandler(ProposalAlreadyAcceptedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleProposalAlreadyAcceptedException(ProposalAlreadyAcceptedException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    // proposalForm - 제안 가격이 하한선보다 낮거나 유효하지 않을 경우 발생하는 예외입니다.
+    @ExceptionHandler(InvalidPriceException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidPriceException(InvalidPriceException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    // proposalForm - 수량이 허용 범위(1~5개)를 벗어날 경우 발생하는 예외입니다.
+    @ExceptionHandler(InvalidQuantityException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidQuantityException(InvalidQuantityException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    // proposalForm - 유효하지 않은 케이크 사이즈일 때 발생하는 예외입니다.
+    @ExceptionHandler(InvalidCakeSizeException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidCakeSizeException(InvalidCakeSizeException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
 }

@@ -4,13 +4,14 @@ import com.cakemate.cake_platform.common.dto.PageDto;
 import com.cakemate.cake_platform.common.exception.OrderNotFoundException;
 import com.cakemate.cake_platform.common.exception.StoreNotFoundException;
 import com.cakemate.cake_platform.domain.order.entity.Order;
-import com.cakemate.cake_platform.domain.order.owner.dto.OwnerOrderDetailResponseDto;
-import com.cakemate.cake_platform.domain.order.owner.dto.OwnerOrderPageResponseDto;
-import com.cakemate.cake_platform.domain.order.owner.dto.OwnerOrderSummaryResponseDto;
+import com.cakemate.cake_platform.domain.order.enums.OrderStatus;
+import com.cakemate.cake_platform.domain.order.owner.dto.*;
 import com.cakemate.cake_platform.common.exception.UnauthorizedAccessException;
+import com.cakemate.cake_platform.domain.order.owner.exception.InvalidOrderStatusException;
 import com.cakemate.cake_platform.domain.order.repository.OrderRepository;
 import com.cakemate.cake_platform.domain.store.entity.Store;
 import com.cakemate.cake_platform.domain.store.repository.StoreRepository;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -33,9 +34,9 @@ public class OrderOwnerService {
     }
 
     /**
-     * 점주 -> 주문 상세 조회 Service
+     * 점주(가게) -> 주문 상세 조회 Service
      */
-    public OwnerOrderDetailResponseDto getOwnerOrderDetailService(Long storeId, Long ownerId, Long orderId) {
+    public OwnerOrderDetailResponseDto getOwnerStoreOrderDetail(Long storeId, Long ownerId, Long orderId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new StoreNotFoundException("가게를 찾을 수 없습니다."));
 
@@ -49,7 +50,7 @@ public class OrderOwnerService {
         OwnerOrderDetailResponseDto responseDto = new OwnerOrderDetailResponseDto(
                 order.getId(),
                 order.getOrderNumber(),
-                order.getOrderCreatedAt(),
+                order.getCreatedAt(),
                 order.getStatus().toString(),
                 order.getCustomerName(),
                 order.getCustomerPhoneNumber(),
@@ -65,9 +66,9 @@ public class OrderOwnerService {
     }
 
     /**
-     * 점주 -> 주문 목록 조회 Service
+     * 점주(가게) -> 주문 목록 조회 Service
      */
-    public OwnerOrderPageResponseDto<OwnerOrderSummaryResponseDto> getOwnerStoreOrderPageService(Long storeId, Long ownerId, Pageable pageable) {
+    public OwnerOrderPageResponseDto<OwnerOrderSummaryResponseDto> getOwnerStoreOrderPage(Long storeId, Long ownerId, Pageable pageable) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new StoreNotFoundException("가게를 찾을 수 없습니다."));
 
@@ -80,7 +81,7 @@ public class OrderOwnerService {
                 .map(order -> new OwnerOrderSummaryResponseDto(
                         order.getId(),
                         order.getOrderNumber(),
-                        order.getOrderCreatedAt(),
+                        order.getCreatedAt(),
                         order.getStatus().toString(),
                         order.getCustomerName(),
                         Optional.ofNullable(order.getProductName()).orElse("상품 정보 없음"),
@@ -97,6 +98,47 @@ public class OrderOwnerService {
         );
 
         OwnerOrderPageResponseDto<OwnerOrderSummaryResponseDto> responseDto = new OwnerOrderPageResponseDto<>(orderList, pageDto);
+        return responseDto;
+    }
+
+    /**
+     * 점주(가게) -> 주문 상태 수정 Service
+     *
+     * @param storeId
+     * @param ownerId
+     * @param requestDto
+     */
+    @Transactional
+    public OwnerOrderStatusUpdateResponseDto updateStoreOrderStatusByOwner(Long storeId, Long orderId, Long ownerId, @Valid OwnerOrderStatusUpdateRequestDto requestDto) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new StoreNotFoundException("가게를 찾을 수 없습니다."));
+
+        if (!store.getOwner().getId().equals(ownerId)) {
+            throw new UnauthorizedAccessException("본인 가게가 아닙니다.");
+        }
+
+        Order order = orderRepository.findByStoreIdAndId(storeId, orderId)
+                .orElseThrow(() -> new OrderNotFoundException("주문이 존재하지 않습니다."));
+
+        OrderStatus orderStatus;
+        try {
+            orderStatus = requestDto.getOrderStatusEnum();
+        } catch (IllegalArgumentException e) {
+            throw new InvalidOrderStatusException("유효하지 않은 주문 상태 값입니다. 유효한 값: MAKE_WAITING, IN_PROGRESS, PRODUCTION_COMPLETED, READY_FOR_PICKUP, PICKED_UP, CUSTOMER_CANCELLED");
+        }
+
+        order.updateOrderStatus(orderStatus);
+
+        OwnerOrderStatusUpdateResponseDto responseDto = new OwnerOrderStatusUpdateResponseDto(
+                order.getId(),
+                order.getOrderNumber(),
+                order.getStatus(),
+                order.getModifiedAt(),
+                order.getStoreName(),
+                order.getCustomerName(),
+                order.getAgreedPickupDate()
+        );
+
         return responseDto;
     }
 }
