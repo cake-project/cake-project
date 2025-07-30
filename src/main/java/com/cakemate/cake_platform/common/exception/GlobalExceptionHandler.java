@@ -342,4 +342,29 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
+
+    // proposalForm - 제안 가격이 하한선보다 낮거나 유효하지 않을 경우 발생하는 예외입니다.
+    @ExceptionHandler(InvalidPriceException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidPriceException(InvalidPriceException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    // proposalForm - 수량이 허용 범위(1~5개)를 벗어날 경우 발생하는 예외입니다.
+    @ExceptionHandler(InvalidQuantityException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidQuantityException(InvalidQuantityException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    // proposalForm - 유효하지 않은 케이크 사이즈일 때 발생하는 예외입니다.
+    @ExceptionHandler(InvalidCakeSizeException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidCakeSizeException(InvalidCakeSizeException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
 }
