@@ -361,7 +361,7 @@ public class ProposalFormService {
      * proposalForm 최종 확정 서비스
      */
     @Transactional
-    public ProposalFormConfirmationResponseDto confirmProposalForm(Long proposalFormId, Long ownerId, ProposalFormConfirmationRequestDto requestDto) {
+    public OwnerProposalFormConfirmResponseDto confirmProposalForm(Long proposalFormId, Long ownerId, OwnerProposalFormConfirmRequestDto requestDto) {
         ProposalForm proposalForm = proposalFormRepository.findById(proposalFormId)
                 .orElseThrow(() -> new ProposalFormNotFoundException("견적서를 찾을 수 없습니다."));
 
@@ -378,7 +378,7 @@ public class ProposalFormService {
 
         proposalForm.confirmStatus(proposalFormStatus);
 
-        ProposalFormConfirmationResponseDto responseDto = new ProposalFormConfirmationResponseDto(proposalForm.getId(), proposalForm.getStatus());
+        OwnerProposalFormConfirmResponseDto responseDto = new OwnerProposalFormConfirmResponseDto(proposalForm.getId(), proposalForm.getStatus());
         return responseDto;
     }
 }
