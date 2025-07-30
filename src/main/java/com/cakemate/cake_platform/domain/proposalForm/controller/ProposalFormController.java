@@ -9,6 +9,8 @@ import com.cakemate.cake_platform.domain.proposalForm.dto.ProposalFormUpdateRequ
 import com.cakemate.cake_platform.domain.proposalForm.service.CustomerProposalFormService;
 import com.cakemate.cake_platform.domain.proposalForm.service.ProposalFormService;
 import io.jsonwebtoken.Claims;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -52,9 +54,9 @@ public class ProposalFormController {
      * proposalForm 목록 조회 API
      */
     @GetMapping
-    public ApiResponse<List<ProposalFormContainsRequestFormDataDto>> getProposalFormsAPI(@RequestHeader("Authorization") String bearerToken) {
+    public ApiResponse<List<ProposalFormDataDto>> getProposalFormsAPI(@RequestHeader("Authorization") String bearerToken) {
         Long ownerId = jwtUtil.extractOwnerId(bearerToken);
-        ApiResponse<List<ProposalFormContainsRequestFormDataDto>> response = proposalFormService.getProposalFormList(ownerId);
+        ApiResponse<List<ProposalFormDataDto>> response = proposalFormService.getProposalFormList(ownerId);
         return response;
     }
 

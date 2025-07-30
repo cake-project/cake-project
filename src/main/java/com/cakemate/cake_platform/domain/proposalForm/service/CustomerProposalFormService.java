@@ -3,10 +3,7 @@ package com.cakemate.cake_platform.domain.proposalForm.service;
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.common.exception.ProposalFormNotFoundException;
 import com.cakemate.cake_platform.common.exception.UnauthorizedAccessException;
-import com.cakemate.cake_platform.domain.proposalForm.dto.CommentDataDto;
-import com.cakemate.cake_platform.domain.proposalForm.dto.CustomerProposalFormDetailDto;
-import com.cakemate.cake_platform.domain.proposalForm.dto.ProposalFormDataDto;
-import com.cakemate.cake_platform.domain.proposalForm.dto.RequestFormDataDto;
+import com.cakemate.cake_platform.domain.proposalForm.dto.*;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.proposalForm.repository.ProposalFormRepository;
 import com.cakemate.cake_platform.domain.proposalFormComment.entity.ProposalFormComment;
@@ -61,13 +58,12 @@ public class CustomerProposalFormService {
         );
 
         //견적서 DTO 만들기
-        ProposalFormDataDto proposalFormDto = new ProposalFormDataDto(
+        CustomerProposalFormDataDto proposalFormDto = new CustomerProposalFormDataDto(
                 proposalForm.getId(),
                 proposalForm.getRequestForm().getId(),
                 proposalForm.getStoreName(),
                 proposalForm.getTitle(),
                 proposalForm.getContent(),
-                proposalForm.getManagerName(),
                 proposalForm.getProposedPrice(),
                 proposalForm.getProposedPickupDate(),
                 proposalForm.getCreatedAt(),

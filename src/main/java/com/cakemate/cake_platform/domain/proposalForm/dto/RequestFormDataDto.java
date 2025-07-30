@@ -1,8 +1,7 @@
 package com.cakemate.cake_platform.domain.proposalForm.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -13,8 +12,12 @@ public class RequestFormDataDto {
     private String region;
     private String content;
     private int desiredPrice;
-    private LocalDateTime desiredPickupDate;
     private String requestFormStatus;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime desiredPickupDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
     private String image;
 

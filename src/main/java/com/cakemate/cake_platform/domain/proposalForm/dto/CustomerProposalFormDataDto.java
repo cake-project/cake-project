@@ -6,20 +6,18 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 /**
- * proposalFormCreateResponseDto, proposalFormListResponseDto에서 활용하는 객체입니다!!
- * 생성, 목록 조회 시 사용
+ * CustomerProposalFormDetailResponseDto에서 활용하는 객체입니다!!
+ * 소비자용 단건 상세 조회 시 사용
  */
+
 @Getter
-public class ProposalFormDataDto {
+public class CustomerProposalFormDataDto {
     //속성
     private Long proposalFormId;
     private Long requestFormId;
     private String storeName;
     private String title;
-//    private String cakeSize;
-//    private int quantity;
     private String content;
-    private String managerName;
     private int proposedPrice;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
@@ -30,14 +28,13 @@ public class ProposalFormDataDto {
     private String status;
     private String image;
 
-    //owner 전용 생성자(모든 정보 다룸)
-    public ProposalFormDataDto(Long proposalFormId, Long requestFormId, String storeName, String title, String content, String managerName, int proposedPrice, LocalDateTime proposedPickupDate, LocalDateTime createdAt, String status, String image) {
+    //customer 전용 생성자(담당자 정보 제외)
+    public CustomerProposalFormDataDto(Long proposalFormId, Long requestFormId, String storeName, String title, String content, int proposedPrice, LocalDateTime proposedPickupDate, LocalDateTime createdAt, String status, String image) {
         this.proposalFormId = proposalFormId;
         this.requestFormId = requestFormId;
         this.storeName = storeName;
         this.title = title;
         this.content = content;
-        this.managerName = managerName;
         this.proposedPrice = proposedPrice;
         this.proposedPickupDate = proposedPickupDate;
         this.createdAt = createdAt;
@@ -47,4 +44,3 @@ public class ProposalFormDataDto {
 
     //기능
 }
-

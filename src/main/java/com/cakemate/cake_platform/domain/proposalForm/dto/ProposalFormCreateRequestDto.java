@@ -11,6 +11,8 @@ public class ProposalFormCreateRequestDto {
     //속성
     private Long requestFormId;
     private String title;
+//    private String cakeSize;
+//    private int quantity;
     private String content;
     private String managerName;
     private int proposedPrice;
