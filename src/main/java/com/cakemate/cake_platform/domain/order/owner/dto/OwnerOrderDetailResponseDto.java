@@ -21,6 +21,7 @@ public class OwnerOrderDetailResponseDto {
     private Long proposalFormId;
     private String productName;
     private int agreedPrice;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime agreedPickupDate;
     private String finalCakeImage;
 }

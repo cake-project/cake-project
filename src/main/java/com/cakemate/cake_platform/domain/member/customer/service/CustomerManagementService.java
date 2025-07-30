@@ -37,27 +37,23 @@ public class CustomerManagementService {
         this.passwordValidator = passwordValidator;
     }
 
+
     /**
      * 소비자 -> 내 정보 조회 Service
      * @param customerId
      * @return
      */
     public CustomerProfileResponseDto getCustomerProfileService(Long customerId) {
-        Customer customer = customerRepository.findById(customerId)
+        Customer customer = customerRepository.findByIdAndIsDeletedFalse(customerId)
                 .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
 
         if (customer.isDeleted()) {
             throw new MemberAlreadyDeletedException("이미 탈퇴한 회원입니다.");
         }
 
-        CustomerProfileResponseDto responseDto = new CustomerProfileResponseDto(
-                customer.getName(),
-                customer.getEmail(),
-                customer.getPhoneNumber()
-        );
-
-        return responseDto;
+        return CustomerProfileResponseDto.from(customer);
     }
+
     /**
      * (소비자) 내 정보 수정 서비스
      */
@@ -101,15 +97,11 @@ public class CustomerManagementService {
         }
 
         // 이름 & 전화번호 업데이트
-        Customer updatedCustomer = customer.updateProfile(name, phoneNumber);
+        customer.updateProfile(name, phoneNumber);
+
 
         // 응답 DTO 생성
-        UpdateCustomerProfileResponseDto responseDto = new UpdateCustomerProfileResponseDto(
-                updatedCustomer.getId(),
-                updatedCustomer.getEmail(),
-                updatedCustomer.getName(),
-                updatedCustomer.getPhoneNumber()
-        );
+        UpdateCustomerProfileResponseDto responseDto = UpdateCustomerProfileResponseDto.from(customer);
 
         return ApiResponse.success(
                 HttpStatus.OK, "회원 정보가 성공적으로 수정되었습니다.", responseDto
@@ -132,11 +124,7 @@ public class CustomerManagementService {
         customer.delete();
         customerRepository.save(customer);
 
-        CustomerProfileResponseDto responseDto = new CustomerProfileResponseDto(
-                customer.getName(),
-                customer.getEmail(),
-                customer.getPhoneNumber()
-        );
+        CustomerProfileResponseDto responseDto = CustomerProfileResponseDto.from(customer);
 
         return responseDto;
     }

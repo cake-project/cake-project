@@ -143,12 +143,5 @@ public class JwtUtil {
         Claims claims = verifyToken(token);
         return subjectMemberId(claims);      // role 무검증
     }
-    //이 메서드는 토큰 서명만 확인합니다.
-    //DB에 해당 역할이 실제로 존재하는지,
-    //요청 리소스에 접근할 권한이 있는지는 서비스 레이어에서 따로 검증해야 합니다.
-    public String extractRole(String bearerJwtToken) {
-        String token = substringToken(bearerJwtToken);
-        Claims claims = verifyToken(token);
-        return claims.get("role", String.class);
-    }
+
 }

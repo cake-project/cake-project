@@ -35,7 +35,7 @@ public class StoreCustomerController {
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "가게 목록을 성공적으로 불러왔습니다.", storeList));
     }
 
-    @GetMapping("/customer/{storeId}")
+    @GetMapping("/customer/store/{storeId}")
     public ResponseEntity<ApiResponse<StoreCustomerDetailResponseDto>> getStoreDetail(
             @RequestHeader("Authorization") String authorization,
             @PathVariable Long storeId
@@ -52,3 +52,5 @@ public class StoreCustomerController {
         );
     }
 }
+
+

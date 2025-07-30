@@ -40,7 +40,7 @@ public class OwnerManagementService {
      * @return
      */
     public OwnerProfileResponseDto getOwnerProfileService(Long ownerId) {
-        Owner owner = ownerRepository.findById(ownerId)
+        Owner owner = ownerRepository.findByIdAndIsDeletedFalse(ownerId)
                 .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
 
         if (owner.isDeleted()) {
@@ -48,8 +48,10 @@ public class OwnerManagementService {
         }
 
         OwnerProfileResponseDto responseDto = new OwnerProfileResponseDto(
-                owner.getName(),
                 owner.getEmail(),
+                owner.getPassword(),
+                owner.getPasswordConfirm(),
+                owner.getName(),
                 owner.getPhoneNumber()
         );
 
@@ -133,11 +135,7 @@ public class OwnerManagementService {
         ownerRepository.save(owner);
 
         // 응답 DTO 생성 (필요에 따라 필드 추가)
-        OwnerProfileResponseDto responseDto = new OwnerProfileResponseDto(
-                owner.getName(),
-                owner.getEmail(),
-                owner.getPhoneNumber()
-        );
+        OwnerProfileResponseDto responseDto = OwnerProfileResponseDto.from(owner);
 
         return responseDto;
 }

@@ -93,7 +93,7 @@ public class CustomerProposalFormService {
                             customerId,
                             ownerId,
                             comment.getContent(),
-                            comment.getCreatedAt().toLocalDateTime()
+                            comment.getCreatedAt()
                     );
                 })
                 .collect(Collectors.toList());

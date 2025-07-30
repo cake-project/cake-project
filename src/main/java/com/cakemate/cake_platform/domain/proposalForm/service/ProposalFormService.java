@@ -194,7 +194,7 @@ public class ProposalFormService {
                             customerId,
                             commentOwnerId,
                             comment.getContent(),
-                            comment.getCreatedAt().toLocalDateTime()
+                            comment.getCreatedAt()
                     );
                 })
                 .collect(Collectors.toList());

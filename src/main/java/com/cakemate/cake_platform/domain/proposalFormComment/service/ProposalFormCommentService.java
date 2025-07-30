@@ -14,7 +14,6 @@ import com.cakemate.cake_platform.domain.proposalFormComment.dto.response.Commen
 import com.cakemate.cake_platform.domain.proposalFormComment.entity.ProposalFormComment;
 
 import com.cakemate.cake_platform.domain.proposalFormComment.repository.ProposalFormCommentRepository;
-import com.cakemate.cake_platform.domain.requestForm.exception.NotFoundProposalFormException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,35 +41,29 @@ public class ProposalFormCommentService {
     @Transactional
     public ApiResponse<CommentCreateResponseDto> createRequestFormCommentService(
             CommentCreateRequestDto commentCreateRequestDto,
-            Long proposalFormId, Long memberId, String role
+            Long proposalFormId
     ) {
         //데이터준비
         String content = commentCreateRequestDto.getContent();
+        Long customersId = commentCreateRequestDto.getCustomerId();
+        Long ownersId = commentCreateRequestDto.getOwnerId();
 
         // 견적서 존재 여부 확인
         ProposalForm proposalForm = proposalFormRepository.findByIdAndIsDeletedFalse(proposalFormId)
-                .orElseThrow(() -> new NotFoundProposalFormException("댓글을 달 견적서가 존재하지 않습니다."));
+                .orElseThrow(() -> new MemberAlreadyDeletedException("댓글을 달 견적서가 존재하지 않습니다."));
 
         //검증
-        // 작성자 식별
-        Customer customer = null;
-        Owner owner = null;
+        //커스터머가 있으면 통과 그렇지 않으면(orElse) 널
+        Customer customer = customerRepository.findByIdAndIsDeletedFalse(customersId)
+                .orElse(null);
 
-        //토큰에서 꺼낸 role 값과 memberId로 누가 요청했는지 검증
-        //이건 권한(role) 이 소비자 혹은 점주와 같으면
-        //소비자 혹은 점주(memberId)가 실제 DB에 존재하는지 보고 같으면 통괴
-        //그 외는 허용되지 않는 권한이니 예외
-        if ("CUSTOMER".equals(role)) {
-           customer = customerRepository.findByIdAndIsDeletedFalse(memberId)
-                    .orElseThrow(() -> new  BadRequestException("유효한 고객 정보가 아닙니다."));
-        } else if ("OWNER".equals(role)) {
-          owner = ownerRepository.findByIdAndIsDeletedFalse(memberId)
-                    .orElseThrow(() -> new BadRequestException("유효한 점주 정보가 아닙니다."));
-        } else {
-            throw new BadRequestException("지원하지 않는 권한입니다.");
-        }
 
-        // 만약 가져온 memberId가 customer,owner 둘 다 널이면 잘못된 사용자 요청이므로 예외 발생
+        //오너가 있으면 통과 그렇지 않으면(orElse) 널
+        Owner owner = ownerRepository.findByIdAndIsDeletedFalse(ownersId)
+                .orElse(null);
+
+
+        // 만약 토큰에서 가져온 memberId가 customer,owner 둘 다 널이면 잘못된 사용자 요청이므로 예외 발생
         if (customer == null && owner == null) {
             throw new BadRequestException("유효한 사용자 정보가 아닙니다.");
         }
@@ -99,7 +92,7 @@ public class ProposalFormCommentService {
         //responseDto 만들기
         CommentCreateResponseDto commentCreateResponseDto
                 = new CommentCreateResponseDto(
-                savedComment.getId() , proposalFormId, customerId, ownerId, content, savedComment.getCreatedAt()
+                savedComment.getId() , proposalFormId, customerId, ownerId, content
         );
 
         return ApiResponse.success(

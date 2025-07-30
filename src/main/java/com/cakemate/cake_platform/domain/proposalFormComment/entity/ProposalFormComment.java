@@ -45,10 +45,9 @@ public class ProposalFormComment {
 
     // auditing 필드
     @CreatedDate                       // INSERT 시 UTC 시각으로 자동 세팅
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 
-//    @LastModifiedDate                  // UPDATE 시 UTC 시각으로 자동 세팅
-//    private OffsetDateTime modifiedAt;
+
     /**
      * 아래는 JPA 에서 쓰는 기본 생성자 입니다.
      */
