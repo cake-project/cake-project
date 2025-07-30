@@ -33,10 +33,9 @@ public class OrderCustomerController {
             @RequestBody CustomerOrderCreateRequestDto requestDto
     ) {
         Long customerId = jwtUtil.extractCustomerId(bearerJwtToken);
-        Long requestFormId = requestDto.getRequestFormId();
         Long proposalFormId = requestDto.getProposalFormId();
 
-        CustomerOrderCreateResponseDto responseDto = orderService.createOrderService(customerId, requestFormId, proposalFormId, requestDto);
+        CustomerOrderCreateResponseDto responseDto = orderService.createOrderService(customerId, proposalFormId, requestDto);
         ApiResponse<CustomerOrderCreateResponseDto> response = ApiResponse.success(HttpStatus.CREATED, "주문이 생성되었습니다.", responseDto);
         return response;
     }
