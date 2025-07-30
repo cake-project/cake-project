@@ -115,9 +115,10 @@ public class ProposalForm {
         this.isDeleted = true;
     }
 
+    // 점주 -> 견적서 확정 시 사용
     public void confirmStatus(ProposalFormStatus proposalFormStatus) {
         if (proposalFormStatus != ProposalFormStatus.CONFIRMED) {
-            throw new InvalidProposalStatusException("견적서 상태는 CONFIRMED로만 변경 가능합니다.");
+            throw new InvalidProposalStatusException("견적서 상태는 CONFIRMED로만 변경할 수 있습니다.");
         }
 
         if (this.status != ProposalFormStatus.ACCEPTED) {
@@ -125,6 +126,19 @@ public class ProposalForm {
         }
 
         this.status = ProposalFormStatus.CONFIRMED;
+    }
+
+    // 소비자 -> 견적서 선택 시 사용
+    public void acceptStatus(ProposalFormStatus proposalFormStatus) {
+        if (proposalFormStatus != ProposalFormStatus.ACCEPTED) {
+            throw new InvalidProposalStatusException("견적서 상태는 ACCEPTED로만 변경할 수 있습니다.");
+        }
+
+        if (this.status != ProposalFormStatus.AWAITING) {
+            throw new InvalidProposalStatusException("소비자는 AWAITING 상태에서만 ACCEPTED로만 변경할 수 있습니다.");
+        }
+
+        this.status = ProposalFormStatus.ACCEPTED;
     }
 
 }
