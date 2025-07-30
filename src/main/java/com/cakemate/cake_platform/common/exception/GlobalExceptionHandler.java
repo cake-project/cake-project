@@ -2,6 +2,7 @@ package com.cakemate.cake_platform.common.exception;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.domain.auth.exception.*;
+import com.cakemate.cake_platform.domain.order.owner.exception.InvalidOrderStatusException;
 import com.cakemate.cake_platform.domain.proposalForm.exception.*;
 import com.cakemate.cake_platform.domain.requestForm.exception.RequestFormAccessDeniedException;
 import com.cakemate.cake_platform.domain.order.customer.exception.MismatchedRequestAndProposalException;
@@ -286,6 +287,14 @@ public class GlobalExceptionHandler {
     // proposalForm - 가격이 마이너스(음수)인 경우 발생하는 예외입니다.
     @ExceptionHandler(InvalidProposedPriceException.class)
     public ResponseEntity<ApiResponse<Void>> handleInvalidProposedPriceException(InvalidProposedPriceException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    // 잘못된 주문 상태 값을 입력했을 때 발생하는 예외입니다.
+    @ExceptionHandler(InvalidOrderStatusException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidOrderStatusException(InvalidOrderStatusException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
