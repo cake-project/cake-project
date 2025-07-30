@@ -1,6 +1,7 @@
 package com.cakemate.cake_platform.domain.proposalForm.entity;
 
 import com.cakemate.cake_platform.common.entity.BaseTimeEntity;
+import com.cakemate.cake_platform.domain.proposalForm.enums.CakeSize;
 import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
 import com.cakemate.cake_platform.domain.proposalForm.exception.InvalidProposalStatusException;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
@@ -46,6 +47,13 @@ public class ProposalForm {
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
+
+//    @Column(nullable = false)
+//    @Enumerated(EnumType.STRING)
+//    private CakeSize cakeSize;
+//
+//    @Column(nullable = false)
+//    private int quantity;
 
     @Column(nullable = false)
     private int proposedPrice;
@@ -118,4 +126,5 @@ public class ProposalForm {
 
         this.status = ProposalFormStatus.CONFIRMED;
     }
+
 }

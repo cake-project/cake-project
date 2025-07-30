@@ -8,11 +8,11 @@ import java.util.List;
 public class CustomerProposalFormDetailDto {
     //속성
     private RequestFormDataDto requestForm;
-    private ProposalFormDataDto proposalForm;
+    private CustomerProposalFormDataDto proposalForm;
     private List<CommentDataDto> comments;
 
     //생성자
-    public CustomerProposalFormDetailDto(RequestFormDataDto requestForm, ProposalFormDataDto proposalForm, List<CommentDataDto> comments) {
+    public CustomerProposalFormDetailDto(RequestFormDataDto requestForm, CustomerProposalFormDataDto proposalForm, List<CommentDataDto> comments) {
         this.requestForm = requestForm;
         this.proposalForm = proposalForm;
         this.comments = comments;
