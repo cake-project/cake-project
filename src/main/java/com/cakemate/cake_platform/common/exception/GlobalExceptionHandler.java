@@ -334,4 +334,12 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
+
+    // 이미 소비자가 선택하여 ACCEPTED 상태인 견적서가 존재할 경우 발생합니다.
+    @ExceptionHandler(ProposalAlreadyAcceptedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleProposalAlreadyAcceptedException(ProposalAlreadyAcceptedException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
 }

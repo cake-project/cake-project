@@ -1,9 +1,8 @@
 name: CI/CD Deploy
 
 on:
-  push:
+  pull_request:
     branches: [ dev ]
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,12 +24,15 @@ jobs:
       - name: Build Spring Boot App
         run: ./gradlew clean build -x test
 
+      - name: List build/libs directory
+        run: ls -l build/libs/
+
       # ✅ 빌드된 JAR 업로드 (워크플로우 아티팩트로 저장)
       - name: Upload JAR Artifact
         uses: actions/upload-artifact@v4
         with:
           name: app
-          path: build/libs/cake-platform-[0-9.]*-SNAPSHOT.jar
+          path: build/libs/*.jar
 
   deploy:
     needs: build
@@ -42,6 +44,17 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: app
+          path: ./artifact
+          #✅ 파일 존재 여부 확인 (디버깅용)
+      - name: Check JAR file existence
+        run: |
+          ls -l ./artifact/*.jar
+          if ls ./artifact/*.jar; then
+            echo "JAR file exists."
+          else
+            echo "JAR file does not exist!"
+            exit 1
+          fi
 
       # ✅ EC2로 JAR 복사
       - name: Deploy to EC2
@@ -50,7 +63,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "*.jar"
+          source: ./artifact/*.jar
           target: "/home/ubuntu/app/"
           overwrite: true
 
@@ -62,4 +75,8 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            echo "리모트 디렉토리 내용 확인"
+            ls -l /home/ubuntu/app/
+            
+            # 배포 후 실행 (run-deploy.sh)
             bash /home/ubuntu/app/run-deploy.sh

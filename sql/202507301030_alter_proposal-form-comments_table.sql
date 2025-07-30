@@ -1,0 +1,1 @@
+ALTER TABLE proposal-form-comments DROP COLUMN modified_at;

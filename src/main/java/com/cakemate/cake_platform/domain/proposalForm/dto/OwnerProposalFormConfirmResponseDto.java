@@ -6,11 +6,8 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class ProposalFormConfirmationRequestDto {
+public class OwnerProposalFormConfirmResponseDto {
 
-    private String proposalFormStatus;
-
-    public ProposalFormStatus getProposalFormStatusEnum() {
-        return ProposalFormStatus.fromString(proposalFormStatus);
-    }
+    private Long proposalFormId;
+    private ProposalFormStatus proposalFormStatus;
 }
