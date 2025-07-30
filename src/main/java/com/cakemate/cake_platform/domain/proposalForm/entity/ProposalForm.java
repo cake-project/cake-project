@@ -3,6 +3,7 @@ package com.cakemate.cake_platform.domain.proposalForm.entity;
 import com.cakemate.cake_platform.common.entity.BaseTimeEntity;
 import com.cakemate.cake_platform.domain.proposalForm.enums.CakeSize;
 import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
+import com.cakemate.cake_platform.domain.proposalForm.exception.InvalidProposalStatusException;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.store.entity.Store;
@@ -114,5 +115,16 @@ public class ProposalForm {
         this.isDeleted = true;
     }
 
+    public void confirmStatus(ProposalFormStatus proposalFormStatus) {
+        if (proposalFormStatus != ProposalFormStatus.CONFIRMED) {
+            throw new InvalidProposalStatusException("견적서 상태는 CONFIRMED로만 변경 가능합니다.");
+        }
+
+        if (this.status != ProposalFormStatus.ACCEPTED) {
+            throw new InvalidProposalStatusException("점주는 ACCEPTED 상태에서만 CONFIRMED로만 변경할 수 있습니다.");
+        }
+
+        this.status = ProposalFormStatus.CONFIRMED;
+    }
 
 }

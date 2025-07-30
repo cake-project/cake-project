@@ -20,7 +20,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     //가게 수정
     Optional<Store> findByIdAndIsDeletedFalse(Long storeId);
     //가게 중복등록했는지 확인할 때 사용
-    boolean existsByOwnerId(Long ownerId);
+    boolean existsByOwnerIdAndIsDeletedFalse(Long ownerId);
     //가게 사업자등록번호가 중복되었는지 확인할 때 사용
     boolean existsByBusinessNumber(String businessNumber);
 }
