@@ -24,6 +24,12 @@ jobs:
       - name: Build Spring Boot App
         run: ./gradlew clean build -x test
 
+      - name: List project root
+        run: ls -l
+
+      - name: List build directory
+        run: ls -l build/
+
       - name: List build/libs directory
         run: ls -l build/libs/
 
