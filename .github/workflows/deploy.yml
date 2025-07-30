@@ -1,6 +1,9 @@
 name: CI/CD Deploy
 
 on:
+  push:
+    branches:
+      - feature/kgs-배포테스트
   pull_request:
     branches: [ dev ]
 jobs:
