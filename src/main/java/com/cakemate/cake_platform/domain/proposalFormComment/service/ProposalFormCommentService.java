@@ -68,7 +68,9 @@ public class ProposalFormCommentService {
             Long commentOwnerId = savedComment.getOwner().getId();
 
             CommentCreateResponseDto ownerCommentResponseDto
-                    = new CommentCreateResponseDto().createOwnerCommentResponseDto(savedComment.getId(), proposalFormId, commentOwnerId, content);
+                    = new CommentCreateResponseDto().createOwnerCommentResponseDto(
+                            savedComment.getId(), proposalFormId, commentOwnerId, content, savedComment.getCreatedAt()
+            );
 
             return ApiResponse.success(
                     HttpStatus.OK, "댓글 작성 성공", ownerCommentResponseDto
@@ -91,7 +93,9 @@ public class ProposalFormCommentService {
         Long commentCustomerId = savedComment.getCustomer().getId();
 
         CommentCreateResponseDto customerCommentResponseDto
-                = new CommentCreateResponseDto().createCustomerCommentResponseDto(savedComment.getId(), proposalFormId, commentCustomerId, content);
+                = new CommentCreateResponseDto().createCustomerCommentResponseDto(
+                        savedComment.getId(), proposalFormId, commentCustomerId, content, savedComment.getCreatedAt()
+        );
 
         return ApiResponse.success(
                 HttpStatus.OK, "댓글 작성 성공", customerCommentResponseDto

@@ -27,7 +27,7 @@ public class ProposalFormCommentController {
     /**
      *  댓글 생성 API
      */
-    @PostMapping("/proposal_forms/{proposalFormId}/comments")
+    @PostMapping("/proposal-forms/{proposalFormId}/comments")
     public ResponseEntity<ApiResponse<CommentCreateResponseDto>> createProposalFormComment(
             @RequestHeader("Authorization") String bearerJwtToken,
             @PathVariable("proposalFormId") Long proposalFormId,

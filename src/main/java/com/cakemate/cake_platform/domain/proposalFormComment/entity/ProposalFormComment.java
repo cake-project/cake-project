@@ -8,6 +8,7 @@ import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 @Getter
 @Entity
@@ -52,12 +53,12 @@ public class ProposalFormComment {
      * 아래는 댓글 생성을 위한 메소드 입니다.
      */
     public static ProposalFormComment create(ProposalForm proposalForm, Customer customer, Owner owner, String content) {
-        ProposalFormComment comment = new ProposalFormComment(); // 기본 생성자로 객체 만듦
-        comment.proposalForm = proposalForm; // 어떤 견적서에 달린 댓글인지 연결
-        comment.customer = customer; // 작성자가 고객이면 넣음
-        comment.owner = owner; // 작성자가 사장이면 넣음
-        comment.content = content; // 댓글 내용
-        return comment; // 완성된 댓글 객체 반환
+        ProposalFormComment comment = new ProposalFormComment();
+        comment.proposalForm = proposalForm;
+        comment.customer = customer;
+        comment.owner = owner;
+        comment.content = content;
+        comment.createdAt = LocalDateTime.now(ZoneOffset.UTC);
+        return comment;
     }
-
 }
