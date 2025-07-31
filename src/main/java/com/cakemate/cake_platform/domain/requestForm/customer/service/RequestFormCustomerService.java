@@ -5,7 +5,6 @@ import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.common.exception.InvalidPriceException;
 import com.cakemate.cake_platform.common.exception.InvalidQuantityException;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
-import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.auth.exception.BadRequestException;
 import com.cakemate.cake_platform.domain.auth.signup.customer.repository.CustomerRepository;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
