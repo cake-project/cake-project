@@ -94,7 +94,7 @@ public class CustomerProposalFormService {
                     }
                     return new CommentDataDto(
                             comment.getId(),
-                            customerId,
+                            writerCustomerId,
                             ownerId,
                             comment.getContent(),
                             comment.getCreatedAt()
