@@ -4,11 +4,9 @@ import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
 
 public enum OrderStatus {
     MAKE_WAITING("MAKE_WAITING", "대기 중"),
-    IN_PROGRESS("IN_PROGRESS", "상품 제작 중"),
-    PRODUCTION_COMPLETED("PRODUCTION_COMPLETED", "상품 제작 완료"),
     READY_FOR_PICKUP("READY_FOR_PICKUP", "상품 픽업 대기 중"),
-    PICKED_UP("PICKED_UP", "픽업 완료"),
-    CUSTOMER_CANCELLED("CUSTOMER_CANCELLED", "주문 취소");
+    COMPLETED("COMPLETED", "주문 완료"),
+    CANCELLED("CANCELLED", "주문 취소");
 
     private final String strValue;
     private final String description;
