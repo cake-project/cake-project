@@ -88,26 +88,36 @@ public class Order extends BaseTimeEntity {
 
     // 주문 상태 변경 메서드
     public void updateOrderStatus(OrderStatus newStatus) {
+        if (this.status == OrderStatus.COMPLETED) {
+            throw new InvalidOrderStatusException("이미 완료된 주문입니다.");
+        }
+        if (this.status == OrderStatus.CANCELLED) {
+            throw new InvalidOrderStatusException("취소된 주문은 상태를 변경할 수 없습니다.");
+        }
         if (newStatus == this.status) {
             throw new InvalidOrderStatusException("현재 상태와 동일한 상태로는 변경할 수 없습니다.");
         }
 
-        if (!isValidTransition(this.status, newStatus)) {
-            throw new InvalidOrderStatusException("현재 상태: " + this.status + ", 변경 요청 상태: " + newStatus + ". 주문 상태는 한 단계씩 앞으로만 변경할 수 있으며, 이전 단계로는 되돌릴 수 없습니다.");
+        switch (this.status) {
+            case MAKE_WAITING -> {
+                if (newStatus != OrderStatus.READY_FOR_PICKUP && newStatus != OrderStatus.CANCELLED) {
+                    throw new InvalidOrderStatusException("현재 상태: " + this.status + ", 변경 요청 상태: " + newStatus + ". 이 상태로는 변경할 수 없습니다.");
+                }
+            }
+
+            case READY_FOR_PICKUP -> {
+                if (newStatus == OrderStatus.CANCELLED) {
+                    throw new InvalidOrderStatusException("주문 취소는 '대기중(MAKE_WAITING)' 상태에서만 가능합니다.");
+                }
+                if (newStatus != OrderStatus.COMPLETED) {
+                    throw new InvalidOrderStatusException("현재 상태: " + this.status + ", 변경 요청 상태: " + newStatus + ". 이 상태로는 변경할 수 없습니다.");
+                }
+            }
+            default ->
+                    throw new InvalidOrderStatusException("현재 상태: " + this.status + ", 변경 요청 상태: " + newStatus + ". 주문 상태는 한 단계씩 앞으로만 변경할 수 있으며, 이전 단계로는 되돌릴 수 없습니다.");
         }
 
         this.status = newStatus;
-    }
-
-    // 다음 단계의 상태로만 변경 가능하게 하는 메서드
-    private boolean isValidTransition(OrderStatus current, OrderStatus next) {
-        return switch (current) {
-            case MAKE_WAITING -> next == OrderStatus.IN_PROGRESS;
-            case IN_PROGRESS -> next == OrderStatus.PRODUCTION_COMPLETED;
-            case PRODUCTION_COMPLETED -> next == OrderStatus.READY_FOR_PICKUP;
-            case READY_FOR_PICKUP -> next == OrderStatus.PICKED_UP;
-            default -> false;
-        };
     }
 
 }
