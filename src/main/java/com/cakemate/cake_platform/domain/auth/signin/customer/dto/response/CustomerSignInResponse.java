@@ -2,8 +2,6 @@ package com.cakemate.cake_platform.domain.auth.signin.customer.dto.response;
 
 import lombok.Getter;
 
-import java.time.LocalDateTime;
-
 @Getter
 public class CustomerSignInResponse {
     private final String jwtToken;

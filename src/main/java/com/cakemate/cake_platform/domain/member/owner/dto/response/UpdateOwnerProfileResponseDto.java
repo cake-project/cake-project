@@ -4,7 +4,6 @@ import lombok.Getter;
 
 @Getter
 public class UpdateOwnerProfileResponseDto {
-
     private Long ownerId;
     private String email;
     private String name;

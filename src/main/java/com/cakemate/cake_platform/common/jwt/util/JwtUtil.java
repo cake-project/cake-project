@@ -135,4 +135,13 @@ public class JwtUtil {
 
         return subjectMemberId(claims);
     }
+
+    // 앞단에서 이미 role 검증을 끝내고 memberId 만 넘기려는 상황에 사용 합니다.
+    // 댓글 작성 같이 검증이 필요한 경우 서비스 내부에서 별도의  role 검증 로직을 반드시 수행해야 합니다.
+    public Long extractMemberId(String authorizationHeader) {
+        String token  = substringToken(authorizationHeader);
+        Claims claims = verifyToken(token);
+        return subjectMemberId(claims);      // role 무검증
+    }
+
 }
