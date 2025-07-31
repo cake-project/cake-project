@@ -1,6 +1,7 @@
 package com.cakemate.cake_platform.domain.order.repository;
 
 import com.cakemate.cake_platform.domain.order.entity.Order;
+import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,4 +21,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     // 가게의 주문 상세 조회에서 사용합니다.
     Optional<Order> findByStoreIdAndId(Long storeId, Long OrderId);
+
+    // 이미 주문이 생성된 견적서인지 확인할 때 사용합니다.
+    boolean existsByProposalForm(ProposalForm proposalForm);
 }

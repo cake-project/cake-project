@@ -8,6 +8,5 @@ import lombok.Getter;
 public class CustomerOrderCreateRequestDto {
 
     private String customerName;
-    private Long requestFormId;
     private Long proposalFormId;
 }

@@ -1,5 +1,6 @@
 package com.cakemate.cake_platform.domain.proposalForm.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -11,6 +12,8 @@ public class CommentDataDto {
     private Long customerId;
     private Long ownerId;
     private String content;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime createdAt;
 
     //생성자

@@ -1,5 +1,6 @@
 package com.cakemate.cake_platform.domain.requestForm.customer.dto.response;
 
+import com.cakemate.cake_platform.common.commonEnum.CakeSize;
 import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -41,14 +42,17 @@ public class CustomerRequestFormGetDetailResponseDto {
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
         private LocalDateTime pickupDate;
         private RequestFormStatus requestStatus;
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
         private LocalDateTime createdAt;
 
         public String businessName;
+        private CakeSize cakeSize;
+        private int quantity;
 
         //생성자
         public RequestFormGetDetailDto(
-                Long requestFormId, String title, String region,
+                Long requestFormId, String title,
+                String region, CakeSize cakeSize, int quantity,
                 String content, Integer desiredPrice,
                 String image, LocalDateTime pickupDate,
                 RequestFormStatus requestStatus,
@@ -57,6 +61,8 @@ public class CustomerRequestFormGetDetailResponseDto {
             this.requestFormId = requestFormId;
             this.title = title;
             this.region = region;
+            this.cakeSize = cakeSize;
+            this.quantity = quantity;
             this.content = content;
             this.desiredPrice = desiredPrice;
             this.image = image;
@@ -103,13 +109,18 @@ public class CustomerRequestFormGetDetailResponseDto {
 
         @CreatedDate
         @Column(nullable = false, updatable = false)
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
         private LocalDateTime createdAt;
+
+        private CakeSize cakeSize;
+        private Integer quantity;
+
 
         //생성자
 
         public ProposalGetListInternalDto(
                 Long proposalFormId, String storeName, String title,
+                CakeSize cakeSize, Integer quantity,
                 String content, Integer proposedPrice,
                 LocalDateTime proposedPickupDate, String image,
                 ProposalFormStatus status, LocalDateTime createdAt
@@ -117,6 +128,8 @@ public class CustomerRequestFormGetDetailResponseDto {
             this.proposalFormId = proposalFormId;
             this.storeName = storeName;
             this.title = title;
+            this.cakeSize = cakeSize;
+            this.quantity = quantity;
             this.content = content;
             this.proposedPrice = proposedPrice;
             this.proposedPickupDate = proposedPickupDate;

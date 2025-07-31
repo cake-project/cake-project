@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CustomerManagementService {
-
     private final MemberRepository memberRepository;
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
@@ -77,9 +76,9 @@ public class CustomerManagementService {
 
 //        // 비밀번호 변경
 //        if (passwordValidator.isPasswordChangeRequested(password)) {
-              //비밀번호와 비밀번호 확인값이 같은지 검사.
+        //비밀번호와 비밀번호 확인값이 같은지 검사.
 //            passwordValidator.validatePasswordMatch(password, passwordConfirm);
-              // 암호화 후 엔티티에 반영
+        // 암호화 후 엔티티에 반영
 //            customer.changePassword(passwordEncoder.encode(password));
 //        }
         // 3. 이름 검증

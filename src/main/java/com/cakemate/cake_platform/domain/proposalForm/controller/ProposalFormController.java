@@ -2,13 +2,11 @@ package com.cakemate.cake_platform.domain.proposalForm.controller;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
-import com.cakemate.cake_platform.domain.proposalForm.dto.ProposalFormContainsRequestFormDataDto;
-import com.cakemate.cake_platform.domain.proposalForm.dto.ProposalFormCreateRequestDto;
-import com.cakemate.cake_platform.domain.proposalForm.dto.ProposalFormDataDto;
-import com.cakemate.cake_platform.domain.proposalForm.dto.ProposalFormUpdateRequestDto;
+import com.cakemate.cake_platform.domain.proposalForm.dto.*;
 import com.cakemate.cake_platform.domain.proposalForm.service.CustomerProposalFormService;
 import com.cakemate.cake_platform.domain.proposalForm.service.ProposalFormService;
 import io.jsonwebtoken.Claims;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -52,9 +50,9 @@ public class ProposalFormController {
      * proposalForm 목록 조회 API
      */
     @GetMapping
-    public ApiResponse<List<ProposalFormContainsRequestFormDataDto>> getProposalFormsAPI(@RequestHeader("Authorization") String bearerToken) {
+    public ApiResponse<List<ProposalFormDataDto>> getProposalFormsAPI(@RequestHeader("Authorization") String bearerToken) {
         Long ownerId = jwtUtil.extractOwnerId(bearerToken);
-        ApiResponse<List<ProposalFormContainsRequestFormDataDto>> response = proposalFormService.getProposalFormList(ownerId);
+        ApiResponse<List<ProposalFormDataDto>> response = proposalFormService.getProposalFormList(ownerId);
         return response;
     }
 
@@ -79,5 +77,21 @@ public class ProposalFormController {
         Long ownerId = jwtUtil.extractOwnerId(bearerToken);
         ApiResponse<String> response = proposalFormService.deleteProposalForm(proposalFormId, ownerId);
         return response;
+    }
+
+    /**
+     * proposalForm 최종 확정 API
+     */
+    @PatchMapping("{proposalFormId}/confirm")
+    public ApiResponse<OwnerProposalFormConfirmResponseDto> updateProposalFormStatusAPI(@PathVariable Long proposalFormId,
+                                                                                        @RequestBody OwnerProposalFormConfirmRequestDto ownerProposalFormConfirmRequestDto,
+                                                                                        @RequestHeader("Authorization") String bearerToken
+
+    ) {
+        Long ownerId = jwtUtil.extractOwnerId(bearerToken);
+        OwnerProposalFormConfirmResponseDto responseDto = proposalFormService.confirmProposalForm(proposalFormId, ownerId, ownerProposalFormConfirmRequestDto);
+        ApiResponse<OwnerProposalFormConfirmResponseDto> response = ApiResponse.success(HttpStatus.OK, "견적서 최종 확정이 완료되었습니다.", responseDto);
+        return response;
+
     }
 }

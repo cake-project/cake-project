@@ -112,7 +112,7 @@ public class OwnerManagementService {
 
         return ApiResponse.success(
                 HttpStatus.OK, "점주 정보가 성공적으로 수정되었습니다.", updateOwnerProfileResponseDto
-                );
+        );
     }
 
     /**
@@ -140,5 +140,5 @@ public class OwnerManagementService {
         );
 
         return responseDto;
-}
+    }
 }
