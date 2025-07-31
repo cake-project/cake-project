@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/customers")
 public class CustomerManagementController {
-
     private final CustomerManagementService customerManagementService;
     private final JwtUtil jwtUtil;
 

@@ -7,7 +7,6 @@ import com.cakemate.cake_platform.domain.proposalForm.dto.CustomerProposalFormAc
 import com.cakemate.cake_platform.domain.proposalForm.dto.CustomerProposalFormDetailDto;
 import com.cakemate.cake_platform.domain.proposalForm.service.CustomerProposalFormService;
 import com.cakemate.cake_platform.domain.proposalForm.service.ProposalFormService;
-import io.jsonwebtoken.Claims;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 

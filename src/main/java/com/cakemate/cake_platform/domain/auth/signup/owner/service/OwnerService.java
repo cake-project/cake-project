@@ -2,9 +2,9 @@ package com.cakemate.cake_platform.domain.auth.signup.owner.service;
 
 import com.cakemate.cake_platform.common.command.SearchCommand;
 import com.cakemate.cake_platform.common.dto.ApiResponse;
-import com.cakemate.cake_platform.common.exception.OwnerNotFoundException;
 import com.cakemate.cake_platform.domain.auth.exception.EmailAlreadyExistsException;
 import com.cakemate.cake_platform.domain.auth.signup.owner.dto.response.OwnerSignUpResponse;
+import com.cakemate.cake_platform.common.exception.OwnerNotFoundException;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.auth.signup.owner.repository.OwnerRepository;
 import com.cakemate.cake_platform.domain.member.entity.Member;
