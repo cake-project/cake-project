@@ -1,5 +1,6 @@
 package com.cakemate.cake_platform.domain.requestForm.entity;
 
+import com.cakemate.cake_platform.common.entity.BaseTimeEntity;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import com.cakemate.cake_platform.common.commonEnum.CakeSize;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
@@ -12,11 +13,11 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "request_forms")
 //Auditing 은 감사하는 것 -> 리퀘스트 폼이라는 엔티티가 변경되면 감지를 해서 디비에 적용을 시켜주는 어노테이션
 //@EnableJpaAuditing 을 설정하먄 읽어 준다.-> 베이스 엔티티가 보는 상황(JpaConfig)
-@EntityListeners(AuditingEntityListener.class)
-public class RequestForm {
+public class RequestForm extends BaseTimeEntity {
 
     //속성
 
@@ -64,6 +65,7 @@ public class RequestForm {
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
 
 
     /**

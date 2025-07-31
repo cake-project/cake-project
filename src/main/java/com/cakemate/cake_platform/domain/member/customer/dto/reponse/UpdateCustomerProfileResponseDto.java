@@ -1,5 +1,6 @@
 package com.cakemate.cake_platform.domain.member.customer.dto.reponse;
 
+import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import lombok.Getter;
 
 @Getter

@@ -42,7 +42,7 @@ public class CustomerRequestFormGetDetailResponseDto {
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
         private LocalDateTime pickupDate;
         private RequestFormStatus requestStatus;
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
         private LocalDateTime createdAt;
 
         public String businessName;
@@ -109,7 +109,7 @@ public class CustomerRequestFormGetDetailResponseDto {
 
         @CreatedDate
         @Column(nullable = false, updatable = false)
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
         private LocalDateTime createdAt;
 
         private CakeSize cakeSize;
