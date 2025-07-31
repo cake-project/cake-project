@@ -1,6 +1,9 @@
 name: CI/CD Deploy
 
 on:
+  push:
+    branches:
+      - feature/kgs-배포테스트
   pull_request:
     branches: [ dev ]
 jobs:
@@ -23,6 +26,12 @@ jobs:
       # ✅ 빌드 시 테스트 제외 (원하면 --no-daemon만 사용)
       - name: Build Spring Boot App
         run: ./gradlew clean build -x test
+
+      - name: List project root
+        run: ls -l
+
+      - name: List build directory
+        run: ls -l build/
 
       - name: List build/libs directory
         run: ls -l build/libs/
