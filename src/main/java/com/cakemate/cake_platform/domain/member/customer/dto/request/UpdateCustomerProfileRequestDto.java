@@ -8,5 +8,4 @@ public class UpdateCustomerProfileRequestDto {
     private String passwordConfirm;
     private String customerName;
     private String phoneNumber;
-
 }

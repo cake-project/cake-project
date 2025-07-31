@@ -10,13 +10,6 @@ public class UpdateCustomerProfileResponseDto {
     private String customerName;
     private String phoneNumber;
 
-    public static UpdateCustomerProfileResponseDto from(Customer customer) {
-        return new UpdateCustomerProfileResponseDto(
-                customer.getId(), customer.getEmail(),
-                customer.getName(), customer.getPhoneNumber()
-        );
-    }
-
     public UpdateCustomerProfileResponseDto(Long customerId, String email, String customerName, String phoneNumber) {
         this.customerId = customerId;
         this.email = email;

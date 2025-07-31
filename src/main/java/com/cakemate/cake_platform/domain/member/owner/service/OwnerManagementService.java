@@ -40,7 +40,7 @@ public class OwnerManagementService {
      * @return
      */
     public OwnerProfileResponseDto getOwnerProfileService(Long ownerId) {
-        Owner owner = ownerRepository.findByIdAndIsDeletedFalse(ownerId)
+        Owner owner = ownerRepository.findById(ownerId)
                 .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
 
         if (owner.isDeleted()) {
@@ -48,10 +48,8 @@ public class OwnerManagementService {
         }
 
         OwnerProfileResponseDto responseDto = new OwnerProfileResponseDto(
-                owner.getEmail(),
-                owner.getPassword(),
-                owner.getPasswordConfirm(),
                 owner.getName(),
+                owner.getEmail(),
                 owner.getPhoneNumber()
         );
 
@@ -114,7 +112,7 @@ public class OwnerManagementService {
 
         return ApiResponse.success(
                 HttpStatus.OK, "점주 정보가 성공적으로 수정되었습니다.", updateOwnerProfileResponseDto
-                );
+        );
     }
 
     /**
@@ -135,8 +133,12 @@ public class OwnerManagementService {
         ownerRepository.save(owner);
 
         // 응답 DTO 생성 (필요에 따라 필드 추가)
-        OwnerProfileResponseDto responseDto = OwnerProfileResponseDto.from(owner);
+        OwnerProfileResponseDto responseDto = new OwnerProfileResponseDto(
+                owner.getName(),
+                owner.getEmail(),
+                owner.getPhoneNumber()
+        );
 
         return responseDto;
-}
+    }
 }
