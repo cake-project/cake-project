@@ -2,12 +2,11 @@ package com.cakemate.cake_platform.domain.proposalFormComment.controller;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
-import com.cakemate.cake_platform.domain.proposalForm.dto.ProposalFormContainsRequestFormDataDto;
 import com.cakemate.cake_platform.domain.proposalForm.service.ProposalFormService;
 import com.cakemate.cake_platform.domain.proposalFormComment.dto.request.CommentCreateRequestDto;
 import com.cakemate.cake_platform.domain.proposalFormComment.dto.response.CommentCreateResponseDto;
 import com.cakemate.cake_platform.domain.proposalFormComment.service.ProposalFormCommentService;
-import io.jsonwebtoken.Claims;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,14 +28,18 @@ public class ProposalFormCommentController {
      *  댓글 생성 API
      */
     @PostMapping("/proposal_forms/{proposalFormId}/comments")
-    public ApiResponse<CommentCreateResponseDto> createProposalFormComment(
+    public ResponseEntity<ApiResponse<CommentCreateResponseDto>> createProposalFormComment(
             @RequestHeader("Authorization") String bearerJwtToken,
             @PathVariable("proposalFormId") Long proposalFormId,
             @RequestBody CommentCreateRequestDto commentCreateRequestDto
     ) {
-        return proposalFormCommentService.createRequestFormCommentService(
-                commentCreateRequestDto, proposalFormId
+        ApiResponse<CommentCreateResponseDto> requestFormCommentService
+                = proposalFormCommentService.createRequestFormCommentService(
+                        bearerJwtToken, commentCreateRequestDto, proposalFormId
         );
+        ResponseEntity<ApiResponse<CommentCreateResponseDto>> response
+                = ResponseEntity.ok(requestFormCommentService);
+        return response;
     }
 
 

@@ -13,7 +13,7 @@ public class CommentCreateResponseDto {
     private Long ownerId;
     private String content;
 
-    public CommentCreateResponseDto(
+    private CommentCreateResponseDto(
             Long commentId, Long proposalFormId, Long customerId,
             Long ownerId, String content
     ) {
@@ -22,5 +22,15 @@ public class CommentCreateResponseDto {
         this.customerId = customerId;
         this.ownerId = ownerId;
         this.content = content;
+    }
+    public CommentCreateResponseDto() {}
+
+    public CommentCreateResponseDto createOwnerCommentResponseDto(Long commentId, Long proposalFormId,
+                                                                  Long ownerId, String content) {
+        return new CommentCreateResponseDto(commentId, proposalFormId, null, ownerId, content);
+    }
+    public CommentCreateResponseDto createCustomerCommentResponseDto(Long commentId, Long proposalFormId,
+                                                                     Long customerId, String content) {
+        return new CommentCreateResponseDto(commentId, proposalFormId, customerId, null, content);
     }
 }
