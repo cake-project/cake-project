@@ -29,7 +29,7 @@ public class RequestFormOwnerController {
      * @param requestFormId
      * @return
      */
-    @GetMapping("/owners/{ownerId}/request-forms/{requestFormId}")
+    @GetMapping("/owners/request-forms/{requestFormId}")
     public ApiResponse<RequestFormDetailOwnerResponseDto> getRequestDetailOwnerAPI(
             @RequestHeader("Authorization") String bearerJwtToken,
             @PathVariable Long requestFormId
@@ -50,7 +50,7 @@ public class RequestFormOwnerController {
      * @param size
      * @return
      */
-    @GetMapping("/owners/{ownerId}/request-forms")
+    @GetMapping("/owners/request-forms")
     public ApiResponse<RequestFormPageOwnerResponseDto> getRequestListOwnerAPI(
             @RequestHeader("Authorization") String bearerJwtToken,
             @RequestParam(defaultValue = "1") int page,
