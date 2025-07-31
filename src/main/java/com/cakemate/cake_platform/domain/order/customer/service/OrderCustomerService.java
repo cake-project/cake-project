@@ -141,6 +141,8 @@ public class OrderCustomerService {
                 order.getRequestForm().getId(),
                 order.getProposalForm().getId(),
                 Optional.ofNullable(order.getProductName()).orElse("상품 정보 없음"),
+                order.getProposalForm().getCakeSize().toString(),
+                order.getProposalForm().getQuantity(),
                 order.getAgreedPrice(),
                 order.getAgreedPickupDate(),
                 Optional.ofNullable(order.getFinalCakeImage()).orElse("케이크 이미지 없음")

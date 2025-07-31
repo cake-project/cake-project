@@ -23,6 +23,8 @@ public class CustomerOrderDetailResponseDto {
     private Long requestFormId;
     private Long proposalFormId;
     private String productName;
+    private String cakeSize;
+    private int quantity;
     private int agreedPrice;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime agreedPickupDate;
