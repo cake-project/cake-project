@@ -1,5 +1,7 @@
 package com.cakemate.cake_platform.common.command;
 
+import com.cakemate.cake_platform.domain.auth.entity.Customer;
+import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.auth.exception.InvalidPasswordFormatException;
 import com.cakemate.cake_platform.domain.auth.exception.PasswordMismatchException;
 import lombok.AllArgsConstructor;
@@ -14,10 +16,24 @@ public class SearchCommand {
     private String passwordConfirm;
     private String name;
     private String phoneNumber;
+    private Long customerId;
+    private Long ownerId;
+
+    public SearchCommand(String email, String password, String passwordConfirm, String name, String phoneNumber) {
+        this.email = email;
+        this.password = password;
+        this.passwordConfirm = passwordConfirm;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+    }
 
     public SearchCommand(String email, String password) {
         this.email = email;
         this.password = password;
+    }
+    public SearchCommand(Long customerId, Long ownerId) {
+        this.customerId = customerId;
+        this.ownerId = ownerId;
     }
 
     public boolean hasEmail() {
@@ -78,5 +94,21 @@ public class SearchCommand {
             throw new InvalidPasswordFormatException("비밀번호는 최소8자 이상, 하나 이상의 영문 대,소문자와 숫자+특수문자 조합이어야 합니다");
         }
 
+    }
+
+    public boolean hasCustomerId () {
+        if (this.customerId != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean hasOwerId() {
+        if (this.ownerId != null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

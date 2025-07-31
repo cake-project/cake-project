@@ -57,13 +57,16 @@ public class JwtUtil {
         }
 
     }
+
     //점주인지 소비자인지 구분하는 메서드
     public boolean isOwnerToken(Claims claims) {
-        return "OWNER".equals(claims.get("memberType", String.class));
+        boolean memberType = "OWNER".equals(claims.get("memberType", String.class));
+        return memberType;
     }
 
     public boolean isCustomerToken(Claims claims) {
-        return "CUSTOMER".equals(claims.get("memberType", String.class));
+        boolean memberType = "CUSTOMER".equals(claims.get("memberType", String.class));
+        return memberType;
     }
 
     private boolean hasOwnerId(Member member) {
@@ -113,6 +116,7 @@ public class JwtUtil {
         long memberId = Long.parseLong(claims.getSubject());
         return memberId;
     }
+
     //OwnerController에 사용
     public Long extractOwnerId(String authorizationHeader) {
         String token = substringToken(authorizationHeader);
@@ -124,6 +128,7 @@ public class JwtUtil {
 
         return subjectMemberId(claims);
     }
+
     //CustomerController에 사용
     public Long extractCustomerId(String authorizationHeader) {
         String token = substringToken(authorizationHeader);
