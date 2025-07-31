@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 
 @Getter
 @MappedSuperclass
@@ -27,10 +28,10 @@ public abstract class BaseTimeEntity {
 
     @PreUpdate
     public void modifiedAt() {
-        this.modifiedAt = LocalDateTime.now();
+        this.modifiedAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
     }
     @PrePersist
     public void createdAt() {
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
     }
 }
