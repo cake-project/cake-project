@@ -4,12 +4,14 @@ import lombok.Getter;
 
 @Getter
 public class CustomerProfileResponseDto {
-    private String name;
+    private Long customerId;
+    private String customerName;
     private String email;
     private String phoneNumber;
 
-    public CustomerProfileResponseDto(String name, String email, String phoneNumber) {
-        this.name = name;
+    public CustomerProfileResponseDto(Long customerId, String customerName, String email, String phoneNumber) {
+        this.customerId = customerId;
+        this.customerName = customerName;
         this.email = email;
         this.phoneNumber = phoneNumber;
     }
