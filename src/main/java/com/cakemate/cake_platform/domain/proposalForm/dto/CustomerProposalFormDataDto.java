@@ -28,11 +28,15 @@ public class CustomerProposalFormDataDto {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime createdAt;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime modifiedAt;
+
     private String status;
     private String image;
 
     //customer 전용 생성자(담당자 정보 제외)
-    public CustomerProposalFormDataDto(Long proposalFormId, Long requestFormId, String storeName, String title, CakeSize cakeSize, int quantity, String content, int proposedPrice, LocalDateTime proposedPickupDate, LocalDateTime createdAt, String status, String image) {
+    public CustomerProposalFormDataDto(Long proposalFormId, Long requestFormId, String storeName, String title, CakeSize cakeSize, int quantity, String content, int proposedPrice, LocalDateTime proposedPickupDate, LocalDateTime createdAt, LocalDateTime modifiedAt, String status, String image) {
         this.proposalFormId = proposalFormId;
         this.requestFormId = requestFormId;
         this.storeName = storeName;
@@ -43,6 +47,7 @@ public class CustomerProposalFormDataDto {
         this.proposedPrice = proposedPrice;
         this.proposedPickupDate = proposedPickupDate;
         this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
         this.status = status;
         this.image = image;
     }
