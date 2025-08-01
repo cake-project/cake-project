@@ -54,12 +54,12 @@ public class CustomerManagementController {
      * (소비자) 회원 탈퇴 API
      */
     @DeleteMapping("/me")
-    public ResponseEntity<ApiResponse<CustomerProfileResponseDto>> deleteCustomerProfile(
+    public ResponseEntity<ApiResponse<Void>> deleteCustomerProfile(
             @RequestHeader("Authorization") String bearerJwtToken
     ) {
         Long customerId = jwtUtil.extractCustomerId(bearerJwtToken);
 
-        CustomerProfileResponseDto dto = customerManagementService.deleteCustomerProfileService(customerId);
-        return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "소비자 탈퇴 성공", dto));
+        ApiResponse<Void> response = customerManagementService.deleteCustomerProfileService(customerId);
+        return ResponseEntity.ok(response);
     }
 }

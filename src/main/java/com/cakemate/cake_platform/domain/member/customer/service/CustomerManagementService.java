@@ -7,6 +7,7 @@ import com.cakemate.cake_platform.common.exception.MemberNotFoundException;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.auth.exception.BadRequestException;
+import com.cakemate.cake_platform.domain.auth.signup.customer.dto.response.CustomerSignUpResponse;
 import com.cakemate.cake_platform.domain.auth.signup.customer.repository.CustomerRepository;
 import com.cakemate.cake_platform.domain.member.customer.dto.CustomerProfileResponseDto;
 import com.cakemate.cake_platform.domain.member.customer.dto.reponse.UpdateCustomerProfileResponseDto;
@@ -119,24 +120,18 @@ public class CustomerManagementService {
      * 소비자 회원 탈퇴
      */
     @Transactional
-    public CustomerProfileResponseDto deleteCustomerProfileService(Long customerId) {
+    public ApiResponse<Void> deleteCustomerProfileService(Long customerId) {
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
 
         if (customer.isDeleted()) {
-            throw new IllegalArgumentException("이미 탈퇴한 회원입니다.");
+            throw new MemberAlreadyDeletedException("이미 탈퇴한 회원입니다.");
         }
 
         // soft delete 처리
         customer.delete();
         customerRepository.save(customer);
 
-        CustomerProfileResponseDto responseDto = new CustomerProfileResponseDto(
-                customer.getName(),
-                customer.getEmail(),
-                customer.getPhoneNumber()
-        );
-
-        return responseDto;
+        return ApiResponse.success(HttpStatus.OK, customer.getName() + "님, 회원탈퇴가 정상적으로 완료되었습니다.", null);
     }
 }

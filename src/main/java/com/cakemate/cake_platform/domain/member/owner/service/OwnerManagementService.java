@@ -12,11 +12,15 @@ import com.cakemate.cake_platform.domain.member.owner.dto.request.UpdateOwnerPro
 import com.cakemate.cake_platform.domain.member.owner.dto.response.OwnerProfileResponseDto;
 import com.cakemate.cake_platform.domain.member.owner.dto.response.UpdateOwnerProfileResponseDto;
 import com.cakemate.cake_platform.domain.member.repository.MemberRepository;
+import com.cakemate.cake_platform.domain.store.entity.Store;
 import com.cakemate.cake_platform.domain.store.owner.exception.NotFoundOwnerException;
+import com.cakemate.cake_platform.domain.store.repository.StoreRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 public class OwnerManagementService {
@@ -25,13 +29,15 @@ public class OwnerManagementService {
     private final OwnerRepository ownerRepository;
     private final PasswordEncoder passwordEncoder;
     private final PasswordValidator passwordValidator;
+    private final StoreRepository storeRepository;
 
 
-    public OwnerManagementService(MemberRepository memberRepository, OwnerRepository ownerRepository, PasswordEncoder passwordEncoder, PasswordValidator passwordValidator) {
+    public OwnerManagementService(MemberRepository memberRepository, OwnerRepository ownerRepository, PasswordEncoder passwordEncoder, PasswordValidator passwordValidator, StoreRepository storeRepository) {
         this.memberRepository = memberRepository;
         this.ownerRepository = ownerRepository;
         this.passwordEncoder = passwordEncoder;
         this.passwordValidator = passwordValidator;
+        this.storeRepository = storeRepository;
     }
 
     /**
@@ -119,7 +125,7 @@ public class OwnerManagementService {
      * 점주 회원 탈퇴
      */
     @Transactional
-    public OwnerProfileResponseDto deleteOwnerProfileService(Long ownerId) {
+    public ApiResponse<Void> deleteOwnerProfileService(Long ownerId) {
         Owner owner = ownerRepository.findByIdAndIsDeletedFalse(ownerId)
                 .orElseThrow(() -> new NotFoundOwnerException("점주 정보를 찾을 수 없습니다."));
 
@@ -132,13 +138,7 @@ public class OwnerManagementService {
         owner.delete();
         ownerRepository.save(owner);
 
-        // 응답 DTO 생성 (필요에 따라 필드 추가)
-        OwnerProfileResponseDto responseDto = new OwnerProfileResponseDto(
-                owner.getName(),
-                owner.getEmail(),
-                owner.getPhoneNumber()
-        );
+        return ApiResponse.success(HttpStatus.OK, owner.getName() + "님, 회원탈퇴가 정상적으로 완료되었습니다.", null);
 
-        return responseDto;
     }
 }
