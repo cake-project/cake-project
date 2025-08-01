@@ -16,6 +16,8 @@ public class StoreCustomerDetailResponseDto {
     private String image;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDateTime modifiedAt;
     private boolean isActive;
 
     //기본 생성자
@@ -30,6 +32,7 @@ public class StoreCustomerDetailResponseDto {
         this.phoneNumber = store.getPhoneNumber();
         this.image = store.getImage();
         this.createdAt = store.getCreatedAt();
+        this.modifiedAt = store.getModifiedAt();
         this.isActive = store.isActive();
     }
 }
