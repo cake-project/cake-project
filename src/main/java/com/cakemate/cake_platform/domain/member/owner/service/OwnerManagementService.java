@@ -7,7 +7,6 @@ import com.cakemate.cake_platform.common.exception.MemberNotFoundException;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.auth.exception.BadRequestException;
 import com.cakemate.cake_platform.domain.auth.signup.owner.repository.OwnerRepository;
-import com.cakemate.cake_platform.domain.member.customer.dto.CustomerProfileResponseDto;
 import com.cakemate.cake_platform.domain.member.owner.dto.request.UpdateOwnerProfileRequestDto;
 import com.cakemate.cake_platform.domain.member.owner.dto.response.OwnerProfileResponseDto;
 import com.cakemate.cake_platform.domain.member.owner.dto.response.UpdateOwnerProfileResponseDto;
