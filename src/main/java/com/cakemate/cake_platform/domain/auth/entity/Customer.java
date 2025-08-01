@@ -66,14 +66,12 @@ public class Customer extends BaseTimeEntity {
     }
 
     // 이름 & 전화번호 수정
-    public Customer updateProfile(String newName, String newPhoneNumber) {
-        if (newName == null || newName.isBlank()) {
-            throw new BadRequestException("이름은 빈 문자열일 수 없습니다.");
-        }
+    public Customer updateProfile(String newPhoneNumber) {
+
         if (newPhoneNumber == null || newPhoneNumber.isBlank()) {
             throw new BadRequestException("전화번호는 null 이거나 빈 문자열일 수 없습니다.");
         }
-        this.name = newName;
+
         this.phoneNumber = newPhoneNumber;
         return this;
     }

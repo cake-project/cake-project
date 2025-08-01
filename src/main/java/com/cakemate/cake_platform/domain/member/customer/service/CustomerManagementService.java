@@ -5,17 +5,13 @@ import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.common.exception.MemberAlreadyDeletedException;
 import com.cakemate.cake_platform.common.exception.MemberNotFoundException;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
-import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.auth.exception.BadRequestException;
 import com.cakemate.cake_platform.domain.auth.signup.customer.repository.CustomerRepository;
-import com.cakemate.cake_platform.domain.member.customer.dto.CustomerProfileResponseDto;
+import com.cakemate.cake_platform.domain.member.customer.dto.reponse.CustomerProfileResponseDto;
 import com.cakemate.cake_platform.domain.member.customer.dto.reponse.UpdateCustomerProfileResponseDto;
 import com.cakemate.cake_platform.domain.member.customer.dto.request.UpdateCustomerProfileRequestDto;
-import com.cakemate.cake_platform.domain.member.owner.dto.request.UpdateOwnerProfileRequestDto;
-import com.cakemate.cake_platform.domain.member.owner.dto.response.UpdateOwnerProfileResponseDto;
 import com.cakemate.cake_platform.domain.member.repository.MemberRepository;
 import com.cakemate.cake_platform.domain.store.owner.exception.NotFoundCustomerException;
-import com.cakemate.cake_platform.domain.store.owner.exception.NotFoundOwnerException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -67,7 +63,6 @@ public class CustomerManagementService {
         // 데이터 준비
         String password = dto.getPassword();
         String passwordConfirm = dto.getPasswordConfirm();
-        String name = dto.getCustomerName();
         String phoneNumber = dto.getPhoneNumber();
 
         // 소비자 조회 & 예외처리
@@ -81,10 +76,6 @@ public class CustomerManagementService {
         // 암호화 후 엔티티에 반영
 //            customer.changePassword(passwordEncoder.encode(password));
 //        }
-        // 3. 이름 검증
-        if (name == null || name.isBlank()) {
-            throw new BadRequestException("이름은 빈 문자열일 수 없습니다.");
-        }
 
         // 4. 전화번호 검증
         if (phoneNumber == null || !phoneNumber.matches("^010-[0-9]{4}-[0-9]{4}$")) {
@@ -100,7 +91,7 @@ public class CustomerManagementService {
         }
 
         // 이름 & 전화번호 업데이트
-        Customer updatedCustomer = customer.updateProfile(name, phoneNumber);
+        Customer updatedCustomer = customer.updateProfile(phoneNumber);
 
         // 응답 DTO 생성
         UpdateCustomerProfileResponseDto responseDto = new UpdateCustomerProfileResponseDto(

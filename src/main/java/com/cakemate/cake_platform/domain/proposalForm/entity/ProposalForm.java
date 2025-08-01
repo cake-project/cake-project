@@ -1,6 +1,7 @@
 package com.cakemate.cake_platform.domain.proposalForm.entity;
 
 import com.cakemate.cake_platform.common.commonEnum.CakeSize;
+import com.cakemate.cake_platform.common.entity.BaseTimeEntity;
 import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
 import com.cakemate.cake_platform.domain.proposalForm.exception.InvalidProposalStatusException;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
@@ -17,7 +18,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "proposal_forms")
 @EntityListeners(AuditingEntityListener.class)
-public class ProposalForm {
+public class ProposalForm extends BaseTimeEntity {
     //속성
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -70,10 +71,8 @@ public class ProposalForm {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
-    @CreatedDate
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
 
+    //생성자
     protected ProposalForm() {
     }
 
