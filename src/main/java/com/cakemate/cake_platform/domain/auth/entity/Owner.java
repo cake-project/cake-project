@@ -81,15 +81,12 @@ public class Owner extends BaseTimeEntity {
     /**
      * 아래는 (점주) 이름 & 전화번호 수정 시 쓰는 메소드 입니다.
      */
-    public Owner updateProfile(String newName, String newPhoneNumber) {
+    public Owner updateProfile(String newPhoneNumber) {
         // null 이 아니고 빈 문자열이 아닐 때만 저장
-        if (newName == null || newName.isBlank()) {
-            throw new BadRequestException("이름은 빈 문자열일 수 없습니다.");
-        }
         if (newPhoneNumber == null || newPhoneNumber.isBlank()) {
             throw new BadRequestException("전화번호는 null 이거나 빈 문자열일 수 없습니다.");
         }
-        this.name = newName;
+
         this.phoneNumber = newPhoneNumber;
 
         return this;
