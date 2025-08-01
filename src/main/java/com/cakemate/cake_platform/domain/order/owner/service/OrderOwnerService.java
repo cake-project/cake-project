@@ -72,7 +72,7 @@ public class OrderOwnerService {
      * 점주(가게) -> 주문 목록 조회 Service
      */
     public OwnerOrderPageResponseDto<OwnerOrderSummaryResponseDto> getOwnerStoreOrderPage(Long storeId, Long ownerId, Pageable pageable) {
-        Store store = storeRepository.findByOwnerIdAndIsDeletedFalse(storeId)
+        Store store = storeRepository.findByIdAndIsDeletedFalse(storeId)
                 .orElseThrow(() -> new StoreNotFoundException("가게를 찾을 수 없습니다."));
 
         if (!store.getOwner().getId().equals(ownerId)) {
