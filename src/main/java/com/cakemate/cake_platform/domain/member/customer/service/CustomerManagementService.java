@@ -67,7 +67,6 @@ public class CustomerManagementService {
         // 데이터 준비
         String password = dto.getPassword();
         String passwordConfirm = dto.getPasswordConfirm();
-        String name = dto.getCustomerName();
         String phoneNumber = dto.getPhoneNumber();
 
         // 소비자 조회 & 예외처리
@@ -81,10 +80,6 @@ public class CustomerManagementService {
         // 암호화 후 엔티티에 반영
 //            customer.changePassword(passwordEncoder.encode(password));
 //        }
-        // 3. 이름 검증
-        if (name == null || name.isBlank()) {
-            throw new BadRequestException("이름은 빈 문자열일 수 없습니다.");
-        }
 
         // 4. 전화번호 검증
         if (phoneNumber == null || !phoneNumber.matches("^010-[0-9]{4}-[0-9]{4}$")) {
@@ -100,7 +95,7 @@ public class CustomerManagementService {
         }
 
         // 이름 & 전화번호 업데이트
-        Customer updatedCustomer = customer.updateProfile(name, phoneNumber);
+        Customer updatedCustomer = customer.updateProfile(phoneNumber);
 
         // 응답 DTO 생성
         UpdateCustomerProfileResponseDto responseDto = new UpdateCustomerProfileResponseDto(
