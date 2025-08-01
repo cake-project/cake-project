@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 @Getter
 public class CustomerRequestFormCreateRequestDto {
 
+
     @NotNull(message = "제목을 입력하세요.")
     private String title;
 

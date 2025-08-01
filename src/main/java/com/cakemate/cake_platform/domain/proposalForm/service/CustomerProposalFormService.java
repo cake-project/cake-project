@@ -75,6 +75,7 @@ public class CustomerProposalFormService {
                 proposalForm.getProposedPrice(),
                 proposalForm.getProposedPickupDate(),
                 proposalForm.getCreatedAt(),
+                proposalForm.getModifiedAt(),
                 proposalForm.getStatus().name(),
                 proposalForm.getImage()
         );
