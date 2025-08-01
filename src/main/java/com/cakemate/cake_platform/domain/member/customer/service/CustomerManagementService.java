@@ -46,6 +46,7 @@ public class CustomerManagementService {
         }
 
         CustomerProfileResponseDto responseDto = new CustomerProfileResponseDto(
+                customer.getId(),
                 customer.getName(),
                 customer.getEmail(),
                 customer.getPhoneNumber()
@@ -123,6 +124,7 @@ public class CustomerManagementService {
         customerRepository.save(customer);
 
         CustomerProfileResponseDto responseDto = new CustomerProfileResponseDto(
+                customer.getId(),
                 customer.getName(),
                 customer.getEmail(),
                 customer.getPhoneNumber()
