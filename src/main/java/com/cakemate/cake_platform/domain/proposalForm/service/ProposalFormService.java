@@ -128,6 +128,7 @@ public class ProposalFormService {
                 savedProposalForm.getProposedPrice(),
                 savedProposalForm.getProposedPickupDate(),
                 savedProposalForm.getCreatedAt(),
+                savedProposalForm.getModifiedAt(),
                 savedProposalForm.getStatus().name(),
                 savedProposalForm.getImage()
         );
@@ -174,6 +175,7 @@ public class ProposalFormService {
                 foundProposalForm.getProposedPrice(),
                 foundProposalForm.getProposedPickupDate(),
                 foundProposalForm.getCreatedAt(),
+                foundProposalForm.getModifiedAt(),
                 foundProposalForm.getStatus().name(),
                 foundProposalForm.getImage()
         );
@@ -252,6 +254,7 @@ public class ProposalFormService {
                         proposalForm.getProposedPrice(),
                         proposalForm.getProposedPickupDate(),
                         proposalForm.getCreatedAt(),
+                        proposalForm.getModifiedAt(),
                         proposalForm.getStatus().name(),
                         proposalForm.getImage()
                 ))
@@ -279,10 +282,12 @@ public class ProposalFormService {
         if (!foundProposalForm.getOwner().getId().equals(owner.getId())) {
             throw new ProposalFormUpdateAccessDeniedException("견적서에 대한 수정 권한이 없습니다.");
         }
-        //status 검증(AWAITING일 때만 수정 가능)
-        if (foundProposalForm.getStatus() != ProposalFormStatus.AWAITING) {
-            throw new ProposalFormUpdateInvalidStatusException("AWAITING 상태일 때만 수정할 수 있습니다.");
+        //status 검증(AWAITING,ACCEPTED일 때만 수정 가능)
+        if (!(foundProposalForm.getStatus() == ProposalFormStatus.AWAITING
+                || foundProposalForm.getStatus() == ProposalFormStatus.ACCEPTED)) {
+            throw new ProposalFormUpdateInvalidStatusException("AWAITING 또는 ACCEPTED 상태일 때만 수정할 수 있습니다.");
         }
+
         //날짜, 가격 제한(과거 날짜, 마이너스 값 불가)
         if (requestDto.getProposedPickupDate().isBefore(LocalDateTime.now())) {
             throw new InvalidProposedPickupDateException("픽업일은 현재 시간보다 이후여야 합니다.");
@@ -319,6 +324,7 @@ public class ProposalFormService {
                 updatedProposalForm.getProposedPrice(),
                 updatedProposalForm.getProposedPickupDate(),
                 updatedProposalForm.getCreatedAt(),
+                updatedProposalForm.getModifiedAt(),
                 updatedProposalForm.getStatus().name(),
                 updatedProposalForm.getImage()
                 );
