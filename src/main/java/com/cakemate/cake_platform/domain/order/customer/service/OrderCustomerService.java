@@ -9,17 +9,14 @@ import com.cakemate.cake_platform.domain.order.customer.exception.ProposalAlread
 import com.cakemate.cake_platform.domain.order.customer.exception.ProposalFormNotConfirmedException;
 import com.cakemate.cake_platform.domain.order.entity.Order;
 import com.cakemate.cake_platform.domain.order.enums.OrderStatus;
-import com.cakemate.cake_platform.domain.order.customer.exception.MismatchedRequestAndProposalException;
 import com.cakemate.cake_platform.domain.order.customer.exception.UnauthorizedRequestFormAccessException;
 import com.cakemate.cake_platform.domain.order.repository.OrderRepository;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
-import com.cakemate.cake_platform.domain.proposalForm.exception.InvalidProposalStatusException;
 import com.cakemate.cake_platform.domain.proposalForm.repository.ProposalFormRepository;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
 import com.cakemate.cake_platform.common.dto.PageDto;
-import com.cakemate.cake_platform.domain.requestForm.repository.RequestFormRepository;
 import com.cakemate.cake_platform.domain.store.entity.Store;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,13 +33,11 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class OrderCustomerService {
     private final OrderRepository orderRepository;
-    private final RequestFormRepository requestFormRepository;
     private final ProposalFormRepository proposalFormRepository;
     private final CustomerRepository customerRepository;
 
-    public OrderCustomerService(OrderRepository orderRepository, RequestFormRepository requestFormRepository, ProposalFormRepository proposalFormRepository, CustomerRepository customerRepository) {
+    public OrderCustomerService(OrderRepository orderRepository, ProposalFormRepository proposalFormRepository, CustomerRepository customerRepository) {
         this.orderRepository = orderRepository;
-        this.requestFormRepository = requestFormRepository;
         this.proposalFormRepository = proposalFormRepository;
         this.customerRepository = customerRepository;
     }
@@ -52,7 +47,7 @@ public class OrderCustomerService {
      */
     @Transactional
     public CustomerOrderCreateResponseDto createOrderService(Long customerId, Long proposalFormId, CustomerOrderCreateRequestDto requestDto) {
-        ProposalForm proposalForm = proposalFormRepository.findById(proposalFormId)
+        ProposalForm proposalForm = proposalFormRepository.findByIdAndIsDeletedFalse(proposalFormId)
                 .orElseThrow(() -> new ProposalFormNotFoundException("견적서가 존재하지 않습니다."));
 
         boolean isAlreadyOrdered = orderRepository.existsByProposalForm(proposalForm);
@@ -87,7 +82,7 @@ public class OrderCustomerService {
         Store store = Optional.ofNullable(proposalForm.getStore())
                 .orElseThrow(() -> new StoreNotFoundException("견적서에 가게가 존재하지 않습니다."));
 
-        Customer customer = customerRepository.findById(customerId)
+        Customer customer = customerRepository.findByIdAndIsDeletedFalse(customerId)
                 .orElseThrow(() -> new CustomerNotFoundException("존재하지 않는 회원입니다."));
 
         // 주문 번호 생성
