@@ -9,6 +9,7 @@ import com.cakemate.cake_platform.domain.order.owner.dto.*;
 import com.cakemate.cake_platform.common.exception.UnauthorizedAccessException;
 import com.cakemate.cake_platform.domain.order.owner.exception.InvalidOrderStatusException;
 import com.cakemate.cake_platform.domain.order.repository.OrderRepository;
+import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
 import com.cakemate.cake_platform.domain.store.entity.Store;
 import com.cakemate.cake_platform.domain.store.repository.StoreRepository;
 import jakarta.validation.Valid;
@@ -126,10 +127,16 @@ public class OrderOwnerService {
         try {
             orderStatus = requestDto.getOrderStatusEnum();
         } catch (IllegalArgumentException e) {
-            throw new InvalidOrderStatusException("유효하지 않은 주문 상태 값입니다. 유효한 값: MAKE_WAITING, IN_PROGRESS, PRODUCTION_COMPLETED, READY_FOR_PICKUP, PICKED_UP, CUSTOMER_CANCELLED");
+            throw new InvalidOrderStatusException("유효하지 않은 주문 상태 값입니다. 유효한 값: MAKE_WAITING, READY_FOR_PICKUP, COMPLETED, CANCELLED");
         }
 
         order.updateOrderStatus(orderStatus);
+
+        // 주문 취소로 변경 시 견적서도 컨택 실패로 변경
+        if (orderStatus == OrderStatus.CANCELLED) {
+            Optional.ofNullable(order.getProposalForm())
+                    .ifPresent(proposalForm -> proposalForm.updateStatus(ProposalFormStatus.CANCELLED));
+        }
 
         OwnerOrderStatusUpdateResponseDto responseDto = new OwnerOrderStatusUpdateResponseDto(
                 order.getId(),
