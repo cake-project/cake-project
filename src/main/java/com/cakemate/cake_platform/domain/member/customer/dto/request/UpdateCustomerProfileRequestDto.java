@@ -6,6 +6,5 @@ import lombok.Getter;
 public class UpdateCustomerProfileRequestDto {
     private String password;
     private String passwordConfirm;
-    private String customerName;
     private String phoneNumber;
 }

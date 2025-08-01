@@ -7,7 +7,6 @@ import com.cakemate.cake_platform.common.exception.MemberNotFoundException;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.auth.exception.BadRequestException;
 import com.cakemate.cake_platform.domain.auth.signup.owner.repository.OwnerRepository;
-import com.cakemate.cake_platform.domain.member.customer.dto.CustomerProfileResponseDto;
 import com.cakemate.cake_platform.domain.member.owner.dto.request.UpdateOwnerProfileRequestDto;
 import com.cakemate.cake_platform.domain.member.owner.dto.response.OwnerProfileResponseDto;
 import com.cakemate.cake_platform.domain.member.owner.dto.response.UpdateOwnerProfileResponseDto;
@@ -72,7 +71,6 @@ public class OwnerManagementService {
         //데이터준비
         String password = updateOwnerProfileRequestDto.getPassword();
         String passwordConfirm = updateOwnerProfileRequestDto.getPasswordConfirm();
-        String name = updateOwnerProfileRequestDto.getName();
         String phoneNumber = updateOwnerProfileRequestDto.getPhoneNumber();
 
         //점주 조회 & 예외처리
@@ -86,10 +84,6 @@ public class OwnerManagementService {
 //            // 암호화 후 엔티티에 반영
 //            owner.changePassword(passwordEncoder.encode(password));
 //        }
-        // 이름 검증 → null 이거나 빈 문자열이면 예외
-        if (name == null || name.isBlank()) {
-            throw new BadRequestException("이름은 빈 문자열일 수 없습니다.");
-        }
 
         // 전화번호 검증 → null 이거나 정규식 불일치면 예외
         if (phoneNumber == null || !phoneNumber.matches("^010-[0-9]{4}-[0-9]{4}$")) {
@@ -104,7 +98,7 @@ public class OwnerManagementService {
             owner.changePassword(passwordEncoder.encode(password));
         }
         // 이름 & 전화번호 업데이트
-        Owner updateOwnerProfile = owner.updateProfile(name, phoneNumber);
+        Owner updateOwnerProfile = owner.updateProfile(phoneNumber);
         Long foundOwnerId = updateOwnerProfile.getId();
         String updateOwnerProfileName = updateOwnerProfile.getName();
         String updateOwnerProfileEmail = updateOwnerProfile.getEmail();

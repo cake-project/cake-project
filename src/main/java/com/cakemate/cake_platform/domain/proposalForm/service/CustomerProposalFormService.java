@@ -113,7 +113,7 @@ public class CustomerProposalFormService {
      */
     @Transactional
     public CustomerProposalFormAcceptResponseDto acceptProposalFormByCustomer(Long proposalFormId, Long customerId, CustomerProposalFormAcceptRequestDto requestDto) {
-        ProposalForm proposalForm = proposalFormRepository.findById(proposalFormId)
+        ProposalForm proposalForm = proposalFormRepository.findByIdAndIsDeletedFalse(proposalFormId)
                 .orElseThrow(() -> new ProposalFormNotFoundException("견적서가 존재하지 않습니다."));
 
         RequestForm requestForm = Objects.requireNonNull(proposalForm.getRequestForm(), "견적서에 연결된 의뢰서가 없습니다.");
