@@ -368,7 +368,7 @@ public class ProposalFormService {
      */
     @Transactional
     public OwnerProposalFormConfirmResponseDto confirmProposalForm(Long proposalFormId, Long ownerId, OwnerProposalFormConfirmRequestDto requestDto) {
-        ProposalForm proposalForm = proposalFormRepository.findById(proposalFormId)
+        ProposalForm proposalForm = proposalFormRepository.findByIdAndIsDeletedFalse(proposalFormId)
                 .orElseThrow(() -> new ProposalFormNotFoundException("견적서를 찾을 수 없습니다."));
 
         if (!proposalForm.getOwner().getId().equals(ownerId)) {
