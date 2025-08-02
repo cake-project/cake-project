@@ -145,6 +145,7 @@ public class ProposalFormCommentService {
                 HttpStatus.OK, "댓글 작성 성공", customerCommentResponseDto
         );
     }
+
     /**
      * 토큰에서 점주 여부 확인
      */
