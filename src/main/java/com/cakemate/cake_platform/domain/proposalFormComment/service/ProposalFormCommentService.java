@@ -86,10 +86,10 @@ public class ProposalFormCommentService {
             ProposalForm proposalForm = proposalFormRepository.findByIdAndIsDeletedFalse(proposalFormId)
                     .orElseThrow(() -> new MemberAlreadyDeletedException("댓글을 달 견적서가 존재하지 않습니다."));
 
-            // 3. 권한 검증: 본인과 관련 있는 견적서만 댓글 가능
+            //  권한 검증: 본인과 관련 있는 견적서만 댓글 가능
             boolean isAuthorized = false;
             if (proposalForm.getRequestForm() != null
-                    && proposalForm.getRequestForm().getCustomer().getId().equals(memberId)) {  // [수정] 고객 접근
+                    && proposalForm.getRequestForm().getCustomer().getId().equals(memberId)) {  // 고객 접근
                 isAuthorized = true;
             }
             if (proposalForm.getOwner() != null
@@ -98,7 +98,7 @@ public class ProposalFormCommentService {
             }
             if (!isAuthorized) {
                 throw new UnauthorizedProposalCommentException("본인과 관련 없는 견적서에는 댓글을 작성할 수 없습니다.");
-            }//UnauthorizedAccessException
+            }
 
             // 댓글 엔티티 생성 및 저장
             ProposalFormComment proposalFormComment = ProposalFormComment.create(proposalForm, customer, owner, content);
@@ -128,6 +128,19 @@ public class ProposalFormCommentService {
         // 견적서 조회 (삭제된 경우 예외)
         ProposalForm proposalForm = proposalFormRepository.findByIdAndIsDeletedFalse(proposalFormId)
                 .orElseThrow(() -> new MemberAlreadyDeletedException("댓글을 달 견적서가 존재하지 않습니다."));
+
+        boolean isAuthorized = false;
+        if (proposalForm.getRequestForm() != null
+                && proposalForm.getRequestForm().getCustomer().getId().equals(memberId)) {  // 고객 접근
+            isAuthorized = true;
+        }
+        if (proposalForm.getOwner() != null
+                && proposalForm.getOwner().getId().equals(memberId)) {  // 점주 접근
+            isAuthorized = true;
+        }
+        if (!isAuthorized) {
+            throw new UnauthorizedProposalCommentException("본인과 관련 없는 견적서에는 댓글을 작성할 수 없습니다.");
+        }
 
         // 댓글 생성 및 저장
         ProposalFormComment proposalFormComment = ProposalFormComment.create(proposalForm, customer, owner, content);
