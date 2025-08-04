@@ -14,6 +14,7 @@ import com.cakemate.cake_platform.domain.proposalFormComment.dto.request.Comment
 import com.cakemate.cake_platform.domain.proposalFormComment.dto.response.CommentCreateResponseDto;
 import com.cakemate.cake_platform.domain.proposalFormComment.entity.ProposalFormComment;
 
+import com.cakemate.cake_platform.domain.proposalFormComment.exception.UnauthorizedProposalCommentException;
 import com.cakemate.cake_platform.domain.proposalFormComment.repository.ProposalFormCommentRepository;
 import com.cakemate.cake_platform.domain.store.owner.exception.NotFoundCustomerException;
 import com.cakemate.cake_platform.domain.store.owner.exception.NotFoundOwnerException;
@@ -65,7 +66,7 @@ public class ProposalFormCommentService {
 
         // 유효한 사용자 유형이 아닐 경우 예외 발생
         if (!isOwner && !isCustomer) {
-            throw new UnauthorizedAccessException("유효하지 않은 사용자 유형입니다.");
+            throw new UnauthorizedProposalCommentException("유효하지 않은 사용자 유형입니다.");
         }
 
         // 토큰에서 memberId 추출
@@ -97,7 +98,7 @@ public class ProposalFormCommentService {
                 isAuthorized = true;
             }
             if (!isAuthorized) {
-                throw new UnauthorizedAccessException("본인과 관련 없는 견적서에는 댓글을 작성할 수 없습니다.");
+                throw new UnauthorizedProposalCommentException("본인과 관련 없는 견적서에는 댓글을 작성할 수 없습니다.");
             }
 
             // 댓글 엔티티 생성 및 저장
