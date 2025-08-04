@@ -2,11 +2,11 @@ package com.cakemate.cake_platform.domain.proposalForm.service;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.common.exception.ProposalFormNotFoundException;
+import com.cakemate.cake_platform.common.exception.RequestFormNotFoundException;
 import com.cakemate.cake_platform.common.exception.UnauthorizedAccessException;
 import com.cakemate.cake_platform.domain.proposalForm.dto.*;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
-import com.cakemate.cake_platform.domain.proposalForm.exception.InvalidProposalStatusException;
 import com.cakemate.cake_platform.domain.proposalForm.exception.ProposalAlreadyAcceptedException;
 import com.cakemate.cake_platform.domain.proposalForm.repository.ProposalFormRepository;
 import com.cakemate.cake_platform.domain.proposalFormComment.entity.ProposalFormComment;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,7 +33,7 @@ public class CustomerProposalFormService {
     }
 
     /**
-     *customer 전용 견적서 상세 조회
+     * customer 전용 견적서 상세 조회
      */
 
     @Transactional(readOnly = true)
@@ -112,11 +112,12 @@ public class CustomerProposalFormService {
      * 소비자 -> 견적서 선택 기능
      */
     @Transactional
-    public CustomerProposalFormAcceptResponseDto acceptProposalFormByCustomer(Long proposalFormId, Long customerId, CustomerProposalFormAcceptRequestDto requestDto) {
+    public CustomerProposalFormAcceptResponseDto acceptProposalFormByCustomer(Long proposalFormId, Long customerId) {
         ProposalForm proposalForm = proposalFormRepository.findByIdAndIsDeletedFalse(proposalFormId)
                 .orElseThrow(() -> new ProposalFormNotFoundException("견적서가 존재하지 않습니다."));
 
-        RequestForm requestForm = Objects.requireNonNull(proposalForm.getRequestForm(), "견적서에 연결된 의뢰서가 없습니다.");
+        RequestForm requestForm = Optional.ofNullable(proposalForm.getRequestForm())
+                .orElseThrow(() -> new RequestFormNotFoundException("견적서에 연결된 의뢰서가 존재하지 않습니다."));
 
         if (!requestForm.getCustomer().getId().equals(customerId)) {
             throw new UnauthorizedAccessException("본인의 의뢰서가 아닙니다.");
@@ -127,14 +128,7 @@ public class CustomerProposalFormService {
             throw new ProposalAlreadyAcceptedException("이미 선택한 견적서가 있습니다.");
         }
 
-        ProposalFormStatus proposalFormStatus;
-        try {
-            proposalFormStatus = requestDto.getProposalFormStatusEnum();
-        } catch (IllegalArgumentException e) {
-            throw new InvalidProposalStatusException("유효하지 않은 견적서 상태입니다.");
-        }
-
-        proposalForm.acceptStatus(proposalFormStatus);
+        proposalForm.acceptStatus(ProposalFormStatus.ACCEPTED);
 
         CustomerProposalFormAcceptResponseDto responseDto = new CustomerProposalFormAcceptResponseDto(proposalForm.getId(), proposalForm.getStatus());
         return responseDto;
