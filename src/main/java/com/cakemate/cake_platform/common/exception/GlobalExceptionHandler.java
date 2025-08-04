@@ -242,7 +242,7 @@ public class GlobalExceptionHandler {
 
     // 접근 권한이 없는 경우 발생하는 예외입니다.
     @ExceptionHandler(UnauthorizedAccessException.class)
-    public ResponseEntity<ApiResponse<Void>> handleUnauthorizedAccessException(UnauthorizedProposalCommentException ex) {
+    public ResponseEntity<ApiResponse<Void>> handleUnauthorizedAccessException(UnauthorizedAccessException ex) {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body(ApiResponse.error(HttpStatus.FORBIDDEN, ex.getMessage()));
@@ -369,7 +369,7 @@ public class GlobalExceptionHandler {
     }
     //proposalFormComment - 본인과 관련 없는 견적서에는 댓글을 작성할 수 없습니다.
     @ExceptionHandler(UnauthorizedProposalCommentException.class)
-    public ResponseEntity<ApiResponse<Void>> handleUnauthorizedProposalCommentException(com.cakemate.cake_platform.domain.proposalFormComment.exception.UnauthorizedProposalCommentException ex) {
+    public ResponseEntity<ApiResponse<Void>> handleUnauthorizedProposalCommentException(UnauthorizedProposalCommentException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
