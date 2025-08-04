@@ -1,6 +1,5 @@
 package com.cakemate.cake_platform.domain.requestForm.entity;
 
-import com.cakemate.cake_platform.common.entity.BaseTimeEntity;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import com.cakemate.cake_platform.common.commonEnum.CakeSize;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
@@ -10,6 +9,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+
 
 @Getter
 @Entity

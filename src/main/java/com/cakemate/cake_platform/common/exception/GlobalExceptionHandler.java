@@ -6,6 +6,7 @@ import com.cakemate.cake_platform.domain.order.customer.exception.ProposalAlread
 import com.cakemate.cake_platform.domain.order.customer.exception.ProposalFormNotConfirmedException;
 import com.cakemate.cake_platform.domain.order.owner.exception.InvalidOrderStatusException;
 import com.cakemate.cake_platform.domain.proposalForm.exception.*;
+import com.cakemate.cake_platform.domain.proposalFormComment.exception.UnauthorizedProposalCommentException;
 import com.cakemate.cake_platform.domain.requestForm.exception.RequestFormAccessDeniedException;
 import com.cakemate.cake_platform.domain.order.customer.exception.MismatchedRequestAndProposalException;
 import com.cakemate.cake_platform.domain.order.customer.exception.UnauthorizedRequestFormAccessException;
@@ -366,5 +367,13 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
+    //proposalFormComment - 본인과 관련 없는 견적서에는 댓글을 작성할 수 없습니다.
+    @ExceptionHandler(UnauthorizedProposalCommentException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUnauthorizedProposalCommentException(UnauthorizedProposalCommentException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
 
 }
