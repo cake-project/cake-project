@@ -2,7 +2,6 @@ package com.cakemate.cake_platform.domain.proposalForm.controller;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
-import com.cakemate.cake_platform.domain.proposalForm.dto.CustomerProposalFormAcceptRequestDto;
 import com.cakemate.cake_platform.domain.proposalForm.dto.CustomerProposalFormAcceptResponseDto;
 import com.cakemate.cake_platform.domain.proposalForm.dto.CustomerProposalFormDetailDto;
 import com.cakemate.cake_platform.domain.proposalForm.service.CustomerProposalFormService;
@@ -43,12 +42,11 @@ public class CustomerProposalFormController {
     @PatchMapping("/{proposalFormId}/accept")
     public ApiResponse<CustomerProposalFormAcceptResponseDto> acceptProposalFormByCustomer(
             @PathVariable Long proposalFormId,
-            @RequestBody CustomerProposalFormAcceptRequestDto requestDto,
             @RequestHeader("Authorization") String bearerToken
     ) {
         Long customerId = jwtUtil.extractCustomerId(bearerToken);
 
-        CustomerProposalFormAcceptResponseDto responseDto = customerProposalFormService.acceptProposalFormByCustomer(proposalFormId, customerId, requestDto);
+        CustomerProposalFormAcceptResponseDto responseDto = customerProposalFormService.acceptProposalFormByCustomer(proposalFormId, customerId);
         ApiResponse<CustomerProposalFormAcceptResponseDto> response = ApiResponse.success(HttpStatus.OK, "견적서 선택이 완료되었습니다.", responseDto);
         return response;
     }

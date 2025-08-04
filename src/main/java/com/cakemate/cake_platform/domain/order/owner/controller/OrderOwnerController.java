@@ -24,10 +24,10 @@ public class OrderOwnerController {
     /**
      * 점주(가게) -> 주문 상세 조회 API
      */
-    @GetMapping("owners/stores/{storeId}/orders/{orderId}")
+    @GetMapping("/owners/orders/{orderId}")
     public ApiResponse<OwnerOrderDetailResponseDto> getOwnerStoreOrderDetail(
             @RequestHeader("Authorization") String bearerJwtToken,
-            @PathVariable Long storeId,
+            @RequestParam Long storeId,
             @PathVariable Long orderId
     ) {
         Long ownerId = jwtUtil.extractOwnerId(bearerJwtToken);
@@ -40,10 +40,10 @@ public class OrderOwnerController {
     /**
      * 점주(가게) -> 주문 목록 조회 API
      */
-    @GetMapping("owners/stores/{storeId}/orders")
+    @GetMapping("/owners/orders")
     public ApiResponse<OwnerOrderPageResponseDto<OwnerOrderSummaryResponseDto>> getOwnerStoreOrderPage(
             @RequestHeader("Authorization") String bearerJwtToken,
-            @PathVariable Long storeId,
+            @RequestParam Long storeId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
@@ -63,10 +63,10 @@ public class OrderOwnerController {
      * @param bearerJwtToken
      * @param ownerOrderStatusUpdateRequestDto
      */
-    @PatchMapping("owners/stores/{storeId}/orders/{orderId}")
+    @PatchMapping("/owners/orders/{orderId}")
     public ApiResponse<OwnerOrderStatusUpdateResponseDto> updateStoreOrderStatusByOwner(
             @RequestHeader("Authorization") String bearerJwtToken,
-            @PathVariable Long storeId,
+            @RequestParam Long storeId,
             @PathVariable Long orderId,
             @RequestBody OwnerOrderStatusUpdateRequestDto ownerOrderStatusUpdateRequestDto
     ) {
