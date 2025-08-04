@@ -3,7 +3,7 @@ package com.cakemate.cake_platform.domain.proposalForm.service;
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.common.exception.ProposalFormNotFoundException;
 import com.cakemate.cake_platform.common.exception.RequestFormNotFoundException;
-import com.cakemate.cake_platform.common.exception.UnauthorizedAccessException;
+import com.cakemate.cake_platform.common.exception.UnauthorizedProposalCommentException;
 import com.cakemate.cake_platform.domain.proposalForm.dto.*;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
@@ -45,7 +45,7 @@ public class CustomerProposalFormService {
 
         //검증 로직
         if (!requestForm.getCustomer().getId().equals(customerId)) {
-            throw new UnauthorizedAccessException("조회 권한이 없습니다.");
+            throw new UnauthorizedProposalCommentException("조회 권한이 없습니다.");
         }
 
         // 의뢰서 DTO 만들기
@@ -120,7 +120,7 @@ public class CustomerProposalFormService {
                 .orElseThrow(() -> new RequestFormNotFoundException("견적서에 연결된 의뢰서가 존재하지 않습니다."));
 
         if (!requestForm.getCustomer().getId().equals(customerId)) {
-            throw new UnauthorizedAccessException("본인의 의뢰서가 아닙니다.");
+            throw new UnauthorizedProposalCommentException("본인의 의뢰서가 아닙니다.");
         }
 
         boolean alreadyAccepted = proposalFormRepository.existsByRequestFormIdAndStatus(requestForm.getId(), ProposalFormStatus.ACCEPTED);
