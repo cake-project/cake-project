@@ -152,7 +152,7 @@ public class ProposalFormService {
 
         //권한 검증 추가
         if (!foundProposalForm.getStore().getOwner().getId().equals(ownerId)) {
-            throw new UnauthorizedProposalCommentException("조회 권한이 없습니다.");
+            throw new UnauthorizedAccessException("조회 권한이 없습니다.");
         }
 
         //RequestForm 조회
@@ -372,7 +372,7 @@ public class ProposalFormService {
                 .orElseThrow(() -> new ProposalFormNotFoundException("견적서를 찾을 수 없습니다."));
 
         if (!proposalForm.getOwner().getId().equals(ownerId)) {
-            throw new UnauthorizedProposalCommentException("접근 권한이 없습니다.");
+            throw new UnauthorizedAccessException("접근 권한이 없습니다.");
         }
 
         proposalForm.confirmStatus(ProposalFormStatus.CONFIRMED);

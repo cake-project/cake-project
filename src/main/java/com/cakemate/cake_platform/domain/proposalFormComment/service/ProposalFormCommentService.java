@@ -2,7 +2,6 @@ package com.cakemate.cake_platform.domain.proposalFormComment.service;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.common.exception.MemberAlreadyDeletedException;
-import com.cakemate.cake_platform.common.exception.UnauthorizedProposalCommentException;
 import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;

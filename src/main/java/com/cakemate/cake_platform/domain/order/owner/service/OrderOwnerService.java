@@ -3,10 +3,10 @@ package com.cakemate.cake_platform.domain.order.owner.service;
 import com.cakemate.cake_platform.common.dto.PageDto;
 import com.cakemate.cake_platform.common.exception.OrderNotFoundException;
 import com.cakemate.cake_platform.common.exception.StoreNotFoundException;
+import com.cakemate.cake_platform.common.exception.UnauthorizedAccessException;
 import com.cakemate.cake_platform.domain.order.entity.Order;
 import com.cakemate.cake_platform.domain.order.enums.OrderStatus;
 import com.cakemate.cake_platform.domain.order.owner.dto.*;
-import com.cakemate.cake_platform.common.exception.UnauthorizedProposalCommentException;
 import com.cakemate.cake_platform.domain.order.owner.exception.InvalidOrderStatusException;
 import com.cakemate.cake_platform.domain.order.repository.OrderRepository;
 import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
@@ -42,7 +42,7 @@ public class OrderOwnerService {
                 .orElseThrow(() -> new StoreNotFoundException("가게를 찾을 수 없습니다."));
 
         if (!store.getOwner().getId().equals(ownerId)) {
-            throw new UnauthorizedProposalCommentException("본인 가게가 아닙니다.");
+            throw new UnauthorizedAccessException("본인 가게가 아닙니다.");
         }
 
         Order order = orderRepository.findByStoreIdAndId(storeId, orderId)
@@ -76,7 +76,7 @@ public class OrderOwnerService {
                 .orElseThrow(() -> new StoreNotFoundException("가게를 찾을 수 없습니다."));
 
         if (!store.getOwner().getId().equals(ownerId)) {
-            throw new UnauthorizedProposalCommentException("본인 가게가 아닙니다.");
+            throw new UnauthorizedAccessException("본인 가게가 아닙니다.");
         }
 
         Page<Order> orderPage = orderRepository.findByStoreId(storeId, pageable);
@@ -117,7 +117,7 @@ public class OrderOwnerService {
                 .orElseThrow(() -> new StoreNotFoundException("가게를 찾을 수 없습니다."));
 
         if (!store.getOwner().getId().equals(ownerId)) {
-            throw new UnauthorizedProposalCommentException("본인 가게가 아닙니다.");
+            throw new UnauthorizedAccessException("본인 가게가 아닙니다.");
         }
 
         Order order = orderRepository.findByStoreIdAndId(storeId, orderId)

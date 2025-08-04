@@ -2,7 +2,8 @@ package com.cakemate.cake_platform.domain.requestForm.owner.service;
 
 import com.cakemate.cake_platform.common.exception.RequestFormNotFoundException;
 import com.cakemate.cake_platform.common.exception.StoreNotFoundException;
-import com.cakemate.cake_platform.common.exception.UnauthorizedProposalCommentException;
+
+import com.cakemate.cake_platform.common.exception.UnauthorizedAccessException;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
 import com.cakemate.cake_platform.common.dto.PageDto;
@@ -62,7 +63,7 @@ public class RequestFormOwnerService {
         }
 
         if (!requestForm.getRegion().contains(cityName)) {
-            throw new UnauthorizedProposalCommentException("접근 권한이 없습니다.");
+            throw new UnauthorizedAccessException("접근 권한이 없습니다.");
         }
 
         Long id = requestForm.getId();
