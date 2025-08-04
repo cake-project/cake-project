@@ -3,7 +3,8 @@ package com.cakemate.cake_platform.domain.order.enums;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
 
 public enum OrderStatus {
-    MAKE_WAITING("MAKE_WAITING", "대기 중"),
+    AWAITING_PAYMENT("AWAITING_PAYMENT", "결제 대기 중"),
+    MAKE_WAITING("MAKE_WAITING", "제작 대기 중"),
     READY_FOR_PICKUP("READY_FOR_PICKUP", "상품 픽업 대기 중"),
     COMPLETED("COMPLETED", "주문 완료"),
     CANCELLED("CANCELLED", "주문 취소");

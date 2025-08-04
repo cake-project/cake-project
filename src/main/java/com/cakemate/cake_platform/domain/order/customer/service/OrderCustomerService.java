@@ -95,7 +95,7 @@ public class OrderCustomerService {
                 .store(store)
                 .requestForm(requestForm)
                 .proposalForm(proposalForm)
-                .status(OrderStatus.MAKE_WAITING)
+                .status(OrderStatus.AWAITING_PAYMENT)
                 .customerName(requestDto.getCustomerName())
                 .customerPhoneNumber(customer.getPhoneNumber())
                 .storeBusinessName(store.getBusinessName())
@@ -111,7 +111,7 @@ public class OrderCustomerService {
         orderRepository.save(order);
 
         CustomerOrderCreateResponseDto responseDto = new CustomerOrderCreateResponseDto(
-                order.getId(), orderNumber, OrderStatus.MAKE_WAITING, LocalDateTime.now()
+                order.getId(), orderNumber, order.getStatus(), LocalDateTime.now()
         );
         return responseDto;
     }
