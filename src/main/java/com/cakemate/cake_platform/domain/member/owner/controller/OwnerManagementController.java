@@ -53,15 +53,15 @@ public class OwnerManagementController {
     }
 
     /**
-     * 점주 회원 탈퇴
+     * (점주) 회원 탈퇴 API
      */
     @DeleteMapping("/me")
-    public ResponseEntity<ApiResponse<OwnerProfileResponseDto>> deleteOwnerProfile(
+    public ResponseEntity<ApiResponse<Void>> deleteOwnerProfile(
             @RequestHeader("Authorization") String bearerJwtToken
     ) {
         Long ownerId = jwtUtil.extractOwnerId(bearerJwtToken);
 
-        OwnerProfileResponseDto dto = ownerManagementService.deleteOwnerProfileService(ownerId);
-        return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "점주 탈퇴 성공", dto));
+        ApiResponse<Void> response = ownerManagementService.deleteOwnerProfileService(ownerId);
+        return ResponseEntity.ok(response);
     }
 }
