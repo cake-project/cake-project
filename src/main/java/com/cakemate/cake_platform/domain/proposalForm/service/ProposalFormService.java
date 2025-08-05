@@ -367,22 +367,15 @@ public class ProposalFormService {
      * proposalForm 최종 확정 서비스
      */
     @Transactional
-    public OwnerProposalFormConfirmResponseDto confirmProposalForm(Long proposalFormId, Long ownerId, OwnerProposalFormConfirmRequestDto requestDto) {
-        ProposalForm proposalForm = proposalFormRepository.findById(proposalFormId)
+    public OwnerProposalFormConfirmResponseDto confirmProposalForm(Long proposalFormId, Long ownerId) {
+        ProposalForm proposalForm = proposalFormRepository.findByIdAndIsDeletedFalse(proposalFormId)
                 .orElseThrow(() -> new ProposalFormNotFoundException("견적서를 찾을 수 없습니다."));
 
         if (!proposalForm.getOwner().getId().equals(ownerId)) {
             throw new UnauthorizedAccessException("접근 권한이 없습니다.");
         }
 
-        ProposalFormStatus proposalFormStatus;
-        try {
-            proposalFormStatus = requestDto.getProposalFormStatusEnum();
-        } catch (IllegalArgumentException e) {
-            throw new InvalidProposalStatusException("유효하지 않은 견적서 상태 값입니다.");
-        }
-
-        proposalForm.confirmStatus(proposalFormStatus);
+        proposalForm.confirmStatus(ProposalFormStatus.CONFIRMED);
 
         OwnerProposalFormConfirmResponseDto responseDto = new OwnerProposalFormConfirmResponseDto(proposalForm.getId(), proposalForm.getStatus());
         return responseDto;

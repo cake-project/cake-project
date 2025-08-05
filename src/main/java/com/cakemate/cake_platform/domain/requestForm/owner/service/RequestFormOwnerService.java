@@ -2,6 +2,7 @@ package com.cakemate.cake_platform.domain.requestForm.owner.service;
 
 import com.cakemate.cake_platform.common.exception.RequestFormNotFoundException;
 import com.cakemate.cake_platform.common.exception.StoreNotFoundException;
+
 import com.cakemate.cake_platform.common.exception.UnauthorizedAccessException;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
@@ -68,6 +69,8 @@ public class RequestFormOwnerService {
         Long id = requestForm.getId();
         String name = requestForm.getCustomer().getName();
         String title = requestForm.getTitle();
+        String size = requestForm.getCakeSize().toString();
+        int quantity = requestForm.getQuantity();
         String region = requestForm.getRegion();
         String content = requestForm.getContent();
         int desiredPrice = requestForm.getDesiredPrice();
@@ -76,7 +79,7 @@ public class RequestFormOwnerService {
         RequestFormStatus status = requestForm.getStatus();
         LocalDateTime createAt = requestForm.getCreatedAt();
 
-        RequestFormDetailOwnerResponseDto responseDto = new RequestFormDetailOwnerResponseDto(id, name, title, region, content, desiredPrice, image, pickupDate, status, createAt);
+        RequestFormDetailOwnerResponseDto responseDto = new RequestFormDetailOwnerResponseDto(id, name, title, size, quantity, region, content, desiredPrice, image, pickupDate, status, createAt);
         return responseDto;
     }
 
@@ -114,6 +117,8 @@ public class RequestFormOwnerService {
                         requestForm.getId(),
                         requestForm.getCustomer().getName(),
                         requestForm.getTitle(),
+                        requestForm.getCakeSize().toString(),
+                        requestForm.getQuantity(),
                         requestForm.getRegion(),
                         requestForm.getContent(),
                         requestForm.getDesiredPrice(),

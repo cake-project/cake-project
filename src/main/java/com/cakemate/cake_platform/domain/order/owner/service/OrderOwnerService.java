@@ -3,10 +3,10 @@ package com.cakemate.cake_platform.domain.order.owner.service;
 import com.cakemate.cake_platform.common.dto.PageDto;
 import com.cakemate.cake_platform.common.exception.OrderNotFoundException;
 import com.cakemate.cake_platform.common.exception.StoreNotFoundException;
+import com.cakemate.cake_platform.common.exception.UnauthorizedAccessException;
 import com.cakemate.cake_platform.domain.order.entity.Order;
 import com.cakemate.cake_platform.domain.order.enums.OrderStatus;
 import com.cakemate.cake_platform.domain.order.owner.dto.*;
-import com.cakemate.cake_platform.common.exception.UnauthorizedAccessException;
 import com.cakemate.cake_platform.domain.order.owner.exception.InvalidOrderStatusException;
 import com.cakemate.cake_platform.domain.order.repository.OrderRepository;
 import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
@@ -38,7 +38,7 @@ public class OrderOwnerService {
      * 점주(가게) -> 주문 상세 조회 Service
      */
     public OwnerOrderDetailResponseDto getOwnerStoreOrderDetail(Long storeId, Long ownerId, Long orderId) {
-        Store store = storeRepository.findById(storeId)
+        Store store = storeRepository.findByIdAndIsDeletedFalse(storeId)
                 .orElseThrow(() -> new StoreNotFoundException("가게를 찾을 수 없습니다."));
 
         if (!store.getOwner().getId().equals(ownerId)) {
@@ -72,7 +72,7 @@ public class OrderOwnerService {
      * 점주(가게) -> 주문 목록 조회 Service
      */
     public OwnerOrderPageResponseDto<OwnerOrderSummaryResponseDto> getOwnerStoreOrderPage(Long storeId, Long ownerId, Pageable pageable) {
-        Store store = storeRepository.findById(storeId)
+        Store store = storeRepository.findByIdAndIsDeletedFalse(storeId)
                 .orElseThrow(() -> new StoreNotFoundException("가게를 찾을 수 없습니다."));
 
         if (!store.getOwner().getId().equals(ownerId)) {
@@ -113,7 +113,7 @@ public class OrderOwnerService {
      */
     @Transactional
     public OwnerOrderStatusUpdateResponseDto updateStoreOrderStatusByOwner(Long storeId, Long orderId, Long ownerId, @Valid OwnerOrderStatusUpdateRequestDto requestDto) {
-        Store store = storeRepository.findById(storeId)
+        Store store = storeRepository.findByIdAndIsDeletedFalse(storeId)
                 .orElseThrow(() -> new StoreNotFoundException("가게를 찾을 수 없습니다."));
 
         if (!store.getOwner().getId().equals(ownerId)) {
