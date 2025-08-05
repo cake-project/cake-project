@@ -1,0 +1,1 @@
+ALTER TABLE proposal_forms ADD COLUMN modified_at DATETIME;

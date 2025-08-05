@@ -4,6 +4,8 @@ import com.cakemate.cake_platform.common.exception.InvalidCakeSizeException;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 
+import java.util.Random;
+
 @Getter
 public enum CakeSize {
     DOSIRAK("도시락", 10, 10000),
@@ -31,4 +33,10 @@ public enum CakeSize {
         }
         throw new InvalidCakeSizeException("일치하는 CakeSize가 없습니다: " + str);
     }
+    // bulkInsert때 status를 랜덤으로 넣기 위해 사용
+    public static CakeSize getRandom(Random random) {
+        CakeSize[] values = CakeSize.values();
+        return values[random.nextInt(values.length)];
+    }
+
 }

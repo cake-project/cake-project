@@ -2,6 +2,8 @@ package com.cakemate.cake_platform.domain.proposalForm.enums;
 
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
 
+import java.util.Random;
+
 public enum ProposalFormStatus {
     AWAITING("AWAITING", "컨택 대기 중"),
     ACCEPTED("ACCEPTED", "컨택 완료"),
@@ -24,5 +26,14 @@ public enum ProposalFormStatus {
         }
         // 일치하는 enum 이 없을 때 예외발생
         throw new IllegalArgumentException("일치하는 ProposalFormStatus의 Enum이 없습니다 " + str);
+    }
+    // bulkInsert때 status를 랜덤으로 넣기 위해 사용
+    public static ProposalFormStatus getRandom(Random random) {
+        ProposalFormStatus[] values = ProposalFormStatus.values();
+        return values[random.nextInt(values.length)];
+    }
+
+    public String getStrValue() {
+        return strValue;
     }
 }
