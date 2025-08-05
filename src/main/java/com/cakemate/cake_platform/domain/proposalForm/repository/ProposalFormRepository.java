@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,6 +46,9 @@ public interface ProposalFormRepository extends JpaRepository<ProposalForm, Long
 
     // 해당 의뢰서에 이미 선택된 견적서가 있는지 조회
     boolean existsByRequestFormIdAndStatus(Long requestFormId, ProposalFormStatus proposalFormStatus);
+
+    //CONFIRMED 상태인데 7일 이상 지난 견적서들을 찾는 데 사용됨
+    List<ProposalForm> findByStatusAndModifiedAtBefore(ProposalFormStatus status, LocalDateTime Before);
 
 
 }
