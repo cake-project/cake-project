@@ -2,6 +2,8 @@ package com.cakemate.cake_platform.dummy;
 
 import java.sql.*;
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -11,12 +13,30 @@ public class ProposalFormCommentBulkInsert {
     private final String DB_URL = "jdbc:mysql://localhost:3306/cake?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true";
     private final String USER = "root";
     private final String PASS = "root1234!";
-    private final int TOTAL_FORMS = 150_000;
+    private final int TOTAL_FORMS = 100_000;
     private final int COMMENTS_PER_TYPE = 10; // 고객 10개 + 점주 10개
     private final int BATCH_SIZE = 5000;
     private final int THREAD_COUNT = 6;
 
     private final Random random = new Random();
+    private Map<Integer, Pair<Long, Long>> loadProposalFormMappings(Connection conn) throws SQLException {
+        Map<Integer, Pair<Long, Long>> map = new HashMap<>();
+        String query = "SELECT id, customer_id, owner_id FROM proposal_forms";
+
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            while (rs.next()) {
+                int proposalFormId = rs.getInt("id");
+                long customerId = rs.getLong("customer_id");
+                long ownerId = rs.getLong("owner_id");
+                map.put(proposalFormId, new Pair<>(customerId, ownerId));
+            }
+        }
+
+        return map;
+    }
+
 
     public void bulkInsert() {
         ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
@@ -46,29 +66,34 @@ public class ProposalFormCommentBulkInsert {
 
             conn.setAutoCommit(false);
 
-            for (int formId = start; formId <= end; formId++) {
-                long ownerId = formId; // 점주 ID는 proposal_form_id와 동일하다고 가정
+            Map<Integer, Pair<Long, Long>> formMap = loadProposalFormMappings(conn);
 
-                // 고객 댓글 10개
+            for (int formId = start; formId <= end; formId++) {
+                Pair<Long, Long> ids = formMap.get(formId);
+                if (ids == null) continue;
+
+                long customerId = ids.getFirst();
+                long ownerId = ids.getSecond();
+
+                // 고객 댓글
                 for (int i = 0; i < COMMENTS_PER_TYPE; i++) {
-                    long customerId = random.nextInt(1_000_000) + 1;
                     String content = "고객 댓글_" + formId + "_" + i;
 
                     pstmt.setLong(1, formId);
                     pstmt.setLong(2, customerId);
-                    pstmt.setNull(3, Types.BIGINT); // owner_id = NULL
+                    pstmt.setNull(3, Types.BIGINT);
                     pstmt.setString(4, content);
                     pstmt.setBoolean(5, false);
                     pstmt.setTimestamp(6, now);
                     pstmt.addBatch();
                 }
 
-                // 점주 댓글 10개
+                // 점주 댓글
                 for (int i = 0; i < COMMENTS_PER_TYPE; i++) {
                     String content = "점주 댓글_" + formId + "_" + i;
 
                     pstmt.setLong(1, formId);
-                    pstmt.setNull(2, Types.BIGINT); // customer_id = NULL
+                    pstmt.setNull(2, Types.BIGINT);
                     pstmt.setLong(3, ownerId);
                     pstmt.setString(4, content);
                     pstmt.setBoolean(5, false);

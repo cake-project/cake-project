@@ -12,8 +12,9 @@ public class StoreBulkInsert {
     private final String USER = "root";
     private final String PASS = "root1234!";
     private final int BATCH_SIZE = 5000;
-    private final int TOTAL = 100_000;
+    private final int TOTAL_OWNERS = 200_000; // ProposalFormBulkInsert와 동일하게 설정
     private final int THREAD_COUNT = 6;
+
     private final List<String> regions = Arrays.asList(
             "서울", "경기", "인천", "부산", "대구", "광주", "대전", "울산", "세종",
             "강원", "충북", "충남", "전북", "전남", "경북", "경남", "제주"
@@ -24,11 +25,11 @@ public class StoreBulkInsert {
 
     public void bulkInsert() {
         ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
-        int chunkSize = TOTAL / THREAD_COUNT;
+        int chunkSize = TOTAL_OWNERS / THREAD_COUNT;
 
         for (int t = 0; t < THREAD_COUNT; t++) {
             int start = t * chunkSize + 1;
-            int end = (t == THREAD_COUNT - 1) ? TOTAL : start + chunkSize - 1;
+            int end = (t == THREAD_COUNT - 1) ? TOTAL_OWNERS : start + chunkSize - 1;
 
             executor.submit(() -> insertRange(start, end));
         }
@@ -49,13 +50,11 @@ public class StoreBulkInsert {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             conn.setAutoCommit(false);
-//		"서울", "경기", "인천", "부산", "대구", "광주", "대전", "울산", "세종",
-//		"강원", "충북", "충남", "전북", "전남", "경북", "경남", "제주"
+
             for (int i = start; i <= end; i++) {
                 long ownerId = i;
                 String paddedId = String.format("%06d", ownerId);
 
-                // 지역 선택: ownerId에 따라 하나의 지역만 할당
                 String region = regions.get((int)((ownerId - 1) % regions.size()));
 
                 String businessName = region + "비즈니스" + paddedId;
@@ -101,7 +100,7 @@ public class StoreBulkInsert {
             String part2 = String.format("%02d", random.nextInt(100));
             String part3 = String.format("%05d", random.nextInt(100000));
             businessNumber = part1 + "-" + part2 + "-" + part3;
-        } while (!usedBusinessNumbers.add(businessNumber)); // 중복이면 다시 생성
+        } while (!usedBusinessNumbers.add(businessNumber));
 
         return businessNumber;
     }

@@ -15,7 +15,6 @@ public class RequestFormBulkInsert {
     private final String DB_URL = "jdbc:mysql://localhost:3306/cake?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true";
     private final String USER = "root";
     private final String PASS = "root1234!";
-    private final int TOTAL = 1_000_000;
     private final int BATCH_SIZE = 5000;
     private final int THREAD_COUNT = 6;
 
@@ -26,26 +25,46 @@ public class RequestFormBulkInsert {
     );
 
     private final Random random = new Random();
+    private List<Long> loadCustomerIds(Connection conn) throws SQLException {
+        List<Long> customerIds = new ArrayList<>();
+        String query = "SELECT id FROM customers";
 
-    public void bulkInsert() {
-        ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
-        int chunkSize = TOTAL / THREAD_COUNT;
-
-        for (int t = 0; t < THREAD_COUNT; t++) {
-            final int threadIndex = t;
-            final int start = threadIndex * chunkSize + 1;
-            final int end = (threadIndex == THREAD_COUNT - 1) ? TOTAL : start + chunkSize - 1;
-
-            executor.submit(() -> insertRange(start, end));
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                customerIds.add(rs.getLong("id"));
+            }
         }
 
-        executor.shutdown();
-        while (!executor.isTerminated()) {
-            // 대기
+        return customerIds;
+    }
+
+
+    public void bulkInsert() {
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS)) {
+            List<Long> customerIds = loadCustomerIds(conn);
+            int chunkSize = customerIds.size() / THREAD_COUNT;
+
+            ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
+
+            for (int t = 0; t < THREAD_COUNT; t++) {
+                final int start = t * chunkSize;
+                final int end = (t == THREAD_COUNT - 1) ? customerIds.size() : start + chunkSize;
+
+                List<Long> subList = customerIds.subList(start, end);
+                executor.submit(() -> insertRange(subList));
+            }
+
+            executor.shutdown();
+            while (!executor.isTerminated()) {
+                // 대기
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
-    private void insertRange(int start, int end) {
+    private void insertRange(List<Long> customerIds) {
         String sql = "INSERT INTO request_forms (customer_id, title, region, content, desired_price, image, desired_pickup_date, status, created_at, is_deleted, quantity, cake_size) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -56,9 +75,9 @@ public class RequestFormBulkInsert {
 
             conn.setAutoCommit(false);
 
-            for (int customerId = start; customerId <= end; customerId++) {
-                for (int j = 0; j < 20; j++) {
-                    String paddedId = String.format("%06d", customerId * 20 + j); // 고유 ID 생성
+            for (Long customerId : customerIds) {
+                for (int j = 0; j < 4; j++) {
+                    String paddedId = String.format("%06d", customerId * 4 + j);
                     String title = "케이크 요청 " + paddedId;
                     String region = regions.get(random.nextInt(regions.size()));
                     String content = "이런 스타일의 케이크를 원해요_" + paddedId;
@@ -85,7 +104,7 @@ public class RequestFormBulkInsert {
 
                     pstmt.addBatch();
 
-                    if (((customerId - start) * 20 + j + 1) % BATCH_SIZE == 0) {
+                    if ((customerIds.indexOf(customerId) * 4 + j + 1) % BATCH_SIZE == 0) {
                         pstmt.executeBatch();
                         conn.commit();
                     }

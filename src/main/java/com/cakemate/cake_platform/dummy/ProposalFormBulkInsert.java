@@ -14,7 +14,7 @@ public class ProposalFormBulkInsert {
     private final String DB_URL = "jdbc:mysql://localhost:3306/cake?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true";
     private final String USER = "root";
     private final String PASS = "root1234!";
-    private final int TOTAL = 1_000_000;
+    private final int REQUEST_FORM_COUNT = 800_000;
     private final int BATCH_SIZE = 5000;
     private final int THREAD_COUNT = 6;
 
@@ -22,11 +22,11 @@ public class ProposalFormBulkInsert {
 
     public void bulkInsert() {
         ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
-        int chunkSize = TOTAL / THREAD_COUNT;
+        int chunkSize = REQUEST_FORM_COUNT / THREAD_COUNT;
 
         for (int t = 0; t < THREAD_COUNT; t++) {
             final int start = t * chunkSize + 1;
-            final int end = (t == THREAD_COUNT - 1) ? TOTAL : start + chunkSize - 1;
+            final int end = (t == THREAD_COUNT - 1) ? REQUEST_FORM_COUNT : start + chunkSize - 1;
 
             executor.submit(() -> insertRange(start, end));
         }
@@ -44,7 +44,7 @@ public class ProposalFormBulkInsert {
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
-        final int TOTAL_OWNERS = 1_000_000; // 예시: 전체 점주 수
+        final int TOTAL_OWNERS = 200_000; // 예시: 전체 점주 수
 
         try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -54,13 +54,16 @@ public class ProposalFormBulkInsert {
             for (int requestFormId = start; requestFormId <= end; requestFormId++) {
                 Set<Long> usedOwnerIds = new HashSet<>();
 
-                for (int j = 0; j < 15; j++) {
-                    long ownerId = ((requestFormId * 15 + j) % TOTAL_OWNERS) + 1;
+                int proposalsCreated = 0;
+                long baseOwnerId = requestFormId * 100; // ownerId 범위 분산
+
+                for (int j = 0; proposalsCreated < 10; j++) {
+                    long ownerId = (baseOwnerId + proposalsCreated) % TOTAL_OWNERS + 1;
 
                     if (!usedOwnerIds.add(ownerId)) continue;
 
                     long storeId = ownerId;
-                    String paddedId = String.format("%06d", requestFormId * 15 + j);
+                    String paddedId = String.format("%06d", requestFormId * 10 + proposalsCreated);
 
                     String storeName = "케이크스토어_" + paddedId;
                     String managerName = "매니저_" + paddedId;
@@ -96,6 +99,7 @@ public class ProposalFormBulkInsert {
                     pstmt.setTimestamp(16, modifiedAt);
 
                     pstmt.addBatch();
+                    proposalsCreated++;
                 }
 
                 if ((requestFormId - start + 1) % BATCH_SIZE == 0) {
@@ -103,9 +107,6 @@ public class ProposalFormBulkInsert {
                     conn.commit();
                 }
             }
-
-            pstmt.executeBatch();
-            conn.commit();
 
         } catch (SQLException e) {
             e.printStackTrace();
