@@ -143,8 +143,8 @@ public class ProposalForm extends BaseTimeEntity {
         this.status = ProposalFormStatus.ACCEPTED;
     }
     // 견적서 자동 취소시 사용
-    public void canceledStatus(ProposalFormStatus status) {
-        if (status != ProposalFormStatus.CONFIRMED) {
+    public void canceledStatus() {
+        if (this.status != ProposalFormStatus.CONFIRMED) {
             throw new InvalidProposalStatusException("CONFIRMED 상태에서만 취소할 수 있습니다. 현재 상태: " + this.status);
         }
 

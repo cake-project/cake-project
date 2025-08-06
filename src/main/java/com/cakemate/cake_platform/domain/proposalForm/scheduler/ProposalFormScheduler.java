@@ -36,7 +36,7 @@ public class ProposalFormScheduler {
         //조회된 견적서들을 반복하면서 상태를 CANCELLED로 변경, try-catch로 각 견적서별 예외를 개별 처리
         for (ProposalForm proposalForm : expiredProposals) {
             try {
-                proposalForm.canceledStatus(ProposalFormStatus.CANCELLED);
+                proposalForm.canceledStatus();
                 log.info("자동 취소된 견적서 ID: {}", proposalForm.getId());
             } catch (Exception e) {
                 log.warn("자동 취소 실패 - 견적서 ID: {}, 이유: {}", proposalForm.getId(), e.getMessage());
