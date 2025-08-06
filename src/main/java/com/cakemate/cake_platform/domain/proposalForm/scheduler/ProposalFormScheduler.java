@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,24 +25,32 @@ public class ProposalFormScheduler {
     @Transactional
     @Scheduled(fixedRate = 60000)
     public void autoCancelConfirmedProposals() {
-        log.info("견적서 자동 취소 스캐쥴러 시작");
-
+        LocalDateTime startTime = LocalDateTime.now();
+        log.info("견적서 자동 취소 스케줄러 시작 - 시작시간: {}", startTime);
         //기준 시간을 현재시간7일전으로 설정
         LocalDateTime cutoff = LocalDateTime.now().minusDays(7);
 
         //ProposalFormStatus.CONFIRMED 상태이고, modifiedAt이 7일 이전인 견적서들을 조회
         List<ProposalForm> expiredProposals = proposalFormRepository
-                .findByStatusAndModifiedAtBefore(ProposalFormStatus.CONFIRMED, cutoff);
-
+                .findByStatusAndModifiedAtBeforeAndNoOrder(ProposalFormStatus.CONFIRMED, cutoff);
+        int cancelCount = 0;
         //조회된 견적서들을 반복하면서 상태를 CANCELLED로 변경, try-catch로 각 견적서별 예외를 개별 처리
         for (ProposalForm proposalForm : expiredProposals) {
             try {
                 proposalForm.canceledStatus();
+                cancelCount++;  // 여기서 상태 변경 성공 시 카운트 증가
                 log.info("자동 취소된 견적서 ID: {}", proposalForm.getId());
             } catch (Exception e) {
                 log.warn("자동 취소 실패 - 견적서 ID: {}, 이유: {}", proposalForm.getId(), e.getMessage());
             }
         }
-    log.info("자동 취소된 견적서 총 수: {}", expiredProposals.size());
+        LocalDateTime endTime = LocalDateTime.now();
+        log.info("견적서 자동 취소 스케줄러 종료 - 종료시간: {}", endTime);
+
+        // 진행시간 계산 (밀리초 단위)
+        Duration duration = Duration.between(startTime, endTime);
+        log.info("자동 취소 진행시간: {}초 ({}밀리초)", duration.toSeconds(), duration.toMillis());
+
+        log.info("실제 상태가 변경된 견적서 수: {}", cancelCount);
     }
 }
