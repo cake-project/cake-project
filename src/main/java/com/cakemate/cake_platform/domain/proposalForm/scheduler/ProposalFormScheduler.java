@@ -22,17 +22,21 @@ public class ProposalFormScheduler {
 
     //confirmed 상태 견적서 자동 취소 기능
     @Transactional
-    @Scheduled(cron = "0 0 1 * * *")
+    @Scheduled(fixedRate = 60000)
     public void autoCancelConfirmedProposals() {
         log.info("견적서 자동 취소 스캐쥴러 시작");
 
+        //기준 시간을 현재시간7일전으로 설정
         LocalDateTime cutoff = LocalDateTime.now().minusDays(7);
+
+        //ProposalFormStatus.CONFIRMED 상태이고, modifiedAt이 7일 이전인 견적서들을 조회
         List<ProposalForm> expiredProposals = proposalFormRepository
                 .findByStatusAndModifiedAtBefore(ProposalFormStatus.CONFIRMED, cutoff);
 
+        //조회된 견적서들을 반복하면서 상태를 CANCELLED로 변경, try-catch로 각 견적서별 예외를 개별 처리
         for (ProposalForm proposalForm : expiredProposals) {
             try {
-                proposalForm.updateStatus(ProposalFormStatus.CONFIRMED);
+                proposalForm.canceledStatus(ProposalFormStatus.CANCELLED);
                 log.info("자동 취소된 견적서 ID: {}", proposalForm.getId());
             } catch (Exception e) {
                 log.warn("자동 취소 실패 - 견적서 ID: {}, 이유: {}", proposalForm.getId(), e.getMessage());
