@@ -1,6 +1,12 @@
 spring:
   profiles:
     active: local
+kakao:
+  client-id: ${KAKAO_CLIENT_ID}
+  client-secret: ${KAKAO_CLIENT_SECRET}
+  redirect-uri: http://localhost:8080/redirect
+  kauth-host: https://kauth.kakao.com
+  kapi-host: https://kapi.kakao.com
 
 #logging:
 #  config: classpath:logback-spring-${spring.profiles.active}.xml
