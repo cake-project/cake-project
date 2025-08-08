@@ -12,6 +12,9 @@ import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
 import com.cakemate.cake_platform.domain.proposalForm.exception.*;
 import com.cakemate.cake_platform.domain.proposalForm.exception.ResourceNotFoundException;
 import com.cakemate.cake_platform.domain.proposalForm.repository.ProposalFormRepository;
+import com.cakemate.cake_platform.domain.proposalFormChat.entity.ChatRoomEntity;
+import com.cakemate.cake_platform.domain.proposalFormChat.repository.ChatRoomRepository;
+import com.cakemate.cake_platform.domain.proposalFormChat.service.ChatService;
 import com.cakemate.cake_platform.domain.proposalFormComment.entity.ProposalFormComment;
 import com.cakemate.cake_platform.domain.proposalFormComment.repository.ProposalFormCommentRepository;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
@@ -26,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Getter
@@ -37,13 +41,17 @@ public class ProposalFormService {
     private final ProposalFormCommentRepository proposalFormCommentRepository;
     private final StoreRepository storeRepository;
     private final MemberRepository memberRepository;
+    private final ChatService chatService;
+    private final ChatRoomRepository chatRoomRepository;
 
-    public ProposalFormService(ProposalFormRepository proposalFormRepository, RequestFormRepository requestFormRepository, ProposalFormCommentRepository proposalFormCommentRepository, StoreRepository storeRepository, MemberRepository memberRepository) {
+    public ProposalFormService(ProposalFormRepository proposalFormRepository, RequestFormRepository requestFormRepository, ProposalFormCommentRepository proposalFormCommentRepository, StoreRepository storeRepository, MemberRepository memberRepository, ChatService chatService, ChatRoomRepository chatRoomRepository) {
         this.proposalFormRepository = proposalFormRepository;
         this.requestFormRepository = requestFormRepository;
         this.proposalFormCommentRepository = proposalFormCommentRepository;
         this.storeRepository = storeRepository;
         this.memberRepository = memberRepository;
+        this.chatService = chatService;
+        this.chatRoomRepository = chatRoomRepository;
     }
 
     /**
@@ -161,6 +169,11 @@ public class ProposalFormService {
         //comment List 조회
         List<ProposalFormComment> commentList = proposalFormCommentRepository.findByProposalForm_IdOrderByCreatedAtAsc(proposalFormId);
 
+        String roomId = chatService.findRoomId(foundProposalForm.getId())
+                .orElse(null);
+
+
+
         //DTO 만들기(ProposalForm, RequestForm, Comment 데이터를 합쳐 DTO 생성)
         //ProposalForm  Dto 만들기
         ProposalFormDataDto proposalFormDataDto = new ProposalFormDataDto(
@@ -177,7 +190,8 @@ public class ProposalFormService {
                 foundProposalForm.getCreatedAt(),
                 foundProposalForm.getModifiedAt(),
                 foundProposalForm.getStatus().name(),
-                foundProposalForm.getImage()
+                foundProposalForm.getImage(),
+                roomId
         );
 
         //RequestFormDto 만들기
@@ -377,7 +391,18 @@ public class ProposalFormService {
 
         proposalForm.confirmStatus(ProposalFormStatus.CONFIRMED);
 
-        OwnerProposalFormConfirmResponseDto responseDto = new OwnerProposalFormConfirmResponseDto(proposalForm.getId(), proposalForm.getStatus());
+        chatService.findRoomOrThrow(proposalFormId);
+
+        OwnerProposalFormConfirmResponseDto responseDto
+                = new OwnerProposalFormConfirmResponseDto(
+                        proposalForm.getId(), proposalForm.getStatus()
+        );
         return responseDto;
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<String> findRoomId(Long proposalFormId) {
+        return chatRoomRepository.findByProposalForm_Id(proposalFormId)
+                .map(ChatRoomEntity::getId);
     }
 }

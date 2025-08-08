@@ -10,6 +10,8 @@ import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
 import com.cakemate.cake_platform.domain.proposalForm.exception.ProposalAlreadyAcceptedException;
 import com.cakemate.cake_platform.domain.proposalForm.repository.ProposalFormRepository;
+import com.cakemate.cake_platform.domain.proposalFormChat.entity.ChatRoomEntity;
+import com.cakemate.cake_platform.domain.proposalFormChat.service.ChatService;
 import com.cakemate.cake_platform.domain.proposalFormComment.entity.ProposalFormComment;
 import com.cakemate.cake_platform.domain.proposalFormComment.repository.ProposalFormCommentRepository;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
@@ -26,11 +28,13 @@ public class CustomerProposalFormService {
 
     private final ProposalFormRepository proposalFormRepository;
     private final ProposalFormCommentRepository proposalFormCommentRepository;
+    private final ChatService chatService;
 
     public CustomerProposalFormService(ProposalFormRepository proposalFormRepository,
-                                       ProposalFormCommentRepository proposalFormCommentRepository) {
+                                       ProposalFormCommentRepository proposalFormCommentRepository, ChatService chatService) {
         this.proposalFormRepository = proposalFormRepository;
         this.proposalFormCommentRepository = proposalFormCommentRepository;
+        this.chatService = chatService;
     }
 
     /**
@@ -131,7 +135,15 @@ public class CustomerProposalFormService {
 
         proposalForm.acceptStatus(ProposalFormStatus.ACCEPTED);
 
-        CustomerProposalFormAcceptResponseDto responseDto = new CustomerProposalFormAcceptResponseDto(proposalForm.getId(), proposalForm.getStatus());
+        //견적서마다 최초로 한 번만 채팅방 생성
+        ChatRoomEntity chatRoomEntity = chatService.createRoomIfAbsent(proposalForm);
+
+
+        //응답 DTO 에 채팅방 ID 추가
+        CustomerProposalFormAcceptResponseDto responseDto
+                = new CustomerProposalFormAcceptResponseDto(
+                        proposalForm.getId(), proposalForm.getStatus(), chatRoomEntity.getId()
+        );
         return responseDto;
     }
 }
