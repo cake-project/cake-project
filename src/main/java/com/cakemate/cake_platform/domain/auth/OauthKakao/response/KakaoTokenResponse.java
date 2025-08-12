@@ -1,4 +1,4 @@
-package com.cakemate.cake_platform.domain.auth.signin.customer.dto.response;
+package com.cakemate.cake_platform.domain.auth.OauthKakao.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -13,6 +13,9 @@ public class KakaoTokenResponse {
 
     @JsonProperty("refresh_token")
     private String refresh_token;
+
+    @JsonProperty("id_token")
+    private String id_token;
 
     @JsonProperty("expires_in")
     private Integer expires_in;

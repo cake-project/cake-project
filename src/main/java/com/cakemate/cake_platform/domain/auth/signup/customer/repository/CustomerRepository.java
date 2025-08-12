@@ -12,7 +12,11 @@ import java.util.Optional;
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     Optional<Customer> findByEmail(@Email(message = "email 형식을 지켜주십시오(ex. cake@gmail.com)") String email);
-    boolean existsByEmail(@Email(message = "email 형식을 지켜주십시오(ex. cake@gmail.com)") String email);
+    boolean existsByEmail(String email);
+    boolean existsByNameAndPhoneNumber(String name, String phoneNumber);
+    Optional<Customer> findByNameAndPhoneNumber(String name, String phoneNumber);
+    
+    Optional<Customer> findByPhoneNumber(String phoneNumber);
 
     //삭제 되지 않은 소비자 식별자를 조회할 떄 사용합니다.
     Optional<Customer> findByIdAndIsDeletedFalse(Long id);

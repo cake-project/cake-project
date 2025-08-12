@@ -1,5 +1,6 @@
 package com.cakemate.cake_platform.common.jwt.util;
 
+import com.cakemate.cake_platform.domain.auth.oAuthEnum.OAuthProvider;
 import com.cakemate.cake_platform.domain.member.entity.Member;
 import com.cakemate.cake_platform.domain.store.owner.exception.ForbiddenException;
 import io.jsonwebtoken.Claims;
@@ -31,6 +32,8 @@ public class JwtUtil {
     public String createMemberJwtToken(Member member) {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + TOKEN_EXPIRATION_TIME);
+        OAuthProvider customerOAuthProvider = member.getCustomer().getProvider();
+        OAuthProvider ownerOAuthProvider = member.getOwner().getProvider();
 
         if (hasOwnerId(member)) {
             String subjectOwnerId = member.getOwner().getId().toString();
@@ -39,6 +42,7 @@ public class JwtUtil {
                     .issuedAt(now)
                     .claim("email", member.getOwner().getEmail())
                     .claim("memberType", "OWNER")
+                    .claim("oAuthProvider",ownerOAuthProvider.getOAuthName()) // 로그인 타입(소셜or로컬)
                     .expiration(expiration) // 만료시간 120분
                     .signWith(secretKey, SignatureAlgorithm.HS256)
                     .compact();
@@ -50,6 +54,7 @@ public class JwtUtil {
                     .issuedAt(now)
                     .claim("email", member.getCustomer().getEmail())
                     .claim("memberType", "CUSTOMER")
+                    .claim("oAuthProvider",customerOAuthProvider.getOAuthName()) // 로그인 타입(소셜or로컬)
                     .expiration(expiration) // 만료시간 120분
                     .signWith(secretKey, SignatureAlgorithm.HS256)
                     .compact();

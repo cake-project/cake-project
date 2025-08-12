@@ -16,6 +16,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByCustomer_Email(@Email(message = "email 형식을 지켜주십시오(ex. cake@gmail.com)") String customerEmail);
     Optional<Member> findByOwner_Email(@Email(message = "email 형식을 지켜주십시오(ex. cake@gmail.com)") String ownerEmail);
     Optional<Member> findByOwnerId(Long ownerId);
+    Optional<Member> findByCustomer_PhoneNumber(String customerPhoneNumber);
 
     // 삭제되지 않은 이메일 조회
 //    @Query("select m from Member m where m.email = :email and m.isDeleted = false")

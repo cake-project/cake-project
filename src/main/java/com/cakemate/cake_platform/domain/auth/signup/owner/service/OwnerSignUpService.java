@@ -1,20 +1,18 @@
-package com.cakemate.cake_platform.domain.auth.signin.customer.service;
-
+package com.cakemate.cake_platform.domain.auth.signup.owner.service;
 
 import com.cakemate.cake_platform.common.command.SearchCommand;
 import com.cakemate.cake_platform.common.dto.ApiResponse;
-import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
-import com.cakemate.cake_platform.domain.auth.entity.Customer;
-import com.cakemate.cake_platform.domain.auth.exception.EmailNotFoundException;
-import com.cakemate.cake_platform.domain.auth.exception.PasswordMismatchException;
-import com.cakemate.cake_platform.domain.auth.signin.customer.dto.response.CustomerSignInResponse;
 import com.cakemate.cake_platform.domain.auth.OauthKakao.response.KakaoTokenResponse;
-import com.cakemate.cake_platform.domain.auth.OauthKakao.response.KakaoUserResponse;
-import com.cakemate.cake_platform.domain.auth.signup.customer.repository.CustomerRepository;
+import com.cakemate.cake_platform.domain.auth.exception.EmailAlreadyExistsException;
+import com.cakemate.cake_platform.domain.auth.signup.owner.dto.response.OwnerSignUpResponse;
+import com.cakemate.cake_platform.common.exception.OwnerNotFoundException;
+import com.cakemate.cake_platform.domain.auth.entity.Owner;
+import com.cakemate.cake_platform.domain.auth.signup.owner.repository.OwnerRepository;
 import com.cakemate.cake_platform.domain.member.entity.Member;
 import com.cakemate.cake_platform.domain.member.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
@@ -29,16 +27,14 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Objects;
 import java.util.Optional;
-
 @Slf4j
+@Transactional
 @Service
-public class CustomerSignInService {
-    private final CustomerRepository customerRepository;
+public class OwnerSignUpService {
+    private final OwnerRepository ownerRepository;
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
-    private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
     private final RestClient restClient;
     @Value("${kakao.client-id}")
@@ -52,100 +48,55 @@ public class CustomerSignInService {
     @Value("${kakao.redirect-uri}")
     private String redirectUri;
 
-    public CustomerSignInService(CustomerRepository customerRepository, PasswordEncoder passwordEncoder,
-                                 MemberRepository memberRepository, JwtUtil jwtUtil, ObjectMapper objectMapper,
-                                 RestClient.Builder restClientBuilder) {
-        this.customerRepository = customerRepository;
+
+    public OwnerSignUpService(OwnerRepository ownerRepository, PasswordEncoder passwordEncoder,
+                              MemberRepository memberRepository, ObjectMapper objectMapper, RestClient.Builder restClientBuilder) {
+        this.ownerRepository = ownerRepository;
         this.passwordEncoder = passwordEncoder;
         this.memberRepository = memberRepository;
-        this.jwtUtil = jwtUtil;
         this.objectMapper = objectMapper;
         this.restClient = restClientBuilder.baseUrl(kapiHost).build();
     }
 
-    // ObjectMapper -> 자바 객체를 JSON 문자열로 변환 해주거나 혹은 JSON 문자열을 자바 객체로 변환
-    public ApiResponse<CustomerSignInResponse> kakaoCustomerSignInProcess(String code) {
+    public ApiResponse<OwnerSignUpResponse> ownerSaveProcess(SearchCommand ownerSignUpRequest) {
+        String email = ownerSignUpRequest.getEmail();
+        String password = ownerSignUpRequest.getPassword();
+        String passwordConfirm = ownerSignUpRequest.getPasswordConfirm();
+        String name = ownerSignUpRequest.getName();
+        String phoneNumber = ownerSignUpRequest.getPhoneNumber();
+        // 비밀번호 정규식 검증
+        ownerSignUpRequest.hasPasswordPattern();
+        // 비밀번호, 비밀빈호 확인이 일치하는지
+        ownerSignUpRequest.isMatchedPassword();
 
-        // 인가 코드에서 accessToken 가져오기
-        try {
-            KakaoTokenResponse tokenResponse = getToken(code);
-            String accessToken = tokenResponse.getAccess_token();
-
-
-            // accessToken을 RequestContextHolder.currentRequestAttributes()에 저장
-            if (accessToken != null) {
-                saveAccessToken(accessToken);
-
-            }
-            log.info("accessToken::: {} ", accessToken);
-
-
-            RestClient.RequestBodySpec userProfileRequestSpec = restClient
-                    .method(HttpMethod.valueOf("GET"))
-                    .uri(kapiHost + "/v2/user/me")
-                    .headers(headers -> headers.setBearerAuth(Objects.requireNonNull(accessToken)));
-            log.info("userProfileRequestSpec {} ", userProfileRequestSpec);
-
-            String body = userProfileRequestSpec.retrieve().body(String.class);
-            log.info("body::: {} ", body);
-
-            // body에 담겨 있는 json을 자바 객체로 가져오기 위해 역직렬화 진행
-            KakaoUserResponse kakaoUserResponse = objectMapper.readValue(body, KakaoUserResponse.class);
-
-            String kakaoUserPhoneNumber = kakaoUserResponse.getKakao_account().getPhone_number();
-            log.info("kakaoUserPhoneNumber:: {} ", kakaoUserPhoneNumber);
-
-            String replaceKakaoUserPhoneNumber = kakaoUserPhoneNumber.replaceAll("^\\+82\\s?0?10", "010");
-            log.info("replaceKakaoUserPhoneNumber:::::{}", replaceKakaoUserPhoneNumber);
-
-            // 소셜로 접속한 사람이 기존 회원DB에 존재하지 않으면
-            Customer customer = customerRepository
-                    .findByPhoneNumber(replaceKakaoUserPhoneNumber)
-                    .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다. 회원가입 하시겠습니까?"));
-
-            Member customerInMember = memberRepository
-                    .findByCustomer_PhoneNumber(replaceKakaoUserPhoneNumber)
-                    .orElseThrow(() -> new EmailNotFoundException("고객이 존재하지 않습니다."));
-
-            String customerJwtToken = jwtUtil.createMemberJwtToken(customerInMember);
-            CustomerSignInResponse customerSignInResponse = new CustomerSignInResponse(customerJwtToken);
-
-            ApiResponse<CustomerSignInResponse> SignInSuccess
-                    = ApiResponse
-                    .success(HttpStatus.OK, "환영합니다 " + customer.getName() + "님", customerSignInResponse);
-            return SignInSuccess;
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-
+        boolean existsByOwnerEmail = ownerRepository.existsByEmail(email);
+        if (existsByOwnerEmail) {
+            throw new EmailAlreadyExistsException("이미 등록된 이메일 입니다.");
         }
-    }
 
-    public ApiResponse<CustomerSignInResponse> CustomerSignInProcess(SearchCommand signInRequest) {
-        String email = signInRequest.getEmail();
-        String password = signInRequest.getPassword();
+        String passwordEncode = passwordEncoder.encode(password);
+        String passwordConfirmEncode = passwordEncoder.encode(passwordConfirm);
 
-        Customer customer = customerRepository.findByEmail(email)
-                .orElseThrow(() -> new EmailNotFoundException("고객 이메일이 존재하지 않습니다."));
+        Owner ownerInfo = new Owner(email, passwordEncode, passwordConfirmEncode, name, phoneNumber);
+        Owner ownerInfoSave = ownerRepository.save(ownerInfo);
+        // 멤버 테이블에 저장
+        Long ownerId = ownerInfo.getId();
+        Owner owner = ownerRepository
+                .findById(ownerId)
+                .orElseThrow(() -> new OwnerNotFoundException("OwnerId가 존재하지 않습니다."));
+        Member ownerMember = new Member(owner);
+        memberRepository.save(ownerMember);
 
-        boolean isMatched = passwordEncoder.matches(password, customer.getPassword());
-        if (!isMatched) {
-            throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
-        }
-        Member customerInMember = memberRepository
-                .findByCustomer_Email(email)
-                .orElseThrow(() -> new EmailNotFoundException("고객 이메일이 존재하지 않습니다."));
+        OwnerSignUpResponse ownerSignUpResponse = new OwnerSignUpResponse(ownerInfoSave);
 
-        String customerJwtToken = jwtUtil.createMemberJwtToken(customerInMember);
-        CustomerSignInResponse customerSignInResponse = new CustomerSignInResponse(customerJwtToken);
-
-        // 차후 토큰 생성 예정
-        ApiResponse<CustomerSignInResponse> SignInSuccess
+        ApiResponse<OwnerSignUpResponse> signUpSuccess
                 = ApiResponse
-                .success(HttpStatus.OK, "환영합니다 " + customer.getName() + "님", customerSignInResponse);
-        return SignInSuccess;
-    }
+                .success(HttpStatus.CREATED,
+                        ownerInfoSave.getName() + "님 회원가입이 완료되었습니다.",
+                        ownerSignUpResponse);
+        return signUpSuccess;
 
+    }
     public String createDefaultMessage() {
         return "template_object={\"object_type\":\"text\",\"text\":\"Hello, world!\",\"link\":{\"web_url\":\"https://developers.kakao.com\",\"mobile_web_url\":\"https://developers.kakao.com\"}}";
     }
@@ -169,9 +120,6 @@ public class CustomerSignInService {
     private void saveAccessToken(String accessToken) {
         log.info("saveAccessToken:::: {} ", accessToken);
         getSession().setAttribute("access_token", accessToken);
-    }
-    private void saveIdToken(String IdToken){
-        getSession().setAttribute("Id_token", IdToken);
     }
 
     // 세션에서 어세스토큰 조회
@@ -250,7 +198,6 @@ public class CustomerSignInService {
             if (tokenResponse != null) {
                 log.info("tokenResponse 존재 한다면 saveAccessToken(tokenResponse.getAccess_token());");
                 saveAccessToken(tokenResponse.getAccess_token());
-                saveIdToken(tokenResponse.getId_token());
                 System.out.println("handleAuthorizationCallback 메서드 끝");
                 return true;
             }

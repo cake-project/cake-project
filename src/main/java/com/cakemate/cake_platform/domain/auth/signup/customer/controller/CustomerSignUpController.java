@@ -2,15 +2,16 @@ package com.cakemate.cake_platform.domain.auth.signup.customer.controller;
 
 import com.cakemate.cake_platform.common.command.SearchCommand;
 import com.cakemate.cake_platform.common.dto.ApiResponse;
+import com.cakemate.cake_platform.domain.auth.signin.customer.dto.response.CustomerSignInResponse;
 import com.cakemate.cake_platform.domain.auth.signup.customer.dto.request.CustomerSignUpRequest;
 import com.cakemate.cake_platform.domain.auth.signup.customer.dto.response.CustomerSignUpResponse;
 import com.cakemate.cake_platform.domain.auth.signup.customer.service.CustomerSignUpService;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.result.view.RedirectView;
 
+@Slf4j
 @RestController
 @RequestMapping("/api")
 public class CustomerSignUpController {
@@ -35,5 +36,7 @@ public class CustomerSignUpController {
         return customerSignUpSuccess;
 
     }
+
+
 
 }

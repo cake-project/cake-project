@@ -15,16 +15,16 @@ public class CustomerSignInController {
     public CustomerSignInController(CustomerSignInService customerSignInService) {
         this.customerSignInService = customerSignInService;
     }
-//    @PostMapping("/signin/customers")
-//    public ApiResponse<CustomerSignInResponse> CustomerSignInApi(@RequestBody CustomerSignInRequest customerSignInRequest) {
-//        String email = customerSignInRequest.getEmail();
-//        String password = customerSignInRequest.getPassword();
-//
-//        SearchCommand signInRequest = new SearchCommand(email, password);
-//
-//        ApiResponse<CustomerSignInResponse> customerSignInProcess = customerSignInService.CustomerSignInProcess(signInRequest);
-//        return customerSignInProcess;
-//    }
+    @PostMapping("/signin/customers")
+    public ApiResponse<CustomerSignInResponse> CustomerSignInApi(@RequestBody CustomerSignInRequest customerSignInRequest) {
+        String email = customerSignInRequest.getEmail();
+        String password = customerSignInRequest.getPassword();
+
+        SearchCommand signInRequest = new SearchCommand(email, password);
+
+        ApiResponse<CustomerSignInResponse> customerSignInProcess = customerSignInService.CustomerSignInProcess(signInRequest);
+        return customerSignInProcess;
+    }
 
 
 }

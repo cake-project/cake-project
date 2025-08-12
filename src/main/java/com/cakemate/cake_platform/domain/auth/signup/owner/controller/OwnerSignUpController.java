@@ -4,7 +4,7 @@ import com.cakemate.cake_platform.common.command.SearchCommand;
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.domain.auth.signup.owner.dto.request.OwnerSignUpRequest;
 import com.cakemate.cake_platform.domain.auth.signup.owner.dto.response.OwnerSignUpResponse;
-import com.cakemate.cake_platform.domain.auth.signup.owner.service.OwnerService;
+import com.cakemate.cake_platform.domain.auth.signup.owner.service.OwnerSignUpService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
-public class OwnerController {
-    private final OwnerService ownerService;
+public class OwnerSignUpController {
+    private final OwnerSignUpService ownerSignUpService;
 
-    public OwnerController(OwnerService ownerService) {
-        this.ownerService = ownerService;
+    public OwnerSignUpController(OwnerSignUpService ownerSignUpService) {
+        this.ownerSignUpService = ownerSignUpService;
     }
 
     @PostMapping("signup/owners")
@@ -31,7 +31,7 @@ public class OwnerController {
 
         SearchCommand searchSignUpRequest = new SearchCommand(email, password, passwordConfirm, name, phoneNumber);
 
-        ApiResponse<OwnerSignUpResponse> ownerSignUpSuccess = ownerService.ownerSaveProcess(searchSignUpRequest);
+        ApiResponse<OwnerSignUpResponse> ownerSignUpSuccess = ownerSignUpService.ownerSaveProcess(searchSignUpRequest);
         return ownerSignUpSuccess;
 
     }

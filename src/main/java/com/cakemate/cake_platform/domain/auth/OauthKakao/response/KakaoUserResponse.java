@@ -1,4 +1,4 @@
-package com.cakemate.cake_platform.domain.auth.signin.customer.dto.response;
+package com.cakemate.cake_platform.domain.auth.OauthKakao.response;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
