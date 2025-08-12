@@ -24,13 +24,13 @@ public class StoreRankingController {
     public ResponseEntity<ApiResponse<List<StoreRankingResponseDto>>> getWeeklyOrderRankings() {
 
         long start = System.currentTimeMillis();
-        List<StoreRankingResponseDto> rankings = storeRankingService.getWeeklyTopStores();
+        List<StoreRankingResponseDto> storeRankingResponseDtoList = storeRankingService.getWeeklyTopStores();
 
         long end = System.currentTimeMillis();
         log.info("getStoreRanking 처리 시간: {} ms", (end - start));
 
         return ResponseEntity.ok(
-                ApiResponse.success(HttpStatus.OK, "최근 1주일 주문량 랭킹을 성공적으로 불러왔습니다.", rankings)
+                ApiResponse.success(HttpStatus.OK, "최근 1주일 주문량 랭킹을 성공적으로 불러왔습니다.", storeRankingResponseDtoList)
         );
     }
 }

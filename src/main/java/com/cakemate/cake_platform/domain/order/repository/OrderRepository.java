@@ -2,6 +2,7 @@ package com.cakemate.cake_platform.domain.order.repository;
 
 import com.cakemate.cake_platform.domain.order.entity.Order;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
+import com.cakemate.cake_platform.domain.store.ranking.dto.StoreOrderCount;
 import com.cakemate.cake_platform.domain.store.ranking.dto.StoreRankingResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,18 +31,12 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     // 이미 주문이 생성된 견적서인지 확인할 때 사용합니다.
     boolean existsByProposalForm(ProposalForm proposalForm);
 
-    @Query(value = """
-        SELECT 
-            RANK() OVER (ORDER BY COUNT(o.id) DESC) AS store_rank,
-            s.id AS storeId,
-            s.name AS storeName,
-            COUNT(o.id) AS orderCount
-        FROM orders o
-        JOIN stores s ON o.store_id = s.id
-        WHERE o.created_at >= :startDate
-        GROUP BY s.id, s.name
-        ORDER BY orderCount DESC
-        LIMIT 10
-        """, nativeQuery = true)
-    List<StoreRankingResponseDto> findWeeklyTopStores(@Param("startDate") LocalDateTime startDate);
+    @Query("select new com.cakemate.cake_platform.domain.store.ranking.dto.StoreOrderCount(s.id, o.storeName, count(o))" +
+            "from Order o " +
+            "join o.store s " +
+            "where o.createdAt >= :startDate " +
+            "group by s.id, o.storeName " +
+            "order by count(o) desc"
+    )
+    List<StoreOrderCount> findWeeklyTopStores(@Param("startDate") LocalDateTime startDate);
 }
