@@ -32,7 +32,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query(value = """
         SELECT 
-            DENSE_RANK() OVER (ORDER BY COUNT(o.id) DESC) AS store_rank,
+            RANK() OVER (ORDER BY COUNT(o.id) DESC) AS store_rank,
             s.id AS storeId,
             s.name AS storeName,
             COUNT(o.id) AS orderCount
