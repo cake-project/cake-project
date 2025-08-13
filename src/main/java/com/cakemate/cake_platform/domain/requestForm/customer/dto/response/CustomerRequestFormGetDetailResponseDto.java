@@ -45,7 +45,6 @@ public class CustomerRequestFormGetDetailResponseDto {
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
         private LocalDateTime createdAt;
 
-        public String businessName;
         private CakeSize cakeSize;
         private int quantity;
 

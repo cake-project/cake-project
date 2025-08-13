@@ -5,7 +5,6 @@ import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
 import com.cakemate.cake_platform.domain.proposalForm.dto.*;
 import com.cakemate.cake_platform.domain.proposalForm.service.CustomerProposalFormService;
 import com.cakemate.cake_platform.domain.proposalForm.service.ProposalFormService;
-import io.jsonwebtoken.Claims;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -84,12 +83,11 @@ public class ProposalFormController {
      */
     @PatchMapping("{proposalFormId}/confirm")
     public ApiResponse<OwnerProposalFormConfirmResponseDto> updateProposalFormStatusAPI(@PathVariable Long proposalFormId,
-                                                                                        @RequestBody OwnerProposalFormConfirmRequestDto ownerProposalFormConfirmRequestDto,
                                                                                         @RequestHeader("Authorization") String bearerToken
 
     ) {
         Long ownerId = jwtUtil.extractOwnerId(bearerToken);
-        OwnerProposalFormConfirmResponseDto responseDto = proposalFormService.confirmProposalForm(proposalFormId, ownerId, ownerProposalFormConfirmRequestDto);
+        OwnerProposalFormConfirmResponseDto responseDto = proposalFormService.confirmProposalForm(proposalFormId, ownerId);
         ApiResponse<OwnerProposalFormConfirmResponseDto> response = ApiResponse.success(HttpStatus.OK, "견적서 최종 확정이 완료되었습니다.", responseDto);
         return response;
 

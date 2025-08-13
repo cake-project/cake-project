@@ -14,6 +14,13 @@ import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
 import com.cakemate.cake_platform.domain.proposalForm.exception.*;
 import com.cakemate.cake_platform.domain.proposalForm.exception.ResourceNotFoundException;
 import com.cakemate.cake_platform.domain.proposalForm.repository.ProposalFormRepository;
+import com.cakemate.cake_platform.domain.proposalFormChat.dto.ChatHistorySectionDto;
+import com.cakemate.cake_platform.domain.proposalFormChat.dto.ChatMessageHistoryResponseDto;
+import com.cakemate.cake_platform.domain.proposalFormChat.entity.ChatMessageEntity;
+import com.cakemate.cake_platform.domain.proposalFormChat.entity.ChatRoomEntity;
+import com.cakemate.cake_platform.domain.proposalFormChat.repository.ChatMessageRepository;
+import com.cakemate.cake_platform.domain.proposalFormChat.repository.ChatRoomRepository;
+import com.cakemate.cake_platform.domain.proposalFormChat.service.ChatService;
 import com.cakemate.cake_platform.domain.proposalFormComment.entity.ProposalFormComment;
 import com.cakemate.cake_platform.domain.proposalFormComment.repository.ProposalFormCommentRepository;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
@@ -28,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Getter
@@ -39,15 +47,20 @@ public class ProposalFormService {
     private final ProposalFormCommentRepository proposalFormCommentRepository;
     private final StoreRepository storeRepository;
     private final MemberRepository memberRepository;
+    private final ChatService chatService;
+    private final ChatRoomRepository chatRoomRepository;
+    private final ChatMessageRepository chatMessageRepository;
     private final NotificationService notificationService;
 
-
-    public ProposalFormService(ProposalFormRepository proposalFormRepository, RequestFormRepository requestFormRepository, ProposalFormCommentRepository proposalFormCommentRepository, StoreRepository storeRepository, MemberRepository memberRepository, NotificationService notificationService) {
+    public ProposalFormService(ProposalFormRepository proposalFormRepository, RequestFormRepository requestFormRepository, ProposalFormCommentRepository proposalFormCommentRepository, StoreRepository storeRepository, MemberRepository memberRepository, ChatService chatService, ChatRoomRepository chatRoomRepository, ChatMessageRepository chatMessageRepository, NotificationService notificationService) {
         this.proposalFormRepository = proposalFormRepository;
         this.requestFormRepository = requestFormRepository;
         this.proposalFormCommentRepository = proposalFormCommentRepository;
         this.storeRepository = storeRepository;
         this.memberRepository = memberRepository;
+        this.chatService = chatService;
+        this.chatRoomRepository = chatRoomRepository;
+        this.chatMessageRepository = chatMessageRepository;
         this.notificationService = notificationService;
     }
 
@@ -171,6 +184,11 @@ public class ProposalFormService {
         //comment List 조회
         List<ProposalFormComment> commentList = proposalFormCommentRepository.findByProposalForm_IdOrderByCreatedAtAsc(proposalFormId);
 
+        String roomId = chatService.findRoomId(foundProposalForm.getId())
+                .orElse(null);
+
+
+
         //DTO 만들기(ProposalForm, RequestForm, Comment 데이터를 합쳐 DTO 생성)
         //ProposalForm  Dto 만들기
         ProposalFormDataDto proposalFormDataDto = new ProposalFormDataDto(
@@ -187,7 +205,8 @@ public class ProposalFormService {
                 foundProposalForm.getCreatedAt(),
                 foundProposalForm.getModifiedAt(),
                 foundProposalForm.getStatus().name(),
-                foundProposalForm.getImage()
+                foundProposalForm.getImage(),
+                roomId
         );
 
         //RequestFormDto 만들기
@@ -230,8 +249,39 @@ public class ProposalFormService {
                 })
                 .collect(Collectors.toList());
 
+
+        // 채팅 내역 섹션 DTO 초기화
+        //->나중에 roomId가 있으면 그 안에 채팅방 ID랑 메시지 목록을 넣어서 완성된 DTO 를 만들고,
+        //roomId가 없으면 그냥 빈 상태(null)로 둔다
+        ChatHistorySectionDto chatSection = null;
+
+        // roomId가 존재하는 경우에만 채팅 내역 조회
+        //특정 채팅방을 가리키는 ID가 있으면 그 방의 채팅 내역을 DB 에서 가져온다.
+        if (roomId != null) {
+
+            // 1. 해당 채팅방(roomId)의 메시지를 생성일 기준 오름차순으로 조회
+            List<ChatMessageEntity> result =
+                    chatMessageRepository.findByRoomIdOrderByCreatedAtAsc(roomId);
+
+            // 2. 조회된 엔티티 리스트를 ChatMessageHistoryDto 로 변환
+            List<ChatMessageHistoryResponseDto> items = result.stream()
+                    .map(ChatMessageHistoryResponseDto::from)
+                    .collect(Collectors.toList());
+
+            // 3. 채팅방 ID와 메시지 목록을 포함한 ChatHistorySectionDto 객체를 생성
+            chatSection = ChatHistorySectionDto.builder()
+                    .chatRoomId(roomId)
+                    .messages(items)
+                    .build();
+        }
+
+
+        //chatSection 추가
         //응답 DTO 만들기
-        ProposalFormContainsRequestFormDataDto responseDto = new ProposalFormContainsRequestFormDataDto(requestFormDataDto, proposalFormDataDto, commentDtoList);
+        ProposalFormContainsRequestFormDataDto responseDto
+                = new ProposalFormContainsRequestFormDataDto(
+                        requestFormDataDto, proposalFormDataDto, chatSection, commentDtoList
+        );
 
         //반환
         ApiResponse<ProposalFormContainsRequestFormDataDto> response = ApiResponse.success(HttpStatus.OK, "success", responseDto);
@@ -382,7 +432,7 @@ public class ProposalFormService {
      * proposalForm 최종 확정 서비스
      */
     @Transactional
-    public OwnerProposalFormConfirmResponseDto confirmProposalForm(Long proposalFormId, Long ownerId, OwnerProposalFormConfirmRequestDto requestDto) {
+    public OwnerProposalFormConfirmResponseDto confirmProposalForm(Long proposalFormId, Long ownerId) {
         ProposalForm proposalForm = proposalFormRepository.findByIdAndIsDeletedFalse(proposalFormId)
                 .orElseThrow(() -> new ProposalFormNotFoundException("견적서를 찾을 수 없습니다."));
 
@@ -390,14 +440,10 @@ public class ProposalFormService {
             throw new UnauthorizedAccessException("접근 권한이 없습니다.");
         }
 
-        ProposalFormStatus proposalFormStatus;
-        try {
-            proposalFormStatus = requestDto.getProposalFormStatusEnum();
-        } catch (IllegalArgumentException e) {
-            throw new InvalidProposalStatusException("유효하지 않은 견적서 상태 값입니다.");
-        }
+        proposalForm.confirmStatus(ProposalFormStatus.CONFIRMED);
+        ProposalFormStatus proposalFormStatus = proposalForm.getStatus();
 
-        proposalForm.confirmStatus(proposalFormStatus);
+        chatService.getRoomIdOrThrow(proposalFormId, ownerId);
 
         //견적서 확정 알림 보내기(점주->소비자)
         if (proposalFormStatus == ProposalFormStatus.CONFIRMED) {
@@ -408,5 +454,11 @@ public class ProposalFormService {
 
         OwnerProposalFormConfirmResponseDto responseDto = new OwnerProposalFormConfirmResponseDto(proposalForm.getId(), proposalForm.getStatus());
         return responseDto;
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<String> findRoomId(Long proposalFormId) {
+        return chatRoomRepository.findByProposalForm_Id(proposalFormId)
+                .map(ChatRoomEntity::getId);
     }
 }

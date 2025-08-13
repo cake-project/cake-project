@@ -2,6 +2,7 @@ package com.cakemate.cake_platform.domain.requestForm.owner.service;
 
 import com.cakemate.cake_platform.common.exception.RequestFormNotFoundException;
 import com.cakemate.cake_platform.common.exception.StoreNotFoundException;
+
 import com.cakemate.cake_platform.common.exception.UnauthorizedAccessException;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
@@ -108,7 +109,7 @@ public class RequestFormOwnerService {
             }
         }
 
-        Page<RequestForm> requestFormPage = requestFormRepository.findByRegionContainingAndIsDeletedFalse(cityName, pageable);
+        Page<RequestForm> requestFormPage = requestFormRepository.findByRegionAndIsDeletedFalse(cityName, pageable);
 
         PageDto pageDto = new PageDto(requestFormPage.getNumber() + 1, requestFormPage.getSize(), requestFormPage.getTotalPages(), requestFormPage.getTotalElements());
         List<RequestFormDetailOwnerResponseDto> responseDtoList = requestFormPage.getContent().stream()

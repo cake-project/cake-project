@@ -1,15 +1,16 @@
 package com.cakemate.cake_platform.domain.requestForm.entity;
 
-import com.cakemate.cake_platform.common.entity.BaseTimeEntity;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import com.cakemate.cake_platform.common.commonEnum.CakeSize;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
+import com.cakemate.cake_platform.domain.requestForm.exception.InvalidRequestDeleteException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+
 
 @Getter
 @Entity
@@ -104,5 +105,22 @@ public class RequestForm {
     //견적서 최초 등록 시 - 의뢰서 상태 변경
     public void updateStatusToHasProposal() {
         this.status = RequestFormStatus.ESTIMATING;
+    }
+
+    // 스케줄러 전용 메서드 (조건이 있는 삭제)
+    public void validateAndSoftDeleteForScheduler() {
+        if (this.isDeleted) {
+            throw new InvalidRequestDeleteException("이미 삭제된 의뢰서입니다.");
+        }
+
+        if (this.status != RequestFormStatus.REQUESTED) {
+            throw new InvalidRequestDeleteException("REQUESTED 상태가 아닌 의뢰서는 삭제할 수 없습니다. 현재 상태: " + this.status);
+        }
+
+        if (this.desiredPickupDate.isAfter(LocalDateTime.now())) {
+            throw new InvalidRequestDeleteException("픽업 날짜가 아직 지나지 않았습니다.");
+        }
+
+        this.isDeleted = true;
     }
 }

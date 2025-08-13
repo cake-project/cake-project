@@ -88,12 +88,6 @@ public class NotificationService {
         //emitterId 생성
         String emitterId = memberType + "_" + receiverId;
 
-//        System.out.println("sendNotification called for emitterId: " + emitterId);
-//        emitterRepository.findById(emitterId).ifPresentOrElse(
-//                emitter -> System.out.println("Emitter found, sending notification."),
-//                () -> System.out.println("Emitter NOT found for emitterId: " + emitterId)
-//        );
-
         //알림 저장
         Notification notification = notificationRepository.save(new Notification(receiverId, message));
 
