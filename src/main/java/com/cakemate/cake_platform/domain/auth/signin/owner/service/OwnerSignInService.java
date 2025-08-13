@@ -14,6 +14,7 @@ import com.cakemate.cake_platform.domain.auth.exception.EmailNotFoundException;
 import com.cakemate.cake_platform.domain.auth.exception.PasswordMismatchException;
 import com.cakemate.cake_platform.domain.auth.oAuthEnum.OAuthProvider;
 import com.cakemate.cake_platform.domain.auth.signin.owner.dto.response.OwnerSignInResponse;
+import com.cakemate.cake_platform.domain.auth.signup.owner.dto.response.OwnerSignUpResponse;
 import com.cakemate.cake_platform.domain.auth.signup.owner.repository.OwnerRepository;
 import com.cakemate.cake_platform.domain.member.entity.Member;
 import com.cakemate.cake_platform.domain.member.repository.MemberRepository;
@@ -70,24 +71,53 @@ public class OwnerSignInService {
         this.restClient = restClientBuilder.baseUrl(kapiHost).build();
     }
 
-    public ApiResponse<OwnerSignInResponse> ownerKakaoSignInProcess(String code) {
-        KakaoUserResponse kakaoUserResponse = retrieveKakaoUser(code);
+    public ApiResponse<?> ownerKakaoSignInProcess(String code) {
         // 인가 코드에서 accessToken 가져오기
+        KakaoUserResponse kakaoUserResponse = retrieveKakaoUser(code);
 
         Long kakaoUserId = kakaoUserResponse.getId();
-        String kakaoUsername = kakaoUserResponse.getKakao_account().getName();
-
+        String kakaoEmail = kakaoUserResponse.getKakao_account().getEmail();
+        String kakaoName = kakaoUserResponse.getKakao_account().getName();
         String kakaoUserPhoneNumber = kakaoUserResponse.getKakao_account().getPhone_number();
         String replaceKakaoUserPhoneNumber = kakaoUserPhoneNumber.replaceAll("^\\+82\\s?0?10", "010");
 
-        Member ownerByKaKao = findOwnerByKaKaoInMember(kakaoUsername, replaceKakaoUserPhoneNumber,
-                OAuthProvider.KAKAO, kakaoUserId);
+        //기존에 가입한 계정(로컬, 어나더소셜) 이 있는가?
 
-        String ownerJwtToken = jwtUtil.createMemberJwtToken(ownerByKaKao);
-        OwnerSignInResponse ownerSignInResponse = new OwnerSignInResponse(ownerJwtToken);
+        boolean existsOwner = existsOwner(kakaoName, replaceKakaoUserPhoneNumber);
+        Owner ownerByProvide;
+        if (existsOwner) {
+            Optional<Owner> ownerByNameAndPhoneNumber =
+                    ownerRepository.findByNameAndPhoneNumber(kakaoName, replaceKakaoUserPhoneNumber);
+            if (ownerByNameAndPhoneNumber.isPresent()) {
+                Member customerByKaKaoInMember = findOwnerByKaKaoInMember(kakaoName,
+                        replaceKakaoUserPhoneNumber,
+                        OAuthProvider.KAKAO,
+                        kakaoUserId);
 
-        ApiResponse<OwnerSignInResponse> success = ApiResponse
-                .success(HttpStatus.OK, "환영합니다 " + kakaoUsername + "님", ownerSignInResponse);
+                String customerJwtToken = jwtUtil.createMemberJwtToken(customerByKaKaoInMember);
+                OwnerSignInResponse ownerSignInResponse = new OwnerSignInResponse(customerJwtToken);
+
+                ApiResponse<OwnerSignInResponse> SignInSuccess
+                        = ApiResponse
+                        .success(HttpStatus.OK, "환영합니다 " + kakaoName + "님", ownerSignInResponse);
+                return SignInSuccess;
+            }
+        }
+
+        Owner kakaoUserOwnerInfo = new Owner(kakaoEmail, null, null, kakaoName,
+                replaceKakaoUserPhoneNumber, OAuthProvider.KAKAO, kakaoUserId);
+        ownerByProvide = ownerRepository.save(kakaoUserOwnerInfo);
+
+        Member custmerMember = new Member(ownerByProvide);
+        memberRepository.save(custmerMember);
+
+
+        OwnerSignUpResponse ownerKakaoSignUpResponse = new OwnerSignUpResponse(ownerByProvide);
+
+        ApiResponse<OwnerSignUpResponse> success = ApiResponse
+                .success(HttpStatus.CREATED,
+                        ownerByProvide.getName() + "님 회원가입이 완료되었습니다.",
+                        ownerKakaoSignUpResponse);
         return success;
 
     }
@@ -118,6 +148,7 @@ public class OwnerSignInService {
                 = ApiResponse.success(HttpStatus.OK, "환영합니다 " + owner.getName() + "님", ownerSignInResponse);
         return SignInSuccess;
     }
+
     private Member findOwnerByKaKaoInMember(String name, String phonNumber, OAuthProvider provider, Long id) {
         return memberRepository.findOwnerByKaKao(name, phonNumber,
                 provider, id).orElseThrow(() -> new MemberNotFoundException("해당 회원을 찾을 수 없습니다."));
@@ -147,6 +178,10 @@ public class OwnerSignInService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private boolean existsOwner(String name, String phoneNumber) {
+        return ownerRepository.existsByNameAndPhoneNumber(name, phoneNumber);
     }
 
     public String createDefaultMessage() {

@@ -89,8 +89,6 @@ public class CustomerSignUpService {
         String passwordEncode = passwordEncoder.encode(password);
         String passwordConfirmEncode = passwordEncoder.encode(passwordConfirm);
 
-        Customer customerInfo = new Customer(UUID.randomUUID().toString(), email, passwordEncode, passwordConfirmEncode, name, phoneNumber);
-        Customer customerSave = customerRepository.save(customerInfo);
         boolean existsOwner = existsCustomer(name, phoneNumber);
         Customer customerByLocal;
         if (existsOwner) {
@@ -111,7 +109,8 @@ public class CustomerSignUpService {
             }
         }
 
-        Customer customerInfo = new Customer(email, passwordEncode, passwordConfirmEncode, name, phoneNumber, OAuthProvider.LOCAL, null);
+        Customer customerInfo = new Customer(UUID.randomUUID().toString(), email, passwordEncode,
+                passwordConfirmEncode, name, phoneNumber, OAuthProvider.LOCAL, null);
         customerByLocal = customerRepository.save(customerInfo);
         // Member 테이블에 저장
 
@@ -162,8 +161,8 @@ public class CustomerSignUpService {
             }
         }
 
-        Customer kakaoUserCustomerInfo = new Customer(kakaoEmail, null, null, kakaoName,
-                replaceKakaoUserPhoneNumber, OAuthProvider.KAKAO, kakaoUserId);
+        Customer kakaoUserCustomerInfo = new Customer(UUID.randomUUID().toString(), kakaoEmail, null,
+                null, kakaoName, replaceKakaoUserPhoneNumber, OAuthProvider.KAKAO, kakaoUserId);
         customerByProvide = customerRepository.save(kakaoUserCustomerInfo);
 
         Member custmerMember = new Member(customerByProvide);

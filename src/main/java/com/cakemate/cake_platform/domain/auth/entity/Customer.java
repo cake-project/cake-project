@@ -68,8 +68,6 @@ public class Customer extends BaseTimeEntity {
         this.password = password;
     }
 
-
-
     //기능
 
     // 비밀번호 변경

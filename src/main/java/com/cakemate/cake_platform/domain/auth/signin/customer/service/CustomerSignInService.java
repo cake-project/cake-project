@@ -11,6 +11,7 @@ import com.cakemate.cake_platform.domain.auth.oAuthEnum.OAuthProvider;
 import com.cakemate.cake_platform.domain.auth.signin.customer.dto.response.CustomerSignInResponse;
 import com.cakemate.cake_platform.domain.auth.OauthKakao.response.KakaoTokenResponse;
 import com.cakemate.cake_platform.domain.auth.OauthKakao.response.KakaoUserResponse;
+import com.cakemate.cake_platform.domain.auth.signup.customer.dto.response.CustomerSignUpResponse;
 import com.cakemate.cake_platform.domain.auth.signup.customer.repository.CustomerRepository;
 import com.cakemate.cake_platform.domain.member.entity.Member;
 import com.cakemate.cake_platform.domain.member.repository.MemberRepository;
@@ -32,6 +33,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -65,28 +67,54 @@ public class CustomerSignInService {
     }
 
     // ObjectMapper -> 자바 객체를 JSON 문자열로 변환 해주거나 혹은 JSON 문자열을 자바 객체로 변환
-    public ApiResponse<CustomerSignInResponse> customerKakaoSignInProcess(String code) {
-        KakaoUserResponse kakaoUserResponse = retrieveKakaoUser(code);
-        // 인가 코드에서 accessToken 가져오기
-        Long kakaoUserId = kakaoUserResponse.getId();
-        String kakaoUsername = kakaoUserResponse.getKakao_account().getName();
+    public ApiResponse<?> customerKakaoSignInProcess(String code) {
+        KakaoUserResponse kakaoUserInfo = retrieveKakaoUser(code);
 
-        String kakaoUserPhoneNumber = kakaoUserResponse.getKakao_account().getPhone_number();
+        Long kakaoUserId = kakaoUserInfo.getId();
+        String kakaoEmail = kakaoUserInfo.getKakao_account().getEmail();
+        String kakaoName = kakaoUserInfo.getKakao_account().getName();
+        String kakaoUserPhoneNumber = kakaoUserInfo.getKakao_account().getPhone_number();
         String replaceKakaoUserPhoneNumber = kakaoUserPhoneNumber.replaceAll("^\\+82\\s?0?10", "010");
 
-        // 수신받은 정보로 해당 사용자가 어떤 경로로 회원가입을 했는지 확인 후 가입 한 경로로 로그인 안내 예외처리 출력
-        Member customerByKaKaoInMember = findCustomerByKaKaoInMember(kakaoUsername,
-                replaceKakaoUserPhoneNumber,
-                OAuthProvider.KAKAO,
-                kakaoUserId);
+        //기존에 가입한 계정(로컬, 어나더소셜) 이 있는가?
+        boolean existsOwner = existsCustomer(kakaoName, replaceKakaoUserPhoneNumber);
+        Customer customerByProvide;
+        if (existsOwner) {
+            Optional<Customer> customerByNameAndPhoneNumber =
+                    customerRepository.findByNameAndPhoneNumber(kakaoName, replaceKakaoUserPhoneNumber);
+            if (customerByNameAndPhoneNumber.isPresent()) {
+                Member customerByKaKaoInMember = findCustomerByKaKaoInMember(kakaoName,
+                        replaceKakaoUserPhoneNumber,
+                        OAuthProvider.KAKAO,
+                        kakaoUserId);
 
-        String customerJwtToken = jwtUtil.createMemberJwtToken(customerByKaKaoInMember);
-        CustomerSignInResponse customerSignInResponse = new CustomerSignInResponse(customerJwtToken);
+                String customerJwtToken = jwtUtil.createMemberJwtToken(customerByKaKaoInMember);
+                CustomerSignInResponse customerSignInResponse = new CustomerSignInResponse(customerJwtToken);
 
-        ApiResponse<CustomerSignInResponse> SignInSuccess
-                = ApiResponse
-                .success(HttpStatus.OK, "환영합니다 " + kakaoUsername + "님", customerSignInResponse);
-        return SignInSuccess;
+                ApiResponse<CustomerSignInResponse> SignInSuccess
+                        = ApiResponse
+                        .success(HttpStatus.OK, "환영합니다 " +
+                                customerByKaKaoInMember.getCustomer().getName() + "님", customerSignInResponse);
+                return SignInSuccess;
+            }
+        }
+
+        Customer kakaoUserCustomerInfo = new Customer(UUID.randomUUID().toString(), kakaoEmail, null,
+                null, kakaoName, replaceKakaoUserPhoneNumber, OAuthProvider.KAKAO, kakaoUserId);
+        customerByProvide = customerRepository.save(kakaoUserCustomerInfo);
+
+        Member custmerMember = new Member(customerByProvide);
+        memberRepository.save(custmerMember);
+
+        CustomerSignUpResponse KaKaoUserCustomerSignUpResponse
+                = new CustomerSignUpResponse(customerByProvide);
+
+        ApiResponse<CustomerSignUpResponse> success = ApiResponse
+                .success(HttpStatus.CREATED,
+                        customerByProvide.getName() + "님 회원가입이 완료되었습니다.",
+                        KaKaoUserCustomerSignUpResponse);
+        return success;
+
 
     }
 
@@ -138,6 +166,9 @@ public class CustomerSignInService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+    private boolean existsCustomer(String name, String phoneNumber) {
+        return customerRepository.existsByNameAndPhoneNumber(name, phoneNumber);
     }
 
     private Member findCustomerByKaKaoInMember(String name, String phonNumber, OAuthProvider provider, Long id) {
