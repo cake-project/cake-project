@@ -4,13 +4,11 @@ import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
-import com.cakemate.cake_platform.domain.proposalFormComment.entity.ProposalFormComment;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,6 +43,13 @@ public interface ProposalFormRepository extends JpaRepository<ProposalForm, Long
 
     // 해당 의뢰서에 이미 선택된 견적서가 있는지 조회
     boolean existsByRequestFormIdAndStatus(Long requestFormId, ProposalFormStatus proposalFormStatus);
+
+    //CONFIRMED 상태인데 주문이 생성되지 않은 7일 이상 지난 견적서들을 찾는 데 사용됨
+    @Query("SELECT pf FROM ProposalForm pf LEFT JOIN Order o ON o.proposalForm = pf " +
+            "WHERE pf.status = :status AND pf.modifiedAt < :cutoff AND o IS NULL")
+    List<ProposalForm> findByStatusAndModifiedAtBeforeAndNoOrder(
+            @Param("status") ProposalFormStatus status,
+            @Param("cutoff") LocalDateTime cutoff);
 
 
     //삭제 안 된 견적서가 해당 소비자 (customer) 소유인지 확인
