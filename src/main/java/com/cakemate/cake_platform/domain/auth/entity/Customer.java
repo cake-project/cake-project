@@ -18,6 +18,9 @@ public class Customer extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
+    private String customerKey;
+
     @Email(message = "email 형식을 지켜주십시오(ex. cake@gmail.com)")
     @Column(nullable = false, unique = true)
     private String email;
@@ -47,8 +50,9 @@ public class Customer extends BaseTimeEntity {
     }
 
     // 회원가입 생성자
-    public Customer(String email, String password, String passwordConfirm, String name, String phoneNumber,
-                    OAuthProvider provider, Long providerId) {
+    public Customer(String customerKey, String email, String password, String passwordConfirm, String name,
+                    String phoneNumber, OAuthProvider provider, Long providerId) {
+        this.customerKey = customerKey;
         this.email = email;
         this.password = password;
         this.passwordConfirm = passwordConfirm;
@@ -63,7 +67,6 @@ public class Customer extends BaseTimeEntity {
         this.email = email;
         this.password = password;
     }
-
 
 
 

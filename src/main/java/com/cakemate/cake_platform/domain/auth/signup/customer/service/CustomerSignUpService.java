@@ -35,6 +35,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.UUID;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -88,6 +89,8 @@ public class CustomerSignUpService {
         String passwordEncode = passwordEncoder.encode(password);
         String passwordConfirmEncode = passwordEncoder.encode(passwordConfirm);
 
+        Customer customerInfo = new Customer(UUID.randomUUID().toString(), email, passwordEncode, passwordConfirmEncode, name, phoneNumber);
+        Customer customerSave = customerRepository.save(customerInfo);
         boolean existsOwner = existsCustomer(name, phoneNumber);
         Customer customerByLocal;
         if (existsOwner) {

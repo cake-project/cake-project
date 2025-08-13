@@ -39,5 +39,13 @@ public class Member {
         this.owner = ownerId;
     }
 
+    public String CustomerName() {
+        String name = customer.getName();
+        return name;
+    }
+    public String OwnerName() {
+        String name = owner.getName();
+        return name;
+    }
 
 }

@@ -24,4 +24,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     // 이미 주문이 생성된 견적서인지 확인할 때 사용합니다.
     boolean existsByProposalForm(ProposalForm proposalForm);
+
+    Optional<Order> findByOrderNumber(String orderNumber);
 }
