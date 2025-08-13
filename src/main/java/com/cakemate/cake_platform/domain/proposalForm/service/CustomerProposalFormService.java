@@ -3,6 +3,9 @@ package com.cakemate.cake_platform.domain.proposalForm.service;
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.common.exception.ProposalFormNotFoundException;
 import com.cakemate.cake_platform.common.exception.UnauthorizedAccessException;
+import com.cakemate.cake_platform.domain.auth.entity.Customer;
+import com.cakemate.cake_platform.domain.auth.entity.Owner;
+import com.cakemate.cake_platform.domain.notification.service.NotificationService;
 import com.cakemate.cake_platform.domain.proposalForm.dto.*;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
@@ -25,11 +28,13 @@ public class CustomerProposalFormService {
 
     private final ProposalFormRepository proposalFormRepository;
     private final ProposalFormCommentRepository proposalFormCommentRepository;
+    private final NotificationService notificationService;
 
     public CustomerProposalFormService(ProposalFormRepository proposalFormRepository,
-                                       ProposalFormCommentRepository proposalFormCommentRepository) {
+                                       ProposalFormCommentRepository proposalFormCommentRepository, NotificationService notificationService) {
         this.proposalFormRepository = proposalFormRepository;
         this.proposalFormCommentRepository = proposalFormCommentRepository;
+        this.notificationService = notificationService;
     }
 
     /**
@@ -135,6 +140,17 @@ public class CustomerProposalFormService {
         }
 
         proposalForm.acceptStatus(proposalFormStatus);
+
+        //견적서 수락 알림 보내기(소비자->점주)
+        String storeName = proposalForm.getStoreName();
+        String message;
+        Owner owner = proposalForm.getOwner();
+        Customer customer = proposalForm.getRequestForm().getCustomer();
+
+        if (proposalFormStatus == ProposalFormStatus.ACCEPTED) {
+            message = String.format("의뢰인이 %s님의 견적서를 수락했습니다.", storeName);
+            notificationService.sendNotification(owner.getId(), message, "owner");
+        }
 
         CustomerProposalFormAcceptResponseDto responseDto = new CustomerProposalFormAcceptResponseDto(proposalForm.getId(), proposalForm.getStatus());
         return responseDto;

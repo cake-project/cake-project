@@ -2,9 +2,11 @@ package com.cakemate.cake_platform.domain.proposalForm.service;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.common.exception.*;
+import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.member.entity.Member;
 import com.cakemate.cake_platform.domain.member.repository.MemberRepository;
+import com.cakemate.cake_platform.domain.notification.service.NotificationService;
 import com.cakemate.cake_platform.domain.proposalForm.dto.*;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.common.commonEnum.CakeSize;
@@ -37,13 +39,16 @@ public class ProposalFormService {
     private final ProposalFormCommentRepository proposalFormCommentRepository;
     private final StoreRepository storeRepository;
     private final MemberRepository memberRepository;
+    private final NotificationService notificationService;
 
-    public ProposalFormService(ProposalFormRepository proposalFormRepository, RequestFormRepository requestFormRepository, ProposalFormCommentRepository proposalFormCommentRepository, StoreRepository storeRepository, MemberRepository memberRepository) {
+
+    public ProposalFormService(ProposalFormRepository proposalFormRepository, RequestFormRepository requestFormRepository, ProposalFormCommentRepository proposalFormCommentRepository, StoreRepository storeRepository, MemberRepository memberRepository, NotificationService notificationService) {
         this.proposalFormRepository = proposalFormRepository;
         this.requestFormRepository = requestFormRepository;
         this.proposalFormCommentRepository = proposalFormCommentRepository;
         this.storeRepository = storeRepository;
         this.memberRepository = memberRepository;
+        this.notificationService = notificationService;
     }
 
     /**
@@ -135,6 +140,11 @@ public class ProposalFormService {
 
         //응답 DTO 만들기
         ApiResponse<ProposalFormDataDto> response = ApiResponse.success(HttpStatus.CREATED, "created", dataDto);
+
+        //견적서 등록 알림 보내기(점주->소비자)
+        Long customerId = savedProposalForm.getRequestForm().getCustomer().getId();
+        notificationService.sendNotification(customerId, "새로운 견적서가 도착했습니다.", "customer");
+
         return response;
     }
 
@@ -311,6 +321,11 @@ public class ProposalFormService {
         //저장
         ProposalForm updatedProposalForm = proposalFormRepository.save(foundProposalForm);
 
+        //견적서 수정 알림 보내기(점주->소비자)
+        Customer customer = updatedProposalForm.getRequestForm().getCustomer();
+        String message = "견적서의 내용이 수정되었습니다. 변동 사항을 확인 해주세요.";
+        notificationService.sendNotification(customer.getId(), message, "customer");
+
         //응답 DTO 만들기
         ProposalFormDataDto responseDto = new ProposalFormDataDto(
                 updatedProposalForm.getId(),
@@ -343,7 +358,7 @@ public class ProposalFormService {
                 .orElseThrow(() -> new OwnerNotFoundException("해당 점주를 찾을 수 없습니다."));
 
         ProposalForm foundProposalForm = proposalFormRepository.findById(proposalFormId)
-                .orElseThrow(() -> new OwnerNotFoundException("해당 제안서가 존재하지 않습니다."));
+                .orElseThrow(() -> new ProposalFormNotFoundException("해당 제안서가 존재하지 않습니다."));
 
         //권한 확인
         if (!foundProposalForm.getOwner().getId().equals(foundOwner.getId())) {
@@ -383,6 +398,13 @@ public class ProposalFormService {
         }
 
         proposalForm.confirmStatus(proposalFormStatus);
+
+        //견적서 확정 알림 보내기(점주->소비자)
+        if (proposalFormStatus == ProposalFormStatus.CONFIRMED) {
+            Customer customer = proposalForm.getRequestForm().getCustomer();
+            String message = "견적서의 최종 내용을 확인 해주세요.";
+            notificationService.sendNotification(customer.getId(), message, "customer");
+        }
 
         OwnerProposalFormConfirmResponseDto responseDto = new OwnerProposalFormConfirmResponseDto(proposalForm.getId(), proposalForm.getStatus());
         return responseDto;

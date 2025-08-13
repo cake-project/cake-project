@@ -3,6 +3,7 @@ package com.cakemate.cake_platform.domain.order.customer.service;
 import com.cakemate.cake_platform.common.exception.*;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import com.cakemate.cake_platform.domain.auth.signup.customer.repository.CustomerRepository;
+import com.cakemate.cake_platform.domain.notification.service.NotificationService;
 import com.cakemate.cake_platform.domain.order.common.OrderNumberGenerator;
 import com.cakemate.cake_platform.domain.order.customer.dto.*;
 import com.cakemate.cake_platform.domain.order.customer.exception.ProposalAlreadyOrderedException;
@@ -18,6 +19,7 @@ import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
 import com.cakemate.cake_platform.common.dto.PageDto;
 import com.cakemate.cake_platform.domain.store.entity.Store;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -35,11 +37,17 @@ public class OrderCustomerService {
     private final OrderRepository orderRepository;
     private final ProposalFormRepository proposalFormRepository;
     private final CustomerRepository customerRepository;
+    private final NotificationService notificationService;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public OrderCustomerService(OrderRepository orderRepository, ProposalFormRepository proposalFormRepository, CustomerRepository customerRepository) {
+
+
+    public OrderCustomerService(OrderRepository orderRepository, ProposalFormRepository proposalFormRepository, CustomerRepository customerRepository, NotificationService notificationService, ApplicationEventPublisher eventPublisher) {
         this.orderRepository = orderRepository;
         this.proposalFormRepository = proposalFormRepository;
         this.customerRepository = customerRepository;
+        this.notificationService = notificationService;
+        this.eventPublisher = eventPublisher;
     }
 
     /**
@@ -78,6 +86,12 @@ public class OrderCustomerService {
             p.updateStatus(ProposalFormStatus.CANCELLED);
         }
 
+        //견적서 취소 알림 보내기(소비자->점주)
+        String message = "견적서가 취소되었습니다.";
+        for (ProposalForm p : proposalFormList) {
+            notificationService.sendNotification(p.getOwner().getId(), message, "owner");
+        }
+
         // ProposalForm의 store가 nullable = true -> null 체크
         Store store = Optional.ofNullable(proposalForm.getStore())
                 .orElseThrow(() -> new StoreNotFoundException("견적서에 가게가 존재하지 않습니다."));
@@ -109,6 +123,10 @@ public class OrderCustomerService {
                 .build();
 
         orderRepository.save(order);
+
+        //주문 생성 알림 보내기(소비자->점주)
+        String orderMessage = "주문이 생성되었습니다.";
+        notificationService.sendNotification(store.getOwner().getId(), orderMessage, "owner");
 
         CustomerOrderCreateResponseDto responseDto = new CustomerOrderCreateResponseDto(
                 order.getId(), orderNumber, OrderStatus.MAKE_WAITING, LocalDateTime.now()
