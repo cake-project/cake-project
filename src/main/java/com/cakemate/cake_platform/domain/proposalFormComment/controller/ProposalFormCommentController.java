@@ -1,8 +1,6 @@
 package com.cakemate.cake_platform.domain.proposalFormComment.controller;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
-import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
-import com.cakemate.cake_platform.domain.proposalForm.service.ProposalFormService;
 import com.cakemate.cake_platform.domain.proposalFormComment.dto.request.CommentCreateRequestDto;
 import com.cakemate.cake_platform.domain.proposalFormComment.dto.response.CommentCreateResponseDto;
 import com.cakemate.cake_platform.domain.proposalFormComment.service.ProposalFormCommentService;
@@ -13,14 +11,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class ProposalFormCommentController {
 
-    private final ProposalFormService proposalFormService;
-    private final ProposalFormCommentService proposalFormCommentService;
-    private final JwtUtil jwtUtil;
 
-    public ProposalFormCommentController(ProposalFormService proposalFormService, ProposalFormCommentService proposalFormCommentService, JwtUtil jwtUtil) {
-        this.proposalFormService = proposalFormService;
+    private final ProposalFormCommentService proposalFormCommentService;
+
+
+    public ProposalFormCommentController(ProposalFormCommentService proposalFormCommentService) {
         this.proposalFormCommentService = proposalFormCommentService;
-        this.jwtUtil = jwtUtil;
     }
 
 

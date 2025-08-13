@@ -38,6 +38,7 @@ public class JwtUtil {
                     .subject(subjectOwnerId)
                     .issuedAt(now)
                     .claim("email", member.getOwner().getEmail())
+                    .claim("memberName", member.OwnerName()) // 채팅 메시지 발신자(sender)로 사용됨.
                     .claim("memberType", "OWNER")
                     .expiration(expiration) // 만료시간 120분
                     .signWith(secretKey, SignatureAlgorithm.HS256)
@@ -49,6 +50,7 @@ public class JwtUtil {
                     .subject(subjectCustomerId)
                     .issuedAt(now)
                     .claim("email", member.getCustomer().getEmail())
+                    .claim("memberName", member.CustomerName())//  채팅 메시지 발신자(sender)로 사용됨.
                     .claim("memberType", "CUSTOMER")
                     .expiration(expiration) // 만료시간 120분
                     .signWith(secretKey, SignatureAlgorithm.HS256)
@@ -149,4 +151,36 @@ public class JwtUtil {
         return subjectMemberId(claims);      // role 무검증
     }
 
+    //실시간 채팅 시 JWT 토큰에서 displayName 클레임을 추출하는 메서드
+    public String extractDisplayName(String bearerJwtToken) {
+        // "Bearer " 접두사를 제거하고 실제 JWT 토큰만 추출
+        String token = substringToken(bearerJwtToken);
+
+        // 토큰 검증 (유효성, 서명 확인 등) 후 Claims 객체로 파싱
+        Claims claims = verifyToken(token);
+
+        // Claims에서 "displayName"이라는 키로 저장된 값을 String 타입으로 가져오기
+        // → 토큰 생성 시 반드시 "displayName" 클레임을 넣어줘야 함
+        return claims.get("displayName", String.class);
+    }
+
+    // 채팅 전용 JWT 생성
+    public String chatJwtToken(Long memberId, String email, String displayName) {
+        long now = System.currentTimeMillis();
+        long validity = 1000L * 60 * 60; // 1시간 유효
+
+        return Jwts.builder()
+                .setSubject(String.valueOf(memberId))   // 사용자 식별자
+                .claim("email", email)                  // 이메일
+                .claim("displayName", displayName)      // 채팅 표시 이름
+                .claim("iat", now / 1000)               // 발급 시간 (초 단위)
+                .claim("exp", (now + validity) / 1000)  // 만료 시간 (1시간 뒤)
+                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    // 채팅 에서 사용
+    public String extractMemberName(Claims claims) {
+        return claims.get("memberName", String.class); // JWT 에 넣은 claim 키명과 동일하게
+    }
 }

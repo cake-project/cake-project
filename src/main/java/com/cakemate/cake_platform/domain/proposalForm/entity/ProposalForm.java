@@ -68,7 +68,7 @@ public class ProposalForm extends BaseTimeEntity {
     @Enumerated(value = EnumType.STRING)
     private ProposalFormStatus status = ProposalFormStatus.AWAITING;  // 디폴트 값;
 
-    @Column(nullable = false)
+    @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
 
@@ -142,5 +142,12 @@ public class ProposalForm extends BaseTimeEntity {
 
         this.status = ProposalFormStatus.ACCEPTED;
     }
+    // 견적서 자동 취소시 사용
+    public void canceledStatus() {
+        if (this.status != ProposalFormStatus.CONFIRMED) {
+            throw new InvalidProposalStatusException("CONFIRMED 상태에서만 취소할 수 있습니다. 현재 상태: " + this.status);
+        }
 
+        this.status = ProposalFormStatus.CANCELLED;
+    }
 }

@@ -10,4 +10,6 @@ public class CustomerProposalFormAcceptResponseDto {
 
     private Long proposalId;
     private ProposalFormStatus proposalFormStatus;
+    //프론트가 WebSocket 연결에 사용할 ID
+    private String chatRoomId;
 }
