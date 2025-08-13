@@ -46,8 +46,8 @@ public class CustomerProposalFormController {
     ) {
         Long customerId = jwtUtil.extractCustomerId(bearerToken);
 
-        CustomerProposalFormAcceptResponseDto responseDto = customerProposalFormService.acceptProposalFormByCustomer(proposalFormId, customerId);
-        ApiResponse<CustomerProposalFormAcceptResponseDto> response = ApiResponse.success(HttpStatus.OK, "견적서 선택이 완료되었습니다.", responseDto);
+        ApiResponse<CustomerProposalFormAcceptResponseDto> response
+                = customerProposalFormService.acceptProposalFormByCustomer(proposalFormId, customerId);
         return response;
     }
 }

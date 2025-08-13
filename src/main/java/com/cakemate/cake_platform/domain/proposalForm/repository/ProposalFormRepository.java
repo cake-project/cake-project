@@ -52,4 +52,13 @@ public interface ProposalFormRepository extends JpaRepository<ProposalForm, Long
             @Param("cutoff") LocalDateTime cutoff);
 
 
+    //삭제 안 된 견적서가 해당 소비자 (customer) 소유인지 확인
+    boolean existsByIdAndRequestForm_Customer_IdAndIsDeletedFalse(Long id, Long customerId);
+
+    //삭제 안 된 견적서가 해당 점주(owner) 소유인지 확인
+    boolean existsByIdAndOwner_IdAndIsDeletedFalse(Long id, Long ownerId);
+
+    /* 같은 의뢰서에서 이미 ACCEPTED 상태 견적서 존재 여부 */
+    boolean existsByRequestForm_IdAndStatusAndIsDeletedFalse(Long requestFormId,
+                                                             ProposalFormStatus status);
 }

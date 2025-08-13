@@ -68,7 +68,7 @@ public class ProposalForm extends BaseTimeEntity {
     @Enumerated(value = EnumType.STRING)
     private ProposalFormStatus status = ProposalFormStatus.AWAITING;  // 디폴트 값;
 
-    @Column(nullable = false)
+    @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
 
