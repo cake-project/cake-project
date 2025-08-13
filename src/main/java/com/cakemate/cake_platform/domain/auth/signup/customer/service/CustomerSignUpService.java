@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
 
 
 @Transactional
@@ -48,7 +49,7 @@ public class CustomerSignUpService {
         String passwordEncode = passwordEncoder.encode(password);
         String passwordConfirmEncode = passwordEncoder.encode(passwordConfirm);
 
-        Customer customerInfo = new Customer(email, passwordEncode, passwordConfirmEncode, name, phoneNumber);
+        Customer customerInfo = new Customer(UUID.randomUUID().toString(), email, passwordEncode, passwordConfirmEncode, name, phoneNumber);
         Customer customerSave = customerRepository.save(customerInfo);
         // Member 테이블에 저장
         Long customerId = customerInfo.getId();

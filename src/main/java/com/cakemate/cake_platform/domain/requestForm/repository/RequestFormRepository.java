@@ -20,6 +20,8 @@ public interface RequestFormRepository extends JpaRepository<RequestForm, Long> 
 
     Page<RequestForm> findByRegionContainingAndIsDeletedFalse(String keyWord, Pageable pageable);
 
+    Page<RequestForm> findByRegionAndIsDeletedFalse(String keyWord, Pageable pageable);
+
 
     // 내 의뢰서 전체 조회 (삭제되지 않은 것만), 최신 생성일 순 정렬.
     List<RequestForm> findAllByCustomerIdAndIsDeletedFalseOrderByCreatedAtDesc(Long customerId);

@@ -27,7 +27,7 @@ public class OrderCustomerController {
      * @param requestDto 주문자 이름, 의뢰서/견적서 정보 받아옴
      * @return
      */
-    @PostMapping("customers/orders")
+    @PostMapping("/customers/orders")
     public ApiResponse<CustomerOrderCreateResponseDto> createOrderAPI(
             @RequestHeader("Authorization") String bearerJwtToken,
             @RequestBody CustomerOrderCreateRequestDto requestDto
