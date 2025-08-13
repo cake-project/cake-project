@@ -27,7 +27,7 @@ public class RequestScheduler {
      * desiredPickUpDate가 지난 의뢰서를 매일 새벽 1시에 소프트 딜리트 처리(현재는 test용으로 1분간격으로 되어있음)
      */
     @Transactional
-    @Scheduled(cron = "0 0 1 * * *")//매일 새벽 1시에 실행
+    @Scheduled(fixedRate = 60000)//테스트용으로 60초로 바꿈
     public void autoSoftDeleteExpiredRequests() {
         LocalDateTime startTime = LocalDateTime.now();
         log.info("의뢰서 자동 소프트 딜리트 스케쥴러 시작 - 시작시간: {}", startTime);
