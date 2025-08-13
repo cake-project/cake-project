@@ -38,7 +38,7 @@ public class JwtUtil {
                     .subject(subjectOwnerId)
                     .issuedAt(now)
                     .claim("email", member.getOwner().getEmail())
-                    .claim("displayName", member.getOwner().getName()) // 채팅/화면 표시용 이름 추가
+                    .claim("memberName", member.OwnerName()) // 채팅 메시지 발신자(sender)로 사용됨.
                     .claim("memberType", "OWNER")
                     .expiration(expiration) // 만료시간 120분
                     .signWith(secretKey, SignatureAlgorithm.HS256)
@@ -50,7 +50,7 @@ public class JwtUtil {
                     .subject(subjectCustomerId)
                     .issuedAt(now)
                     .claim("email", member.getCustomer().getEmail())
-                    .claim("displayName", member.getCustomer().getName()) // 채팅/화면 표시용 이름 추가
+                    .claim("memberName", member.CustomerName())//  채팅 메시지 발신자(sender)로 사용됨.
                     .claim("memberType", "CUSTOMER")
                     .expiration(expiration) // 만료시간 120분
                     .signWith(secretKey, SignatureAlgorithm.HS256)
@@ -177,5 +177,10 @@ public class JwtUtil {
                 .claim("exp", (now + validity) / 1000)  // 만료 시간 (1시간 뒤)
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    // 채팅 에서 사용
+    public String extractMemberName(Claims claims) {
+        return claims.get("memberName", String.class); // JWT 에 넣은 claim 키명과 동일하게
     }
 }
