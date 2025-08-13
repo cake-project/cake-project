@@ -1,4 +1,4 @@
-package com.cakemate.cake_platform.common.exception;
+package com.cakemate.cake_platform.domain.auth.exception;
 
 public class CustomerNotFoundException extends RuntimeException {
     public CustomerNotFoundException() {

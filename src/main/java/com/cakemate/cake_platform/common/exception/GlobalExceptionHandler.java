@@ -177,8 +177,8 @@ public class GlobalExceptionHandler {
     }
 
     // 소비자가 존재하지 않을 때 사용합니다.
-    @ExceptionHandler(SocialAccountAlreadyBoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleSocialAccountAlreadyBoundException(SocialAccountAlreadyBoundException ex) {
+    @ExceptionHandler(OAuthAccountAlreadyBoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleSocialAccountAlreadyBoundException(OAuthAccountAlreadyBoundException ex) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.error(HttpStatus.NOT_FOUND, ex.getMessage()));
@@ -313,12 +313,12 @@ public class GlobalExceptionHandler {
     }
 
     // 요청 바디가 없거나 JSON 형식이 올바르지 않을 때 발생하는 예외를 처리합니다.
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, "요청 바디가 올바르지 않습니다."));
-    }
+//    @ExceptionHandler(HttpMessageNotReadableException.class)
+//    public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+//        return ResponseEntity
+//                .status(HttpStatus.BAD_REQUEST)
+//                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, "요청 바디가 올바르지 않습니다."));
+//    }
 
     // 견적서가 주문할 수 없는 상태(CONFIRMED이 아닌 상태)에 발생하는 예외입니다.
     @ExceptionHandler(ProposalFormNotConfirmedException.class)

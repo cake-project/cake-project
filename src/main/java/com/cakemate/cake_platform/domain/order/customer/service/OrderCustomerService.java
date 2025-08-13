@@ -2,6 +2,7 @@ package com.cakemate.cake_platform.domain.order.customer.service;
 
 import com.cakemate.cake_platform.common.exception.*;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
+import com.cakemate.cake_platform.domain.auth.exception.CustomerNotFoundException;
 import com.cakemate.cake_platform.domain.auth.signup.customer.repository.CustomerRepository;
 import com.cakemate.cake_platform.domain.order.common.OrderNumberGenerator;
 import com.cakemate.cake_platform.domain.order.customer.dto.*;
