@@ -7,6 +7,7 @@ import com.cakemate.cake_platform.domain.order.customer.exception.ProposalFormNo
 import com.cakemate.cake_platform.domain.order.owner.exception.InvalidOrderStatusException;
 import com.cakemate.cake_platform.domain.proposalForm.exception.*;
 import com.cakemate.cake_platform.domain.proposalFormComment.exception.UnauthorizedProposalCommentException;
+import com.cakemate.cake_platform.domain.requestForm.exception.InvalidRequestDeleteException;
 import com.cakemate.cake_platform.domain.requestForm.exception.RequestFormAccessDeniedException;
 import com.cakemate.cake_platform.domain.order.customer.exception.MismatchedRequestAndProposalException;
 import com.cakemate.cake_platform.domain.order.customer.exception.UnauthorizedRequestFormAccessException;
@@ -375,5 +376,11 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
 
-
+    //RequestForm - 스케줄러에서 조건에 맞지 않는 의뢰서 삭제 시도
+    @ExceptionHandler(InvalidRequestDeleteException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidRequestDeleteException(InvalidRequestDeleteException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
 }
