@@ -3,13 +3,15 @@ package com.cakemate.cake_platform.domain.store.ranking.service;
 import com.cakemate.cake_platform.domain.order.repository.OrderRepository;
 import com.cakemate.cake_platform.domain.store.ranking.dto.StoreOrderCount;
 import com.cakemate.cake_platform.domain.store.ranking.dto.StoreRankingResponseDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
+@Slf4j
 @Service
 public class StoreRankingService {
     private final OrderRepository orderRepository;
@@ -17,12 +19,15 @@ public class StoreRankingService {
     public StoreRankingService(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
     }
-    @Cacheable(value = "storeOrderRankings")
+//    @Cacheable(value = "storeOrderRankings")
+    @Transactional(readOnly = true)
     public List<StoreRankingResponseDto> getWeeklyTopStores() {
         LocalDateTime startDate = LocalDateTime.now().minusDays(7);
         // 1. 주문 수 기준 내림차순 정렬된 데이터 조회
+        long start = System.currentTimeMillis();
         List<StoreOrderCount> storeOrderCounts = orderRepository.findWeeklyTopStores(startDate);
-
+        long end = System.currentTimeMillis();
+        log.info("getStoreRanking 처리 시간: {} ms", (end - start));
         //순위 매기기
 
         List<StoreRankingResponseDto> storeRankingResponseDtoList = new ArrayList<>();
