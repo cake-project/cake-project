@@ -20,29 +20,49 @@ public class Payment {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    private String version;
-
-    private String type;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PaymentStatus paymentStatus;
 
     private String paymentKey;
 
+    @Column(nullable = false)
     private int amount;
 
+    @Column(nullable = false)
     private String method;
 
-    private PaymentStatus paymentStatus;
+    private String easyPayProvider;
+
+    private String receiptUrl;
 
     private LocalDateTime requestedAt;
 
     private LocalDateTime approvedAt;
 
-    private String failReason;
-
-    private String cancelReason;
 
     /**
      * JPA 에서 사용하는 기본 생성자 입니다.
      */
     protected Payment() {
+    }
+
+    public Payment(Order order, int amount, String method, PaymentStatus paymentStatus) {
+        this.order = order;
+        this.amount = amount;
+        this.method = method;
+        this.paymentStatus = paymentStatus;
+    }
+
+    public Payment updatePayment(PaymentStatus paymentStatus, String paymentKey, int amount, String method, String easyPayProvider, String receiptUrl, LocalDateTime requestedAt, LocalDateTime approvedAt) {
+        this.paymentStatus = paymentStatus;
+        this.paymentKey = paymentKey;
+        this.amount = amount;
+        this.method = method;
+        this.easyPayProvider = easyPayProvider;
+        this.receiptUrl = receiptUrl;
+        this.requestedAt = requestedAt;
+        this.approvedAt = approvedAt;
+        return this;
     }
 }

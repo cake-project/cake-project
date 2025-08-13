@@ -5,6 +5,8 @@ import com.cakemate.cake_platform.domain.auth.exception.*;
 import com.cakemate.cake_platform.domain.order.customer.exception.ProposalAlreadyOrderedException;
 import com.cakemate.cake_platform.domain.order.customer.exception.ProposalFormNotConfirmedException;
 import com.cakemate.cake_platform.domain.order.owner.exception.InvalidOrderStatusException;
+import com.cakemate.cake_platform.domain.payment.customer.exception.PaymentFailedException;
+import com.cakemate.cake_platform.domain.payment.customer.exception.PaymentNotFoundException;
 import com.cakemate.cake_platform.domain.proposalForm.exception.*;
 import com.cakemate.cake_platform.domain.proposalFormComment.exception.UnauthorizedProposalCommentException;
 import com.cakemate.cake_platform.domain.requestForm.exception.RequestFormAccessDeniedException;
@@ -375,5 +377,20 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
 
+    // 결제 실패 시 발생하는 예외입니다.
+    @ExceptionHandler(PaymentFailedException.class)
+    public ResponseEntity<ApiResponse<Void>> handlePaymentFailedException(PaymentFailedException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    // 결제 정보가 존재하지 않을 때 발생하는 예외입니다.
+    @ExceptionHandler(PaymentNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handlePaymentNotFoundException(PaymentNotFoundException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(HttpStatus.NOT_FOUND, ex.getMessage()));
+    }
 
 }

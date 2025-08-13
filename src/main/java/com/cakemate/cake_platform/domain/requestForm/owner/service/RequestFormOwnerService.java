@@ -109,7 +109,7 @@ public class RequestFormOwnerService {
             }
         }
 
-        Page<RequestForm> requestFormPage = requestFormRepository.findByRegionContainingAndIsDeletedFalse(cityName, pageable);
+        Page<RequestForm> requestFormPage = requestFormRepository.findByRegionAndIsDeletedFalse(cityName, pageable);
 
         PageDto pageDto = new PageDto(requestFormPage.getNumber() + 1, requestFormPage.getSize(), requestFormPage.getTotalPages(), requestFormPage.getTotalElements());
         List<RequestFormDetailOwnerResponseDto> responseDtoList = requestFormPage.getContent().stream()

@@ -4,14 +4,12 @@ import lombok.Getter;
 
 @Getter
 public enum PaymentStatus {
-    READY("READY", "결제 생성"),
-    IN_PROGRESS("IN_PROGRESS", "결제 정보 인증 완료"),
-    WAITING_FOR_DEPOSIT("WAITING_FOR_DEPOSIT", "가상 계좌 입금 대기"),
-    DONE("DONE", "결제 승인"),
-    CANCELED("CANCELED", "결제 취소"),
-    PARTIAL_CANCELED("PARTIAL_CANCELED", "결제 부분 취소"),
-    ABORTED("ABORTED", "결제 승인 실패"),
-    EXPIRED("EXPIRED", "결제 유효 시간 만료");
+    AWAITING_PAYMENT("AWAITING_PAYMENT", "결제 대기"),
+    IN_PROGRESS("IN_PROGRESS", "결제 시작"),
+    AUTHENTICATED("AUTHENTICATED", "결제 인증 성공"),
+    APPROVING("APPROVING", "결제 승인 요청"),
+    COMPLETED("COMPLETED", "결제 완료"),
+    FAILED("FAILED", "결제 실패");
 
     private final String strValue;
     private final String description;

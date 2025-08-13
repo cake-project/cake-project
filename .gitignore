@@ -36,3 +36,12 @@ src/main/resources/.env
 ### VS Code ###
 .vscode/
 .env
+
+### payment webhook 제외 ###
+src/main/java/com/cakemate/cake_platform/domain/payment/webhook/
+
+### DataInitializer 제외 ###
+src/main/java/com/cakemate/cake_platform/DataInitializer.java
+
+### RequestFormCsvGenerator 제외 ###
+src/main/java/RequestFormCsvGenerator.java
