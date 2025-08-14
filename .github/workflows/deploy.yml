@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - dev
+      - feature/OAuth-kakao
 
 jobs:
   build:
