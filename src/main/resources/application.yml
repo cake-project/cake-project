@@ -2,6 +2,8 @@ spring:
   profiles:
     active: local
 
+KAKAO_CLIENT_ID: dummy
+KAKAO_CLIENT_SECRET: dummy
 
 #logging:
 #  config: classpath:logback-spring-${spring.profiles.active}.xml
