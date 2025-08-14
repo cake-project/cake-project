@@ -4,9 +4,13 @@ import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.common.exception.ProposalFormNotFoundException;
 import com.cakemate.cake_platform.common.exception.UnauthorizedAccessException;
 
+import com.cakemate.cake_platform.domain.auth.entity.Customer;
+import com.cakemate.cake_platform.domain.auth.entity.Owner;
+import com.cakemate.cake_platform.domain.notification.service.NotificationService;
 import com.cakemate.cake_platform.domain.proposalForm.dto.*;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
+import com.cakemate.cake_platform.domain.proposalForm.exception.InvalidProposalStatusException;
 import com.cakemate.cake_platform.domain.proposalForm.exception.ProposalAlreadyAcceptedException;
 import com.cakemate.cake_platform.domain.proposalForm.repository.ProposalFormRepository;
 import com.cakemate.cake_platform.domain.proposalFormChat.dto.ChatHistorySectionDto;
@@ -32,13 +36,15 @@ public class CustomerProposalFormService {
     private final ProposalFormCommentRepository proposalFormCommentRepository;
     private final ChatService chatService;
     private final ChatMessageRepository chatMessageRepository;
+    private final NotificationService notificationService;
 
     public CustomerProposalFormService(ProposalFormRepository proposalFormRepository,
-                                       ProposalFormCommentRepository proposalFormCommentRepository, ChatService chatService, ChatMessageRepository chatMessageRepository) {
+                                       ProposalFormCommentRepository proposalFormCommentRepository, ChatService chatService, ChatMessageRepository chatMessageRepository, NotificationService notificationService) {
         this.proposalFormRepository = proposalFormRepository;
         this.proposalFormCommentRepository = proposalFormCommentRepository;
         this.chatService = chatService;
         this.chatMessageRepository = chatMessageRepository;
+        this.notificationService = notificationService;
     }
 
     /**
@@ -174,6 +180,18 @@ public class CustomerProposalFormService {
         /* 3) 상태 변경 → ACCEPTED */
         ProposalForm proposalForm = proposalFormRepository.getReferenceById(proposalFormId);
         proposalForm.acceptStatus(ProposalFormStatus.ACCEPTED);
+        ProposalFormStatus proposalFormStatus = proposalForm.getStatus();
+
+        //견적서 수락 알림 보내기(소비자->점주)
+        String storeName = proposalForm.getStoreName();
+        String message;
+        Owner owner = proposalForm.getOwner();
+        Customer customer = proposalForm.getRequestForm().getCustomer();
+
+        if (proposalFormStatus == ProposalFormStatus.ACCEPTED) {
+            message = String.format("의뢰인이 %s님의 견적서를 수락했습니다.", storeName);
+            notificationService.sendNotification(owner.getId(), message, "owner");
+        }
 
         //견적서마다 최초로 한 번만 채팅방 생성
         ChatRoomResponseDto chatDto = chatService
@@ -191,7 +209,5 @@ public class CustomerProposalFormService {
         return ApiResponse.success(
                 HttpStatus.OK, "견적서 선택이 완료되었습니다.", customerProposalFormAcceptResponseDto
         );
-
     }
 }
-

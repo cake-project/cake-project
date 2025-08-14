@@ -2,10 +2,12 @@ package com.cakemate.cake_platform.domain.proposalForm.service;
 
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.common.exception.*;
+import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
 import com.cakemate.cake_platform.domain.auth.exception.OwnerNotFoundException;
 import com.cakemate.cake_platform.domain.member.entity.Member;
 import com.cakemate.cake_platform.domain.member.repository.MemberRepository;
+import com.cakemate.cake_platform.domain.notification.service.NotificationService;
 import com.cakemate.cake_platform.domain.proposalForm.dto.*;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.common.commonEnum.CakeSize;
@@ -49,8 +51,9 @@ public class ProposalFormService {
     private final ChatService chatService;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final NotificationService notificationService;
 
-    public ProposalFormService(ProposalFormRepository proposalFormRepository, RequestFormRepository requestFormRepository, ProposalFormCommentRepository proposalFormCommentRepository, StoreRepository storeRepository, MemberRepository memberRepository, ChatService chatService, ChatRoomRepository chatRoomRepository, ChatMessageRepository chatMessageRepository) {
+    public ProposalFormService(ProposalFormRepository proposalFormRepository, RequestFormRepository requestFormRepository, ProposalFormCommentRepository proposalFormCommentRepository, StoreRepository storeRepository, MemberRepository memberRepository, ChatService chatService, ChatRoomRepository chatRoomRepository, ChatMessageRepository chatMessageRepository, NotificationService notificationService) {
         this.proposalFormRepository = proposalFormRepository;
         this.requestFormRepository = requestFormRepository;
         this.proposalFormCommentRepository = proposalFormCommentRepository;
@@ -59,6 +62,7 @@ public class ProposalFormService {
         this.chatService = chatService;
         this.chatRoomRepository = chatRoomRepository;
         this.chatMessageRepository = chatMessageRepository;
+        this.notificationService = notificationService;
     }
 
     /**
@@ -150,6 +154,11 @@ public class ProposalFormService {
 
         //응답 DTO 만들기
         ApiResponse<ProposalFormDataDto> response = ApiResponse.success(HttpStatus.CREATED, "created", dataDto);
+
+        //견적서 등록 알림 보내기(점주->소비자)
+        Long customerId = savedProposalForm.getRequestForm().getCustomer().getId();
+        notificationService.sendNotification(customerId, "새로운 견적서가 도착했습니다.", "customer");
+
         return response;
     }
 
@@ -363,6 +372,11 @@ public class ProposalFormService {
         //저장
         ProposalForm updatedProposalForm = proposalFormRepository.save(foundProposalForm);
 
+        //견적서 수정 알림 보내기(점주->소비자)
+        Customer customer = updatedProposalForm.getRequestForm().getCustomer();
+        String message = "견적서의 내용이 수정되었습니다. 변동 사항을 확인 해주세요.";
+        notificationService.sendNotification(customer.getId(), message, "customer");
+
         //응답 DTO 만들기
         ProposalFormDataDto responseDto = new ProposalFormDataDto(
                 updatedProposalForm.getId(),
@@ -428,13 +442,18 @@ public class ProposalFormService {
         }
 
         proposalForm.confirmStatus(ProposalFormStatus.CONFIRMED);
+        ProposalFormStatus proposalFormStatus = proposalForm.getStatus();
 
         chatService.getRoomIdOrThrow(proposalFormId, ownerId);
 
-        OwnerProposalFormConfirmResponseDto responseDto
-                = new OwnerProposalFormConfirmResponseDto(
-                        proposalForm.getId(), proposalForm.getStatus()
-        );
+        //견적서 확정 알림 보내기(점주->소비자)
+        if (proposalFormStatus == ProposalFormStatus.CONFIRMED) {
+            Customer customer = proposalForm.getRequestForm().getCustomer();
+            String message = "견적서의 최종 내용을 확인 해주세요.";
+            notificationService.sendNotification(customer.getId(), message, "customer");
+        }
+
+        OwnerProposalFormConfirmResponseDto responseDto = new OwnerProposalFormConfirmResponseDto(proposalForm.getId(), proposalForm.getStatus());
         return responseDto;
     }
 

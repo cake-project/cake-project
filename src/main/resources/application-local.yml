@@ -24,6 +24,7 @@ jwt:
 server:
   port: 8080
 
+
 kakao:
   redirect-uri-signin-owners-kakao: http://localhost:8080/api/owners/kakao/signin
   redirect-uri-signin-customers-kakao: http://localhost:8080/api/customers/kakao/signin
