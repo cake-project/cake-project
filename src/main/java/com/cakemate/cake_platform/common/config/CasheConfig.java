@@ -13,7 +13,7 @@ public class CasheConfig {
     @Bean
     public Caffeine<Object, Object> caffeineConfig() {
         return Caffeine.newBuilder()
-                .expireAfterWrite(60, TimeUnit.MINUTES)// 쓰기 시점 기준으로 TTL적용 60분
+                .expireAfterWrite(5, TimeUnit.MINUTES)// 쓰기 시점 기준으로 TTL적용 60분
                 .maximumSize(200);// 최대 200개의 캐시 항목만 저장
     }
 }

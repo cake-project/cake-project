@@ -26,7 +26,7 @@ public class ProposalFormScheduler {
 
     //confirmed 상태 견적서 자동 취소 기능
     @Transactional
-    @Scheduled(fixedRate = 60000)//매일 새벽 1시에 실행
+    @Scheduled(cron = "0 0 1 * * *")//매일 새벽 1시에 실행
     public void autoCancelConfirmedProposals() {
         LocalDateTime startTime = LocalDateTime.now();
         log.info("견적서 자동 취소 스케줄러 시작 - 시작시간: {}", startTime);
