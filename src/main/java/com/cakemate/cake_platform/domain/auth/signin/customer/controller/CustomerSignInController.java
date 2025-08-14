@@ -22,7 +22,7 @@ public class CustomerSignInController {
         return redirectView;
     }
 
-    @GetMapping("customers/kakao/signin")
+    @GetMapping("/customers/kakao/signin")
     public ApiResponse<?> handleKakaoCallback(@RequestParam String code) {
         ApiResponse<?> kakaoSignUpProcess = customerSignInService.customerKakaoSignInProcess(code);
         return kakaoSignUpProcess;
