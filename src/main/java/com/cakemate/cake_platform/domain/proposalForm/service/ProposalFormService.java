@@ -3,6 +3,7 @@ package com.cakemate.cake_platform.domain.proposalForm.service;
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.common.exception.*;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
+import com.cakemate.cake_platform.domain.auth.exception.OwnerNotFoundException;
 import com.cakemate.cake_platform.domain.member.entity.Member;
 import com.cakemate.cake_platform.domain.member.repository.MemberRepository;
 import com.cakemate.cake_platform.domain.proposalForm.dto.*;
@@ -394,7 +395,7 @@ public class ProposalFormService {
                 .orElseThrow(() -> new OwnerNotFoundException("해당 점주를 찾을 수 없습니다."));
 
         ProposalForm foundProposalForm = proposalFormRepository.findById(proposalFormId)
-                .orElseThrow(() -> new OwnerNotFoundException("해당 제안서가 존재하지 않습니다."));
+                .orElseThrow(() -> new ProposalFormNotFoundException("해당 제안서가 존재하지 않습니다."));
 
         //권한 확인
         if (!foundProposalForm.getOwner().getId().equals(foundOwner.getId())) {

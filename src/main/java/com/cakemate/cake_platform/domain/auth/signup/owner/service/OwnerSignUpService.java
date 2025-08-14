@@ -1,22 +1,26 @@
-package com.cakemate.cake_platform.domain.auth.signin.customer.service;
-
+package com.cakemate.cake_platform.domain.auth.signup.owner.service;
 
 import com.cakemate.cake_platform.common.command.SearchCommand;
 import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.common.exception.MemberNotFoundException;
 import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
-import com.cakemate.cake_platform.domain.auth.entity.Customer;
-import com.cakemate.cake_platform.domain.auth.exception.*;
-import com.cakemate.cake_platform.domain.auth.oAuthEnum.OAuthProvider;
-import com.cakemate.cake_platform.domain.auth.signin.customer.dto.response.CustomerSignInResponse;
+import com.cakemate.cake_platform.domain.auth.exception.CustomerNotFoundException;
+import com.cakemate.cake_platform.domain.auth.exception.OAuthAccountAlreadyBoundException;
 import com.cakemate.cake_platform.domain.auth.OauthKakao.response.KakaoTokenResponse;
 import com.cakemate.cake_platform.domain.auth.OauthKakao.response.KakaoUserResponse;
-import com.cakemate.cake_platform.domain.auth.signup.customer.dto.response.CustomerSignUpResponse;
-import com.cakemate.cake_platform.domain.auth.signup.customer.repository.CustomerRepository;
+import com.cakemate.cake_platform.domain.auth.exception.EmailAlreadyExistsException;
+import com.cakemate.cake_platform.domain.auth.oAuthEnum.OAuthProvider;
+import com.cakemate.cake_platform.domain.auth.signin.customer.dto.response.CustomerSignInResponse;
+import com.cakemate.cake_platform.domain.auth.signin.owner.dto.response.OwnerSignInResponse;
+import com.cakemate.cake_platform.domain.auth.signup.owner.dto.response.OwnerSignUpResponse;
+import com.cakemate.cake_platform.domain.auth.exception.OwnerNotFoundException;
+import com.cakemate.cake_platform.domain.auth.entity.Owner;
+import com.cakemate.cake_platform.domain.auth.signup.owner.repository.OwnerRepository;
 import com.cakemate.cake_platform.domain.member.entity.Member;
 import com.cakemate.cake_platform.domain.member.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
@@ -33,12 +37,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
+@Transactional
 @Service
-public class CustomerSignInService {
-    private final CustomerRepository customerRepository;
+public class OwnerSignUpService {
+    private final OwnerRepository ownerRepository;
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
     private final JwtUtil jwtUtil;
@@ -52,13 +56,11 @@ public class CustomerSignInService {
     private String kauthHost;
     @Value("${kakao.kapi-host}")
     private String kapiHost;
-    @Value("${kakao.redirect-uri-signin-customers-kakao}")
-    private String redirectUriSignInKakao;
 
-    public CustomerSignInService(CustomerRepository customerRepository, PasswordEncoder passwordEncoder,
-                                 MemberRepository memberRepository, JwtUtil jwtUtil, ObjectMapper objectMapper,
-                                 RestClient.Builder restClientBuilder) {
-        this.customerRepository = customerRepository;
+
+    public OwnerSignUpService(OwnerRepository ownerRepository, PasswordEncoder passwordEncoder,
+                              MemberRepository memberRepository, JwtUtil jwtUtil, ObjectMapper objectMapper, RestClient.Builder restClientBuilder) {
+        this.ownerRepository = ownerRepository;
         this.passwordEncoder = passwordEncoder;
         this.memberRepository = memberRepository;
         this.jwtUtil = jwtUtil;
@@ -66,80 +68,139 @@ public class CustomerSignInService {
         this.restClient = restClientBuilder.baseUrl(kapiHost).build();
     }
 
-    // ObjectMapper -> 자바 객체를 JSON 문자열로 변환 해주거나 혹은 JSON 문자열을 자바 객체로 변환
-    public ApiResponse<?> customerKakaoSignInProcess(String code) {
-        KakaoUserResponse kakaoUserInfo = retrieveKakaoUser(code);
+    private Owner findOwner(String name, String phoneNumber) {
+        Owner owner = ownerRepository
+                .findByNameAndPhoneNumber(name, phoneNumber)
+                .orElseThrow(() -> new OwnerNotFoundException("해당 점주가 존재하지 않습니다"));
+        return owner;
+    }
 
-        Long kakaoUserId = kakaoUserInfo.getId();
-        String kakaoEmail = kakaoUserInfo.getKakao_account().getEmail();
-        String kakaoName = kakaoUserInfo.getKakao_account().getName();
-        String kakaoUserPhoneNumber = kakaoUserInfo.getKakao_account().getPhone_number();
+    private boolean existsOwnerEmail(String email) {
+        return ownerRepository.existsByEmail(email);
+    }
+
+    private boolean existsOwner(String name, String phoneNumber) {
+        return ownerRepository.existsByNameAndPhoneNumber(name, phoneNumber);
+    }
+
+    public ApiResponse<?> ownerLocalSignUpProcess(SearchCommand ownerSignUpRequest) {
+        String email = ownerSignUpRequest.getEmail();
+        String password = ownerSignUpRequest.getPassword();
+        String passwordConfirm = ownerSignUpRequest.getPasswordConfirm();
+        String name = ownerSignUpRequest.getName();
+        String phoneNumber = ownerSignUpRequest.getPhoneNumber();
+        // 비밀번호 정규식 검증
+        ownerSignUpRequest.hasPasswordPattern();
+        // 비밀번호, 비밀빈호 확인이 일치하는지
+        ownerSignUpRequest.isMatchedPassword();
+
+        boolean existsOwnerEmail = existsOwnerEmail(email);
+        if (existsOwnerEmail) {
+            throw new EmailAlreadyExistsException();
+        }
+        String passwordEncode = passwordEncoder.encode(password);
+        String passwordConfirmEncode = passwordEncoder.encode(passwordConfirm);
+
+        boolean existsOwner = existsOwner(name, phoneNumber);
+        Owner ownerByLocal;
+        if (existsOwner) {
+            Optional<Owner> ownerByNameAndPhoneNumber =
+                    ownerRepository.findByNameAndPhoneNumber(name, phoneNumber);
+            if (ownerByNameAndPhoneNumber.isPresent()) {
+                OAuthProvider provider = ownerByNameAndPhoneNumber.get().getProvider();
+                Member customerByKaKaoInMember = findOwnerByProvider(name,
+                        phoneNumber,
+                        provider);
+
+                String customerJwtToken = jwtUtil.createMemberJwtToken(customerByKaKaoInMember);
+                OwnerSignInResponse ownerSignInResponse = new OwnerSignInResponse(customerJwtToken);
+
+                ApiResponse<OwnerSignInResponse> SignInSuccess
+                        = ApiResponse
+                        .success(HttpStatus.OK, "환영합니다 " + name + "님", ownerSignInResponse);
+                return SignInSuccess;
+            }
+        }
+        Owner ownerInfo = new Owner(email, passwordEncode, passwordConfirmEncode, name, phoneNumber, OAuthProvider.LOCAL, null);
+        ownerByLocal = ownerRepository.save(ownerInfo);
+
+        // 멤버 테이블에 저장
+        Long ownerId = ownerInfo.getId();
+        Owner owner = ownerRepository
+                .findById(ownerId)
+                .orElseThrow(() -> new OwnerNotFoundException("OwnerId가 존재하지 않습니다."));
+        Member ownerMember = new Member(owner);
+        memberRepository.save(ownerMember);
+
+        OwnerSignUpResponse ownerSignUpResponse = new OwnerSignUpResponse(ownerByLocal);
+
+        ApiResponse<OwnerSignUpResponse> signUpSuccess
+                = ApiResponse
+                .success(HttpStatus.CREATED,
+                        ownerByLocal.getName() + "님 회원가입이 완료되었습니다.",
+                        ownerSignUpResponse);
+        return signUpSuccess;
+    }
+
+    public ApiResponse<?> ownerKakaoSignUpProcess(String code) {
+        // 인가 코드에서 accessToken 가져오기
+        KakaoUserResponse kakaoUserResponse = retrieveKakaoUser(code);
+
+        Long kakaoUserId = kakaoUserResponse.getId();
+        String kakaoEmail = kakaoUserResponse.getKakao_account().getEmail();
+        String kakaoName = kakaoUserResponse.getKakao_account().getName();
+        String kakaoUserPhoneNumber = kakaoUserResponse.getKakao_account().getPhone_number();
         String replaceKakaoUserPhoneNumber = kakaoUserPhoneNumber.replaceAll("^\\+82\\s?0?10", "010");
 
         //기존에 가입한 계정(로컬, 어나더소셜) 이 있는가?
-        boolean existsOwner = existsCustomer(kakaoName, replaceKakaoUserPhoneNumber);
-        Customer customerByProvide;
+
+        boolean existsOwner = existsOwner(kakaoName, replaceKakaoUserPhoneNumber);
+        Owner ownerByProvide;
         if (existsOwner) {
-            Optional<Customer> customerByNameAndPhoneNumber =
-                    customerRepository.findByNameAndPhoneNumber(kakaoName, replaceKakaoUserPhoneNumber);
-            if (customerByNameAndPhoneNumber.isPresent()) {
-                Member customerByKaKaoInMember = findCustomerByKaKaoInMember(kakaoName,
+            Optional<Owner> ownerByNameAndPhoneNumber =
+                    ownerRepository.findByNameAndPhoneNumber(kakaoName, replaceKakaoUserPhoneNumber);
+            if (ownerByNameAndPhoneNumber.isPresent()) {
+                Member customerByKaKaoInMember = findOwnerByKaKaoInMember(kakaoName,
                         replaceKakaoUserPhoneNumber,
                         OAuthProvider.KAKAO,
                         kakaoUserId);
 
                 String customerJwtToken = jwtUtil.createMemberJwtToken(customerByKaKaoInMember);
-                CustomerSignInResponse customerSignInResponse = new CustomerSignInResponse(customerJwtToken);
+                OwnerSignInResponse ownerSignInResponse = new OwnerSignInResponse(customerJwtToken);
 
-                ApiResponse<CustomerSignInResponse> SignInSuccess
+                ApiResponse<OwnerSignInResponse> SignInSuccess
                         = ApiResponse
-                        .success(HttpStatus.OK, "환영합니다 " +
-                                customerByKaKaoInMember.getCustomer().getName() + "님", customerSignInResponse);
+                        .success(HttpStatus.OK, "환영합니다 " + kakaoName + "님", ownerSignInResponse);
                 return SignInSuccess;
             }
         }
 
-        Customer kakaoUserCustomerInfo = new Customer(UUID.randomUUID().toString(), kakaoEmail, null,
-                null, kakaoName, replaceKakaoUserPhoneNumber, OAuthProvider.KAKAO, kakaoUserId);
-        customerByProvide = customerRepository.save(kakaoUserCustomerInfo);
+        Owner kakaoUserOwnerInfo = new Owner(kakaoEmail, null, null, kakaoName,
+                replaceKakaoUserPhoneNumber, OAuthProvider.KAKAO, kakaoUserId);
+        ownerByProvide = ownerRepository.save(kakaoUserOwnerInfo);
 
-        Member custmerMember = new Member(customerByProvide);
+        Member custmerMember = new Member(ownerByProvide);
         memberRepository.save(custmerMember);
 
-        CustomerSignUpResponse KaKaoUserCustomerSignUpResponse
-                = new CustomerSignUpResponse(customerByProvide);
 
-        ApiResponse<CustomerSignUpResponse> success = ApiResponse
+        OwnerSignUpResponse ownerKakaoSignUpResponse = new OwnerSignUpResponse(ownerByProvide);
+
+        ApiResponse<OwnerSignUpResponse> success = ApiResponse
                 .success(HttpStatus.CREATED,
-                        customerByProvide.getName() + "님 회원가입이 완료되었습니다.",
-                        KaKaoUserCustomerSignUpResponse);
+                        ownerByProvide.getName() + "님 회원가입이 완료되었습니다.",
+                        ownerKakaoSignUpResponse);
         return success;
-
 
     }
 
-    public ApiResponse<CustomerSignInResponse> CustomerSignInProcess(SearchCommand signInRequest) {
-        String customerEmail = signInRequest.getEmail();
-        String customerPassword = signInRequest.getPassword();
+    private Member findOwnerByProvider(String name, String phoneNumber, OAuthProvider provider) {
+        return memberRepository.findOwnerByProvider(name, phoneNumber, provider)
+                .orElseThrow(() -> new MemberNotFoundException("회원이 존재 하지 않습니다."));
+    }
 
-        Customer customer = customerRepository.findByEmail(customerEmail)
-                .orElseThrow(() -> new EmailNotFoundException("고객 이메일이 존재하지 않습니다."));
-
-        boolean isMatched = passwordEncoder.matches(customerPassword, customer.getPassword());
-        if (!isMatched) {
-            throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
-        }
-        Member customerInMember = memberRepository
-                .findByCustomer_Email(customerEmail)
-                .orElseThrow(() -> new EmailNotFoundException("고객 이메일이 존재하지 않습니다."));
-
-        String customerJwtToken = jwtUtil.createMemberJwtToken(customerInMember);
-        CustomerSignInResponse customerSignInResponse = new CustomerSignInResponse(customerJwtToken);
-
-        ApiResponse<CustomerSignInResponse> SignInSuccess
-                = ApiResponse
-                .success(HttpStatus.OK, "환영합니다 " + customer.getName() + "님", customerSignInResponse);
-        return SignInSuccess;
+    private Member findOwnerByKaKaoInMember(String name, String phoneNumber, OAuthProvider provider, Long providerId) {
+        return memberRepository.findOwnerByKaKao(name, phoneNumber, provider, providerId)
+                .orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다"));
     }
 
     private KakaoUserResponse retrieveKakaoUser(String code) {
@@ -167,14 +228,6 @@ public class CustomerSignInService {
             throw new RuntimeException(e);
         }
     }
-    private boolean existsCustomer(String name, String phoneNumber) {
-        return customerRepository.existsByNameAndPhoneNumber(name, phoneNumber);
-    }
-
-    private Member findCustomerByKaKaoInMember(String name, String phonNumber, OAuthProvider provider, Long id) {
-        return memberRepository.findByCustomerByKakao(name, phonNumber,
-                provider, id).orElseThrow(() -> new MemberNotFoundException("해당 회원을 찾을 수 없습니다."));
-    }
 
     public String createDefaultMessage() {
         return "template_object={\"object_type\":\"text\",\"text\":\"Hello, world!\",\"link\":{\"web_url\":\"https://developers.kakao.com\",\"mobile_web_url\":\"https://developers.kakao.com\"}}";
@@ -190,10 +243,6 @@ public class CustomerSignInService {
         getSession().setAttribute("access_token", accessToken);
     }
 
-    private void saveIdToken(String IdToken) {
-        getSession().setAttribute("Id_token", IdToken);
-    }
-
     // 세션에서 어세스토큰 조회
     private String getAccessToken() {
         String accessToken = (String) getSession().getAttribute("access_token");
@@ -204,7 +253,7 @@ public class CustomerSignInService {
         getSession().invalidate();
     }
 
-    public String call(String method, String urlString, String body) throws Exception {
+    public String call(String method, String urlString, String body) {
         RestClient.RequestBodySpec requestSpec
                 = restClient
                 .method(HttpMethod.valueOf(method))
@@ -225,26 +274,14 @@ public class CustomerSignInService {
         }
     }
 
-    public String getAuthUrlKakao(String scope) {
-        String uriString = UriComponentsBuilder
-                .fromHttpUrl(kauthHost + "/oauth/authorize")
-                .queryParam("client_id", clientId)
-                .queryParam("redirect_uri", redirectUriSignInKakao)
-                .queryParam("response_type", "code")
-                .queryParamIfPresent("scope", scope != null ? Optional.of(scope) : Optional.empty())
-                .build()
-                .toUriString();
-        return uriString;
-    }
-
     public boolean handleAuthorizationCallback(String code) {
         try {
             KakaoTokenResponse tokenResponse = getToken(code);
 
+            log.info("tokenResponse::: {} ", tokenResponse);
+
             if (tokenResponse != null) {
                 saveAccessToken(tokenResponse.getAccess_token());
-                saveIdToken(tokenResponse.getId_token());
-
                 return true;
             }
         } catch (Exception e) {

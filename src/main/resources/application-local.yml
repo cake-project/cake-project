@@ -23,3 +23,11 @@ jwt:
 
 server:
   port: 8080
+
+kakao:
+  redirect-uri-signin-owners-kakao: http://localhost:8080/api/owners/kakao/signin
+  redirect-uri-signin-customers-kakao: http://localhost:8080/api/customers/kakao/signin
+  client-id: ${KAKAO_CLIENT_ID}
+  client-secret: ${KAKAO_CLIENT_SECRET}
+  kauth-host: https://kauth.kakao.com
+  kapi-host: https://kapi.kakao.com

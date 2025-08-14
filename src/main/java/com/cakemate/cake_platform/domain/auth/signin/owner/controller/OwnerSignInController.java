@@ -5,10 +5,8 @@ import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.domain.auth.signin.owner.dto.request.OwnerSignInRequest;
 import com.cakemate.cake_platform.domain.auth.signin.owner.dto.response.OwnerSignInResponse;
 import com.cakemate.cake_platform.domain.auth.signin.owner.service.OwnerSignInService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.result.view.RedirectView;
 
 @RestController
 @RequestMapping("/api")
@@ -18,14 +16,27 @@ public class OwnerSignInController {
     public OwnerSignInController(OwnerSignInService ownerSignInService) {
         this.ownerSignInService = ownerSignInService;
     }
-    @PostMapping("/signin/owners")
+
+    @GetMapping("/auth/owners/signin")
+    public RedirectView authorize(@RequestParam(required = false) String scope) {
+        RedirectView redirectView = new RedirectView(ownerSignInService.getAuthUrlKakao(scope));
+        return redirectView;
+    }
+
+    @GetMapping("/owners/kakao/signin")
+    public ApiResponse<?> handleKakaoCallback(@RequestParam String code) {
+        ApiResponse<?> kakaoSignUpProcess = ownerSignInService.ownerKakaoSignInProcess(code);
+        return kakaoSignUpProcess;
+    }
+
+    @PostMapping("/owners/signin")
     public ApiResponse<OwnerSignInResponse> OwnerSignInApi(@RequestBody OwnerSignInRequest ownerSignInRequest) {
         String email = ownerSignInRequest.getEmail();
         String password = ownerSignInRequest.getPassword();
 
         SearchCommand signInRequest = new SearchCommand(email, password);
 
-        ApiResponse<OwnerSignInResponse> ownerSignInProcess = ownerSignInService.OwnerSignInProcess(signInRequest);
+        ApiResponse<OwnerSignInResponse> ownerSignInProcess = ownerSignInService.ownerSignInProcess(signInRequest);
         return ownerSignInProcess;
     }
 }
