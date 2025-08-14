@@ -24,3 +24,10 @@ jwt:
 
 logging:
   config: classpath:logback-spring-${spring.profiles.active}.xml
+kakao:
+  redirect-uri-signin-owners-kakao: http://13.124.198.59:8000/api/signin/owners/kakao
+  redirect-uri-signin-customers-kakao: http://13.124.198.59:8000/api/signin/customers/kakao
+  client-id: ${KAKAO_CLIENT_ID}
+  client-secret: ${KAKAO_CLIENT_SECRET}
+  kauth-host: https://kauth.kakao.com
+  kapi-host: https://kapi.kakao.com

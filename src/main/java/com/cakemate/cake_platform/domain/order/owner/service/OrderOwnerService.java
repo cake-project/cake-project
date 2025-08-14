@@ -4,6 +4,7 @@ import com.cakemate.cake_platform.common.dto.PageDto;
 import com.cakemate.cake_platform.common.exception.OrderNotFoundException;
 import com.cakemate.cake_platform.common.exception.StoreNotFoundException;
 import com.cakemate.cake_platform.common.exception.UnauthorizedAccessException;
+import com.cakemate.cake_platform.domain.notification.service.NotificationService;
 import com.cakemate.cake_platform.domain.order.entity.Order;
 import com.cakemate.cake_platform.domain.order.enums.OrderStatus;
 import com.cakemate.cake_platform.domain.order.owner.dto.*;
@@ -28,10 +29,12 @@ public class OrderOwnerService {
 
     private final OrderRepository orderRepository;
     private final StoreRepository storeRepository;
+    private final NotificationService notificationService;
 
-    public OrderOwnerService(OrderRepository orderRepository, StoreRepository storeRepository) {
+    public OrderOwnerService(OrderRepository orderRepository, StoreRepository storeRepository, NotificationService notificationService) {
         this.orderRepository = orderRepository;
         this.storeRepository = storeRepository;
+        this.notificationService = notificationService;
     }
 
     /**
@@ -136,6 +139,15 @@ public class OrderOwnerService {
         if (orderStatus == OrderStatus.CANCELLED) {
             Optional.ofNullable(order.getProposalForm())
                     .ifPresent(proposalForm -> proposalForm.updateStatus(ProposalFormStatus.CANCELLED));
+        }
+
+        //주문 상태 알림 보내기(점주->소비자)
+        if (orderStatus == OrderStatus.READY_FOR_PICKUP) {
+            String message = "케이크 제작이 완료되었습니다.";
+            notificationService.sendNotification(order.getCustomer().getId(), message, "customer");
+        } else if (orderStatus == OrderStatus.CANCELLED) {
+            String message = "주문이 취소되었습니다.";
+            notificationService.sendNotification(order.getCustomer().getId(), message, "customer");
         }
 
         OwnerOrderStatusUpdateResponseDto responseDto = new OwnerOrderStatusUpdateResponseDto(

@@ -2,7 +2,9 @@ package com.cakemate.cake_platform.domain.order.customer.service;
 
 import com.cakemate.cake_platform.common.exception.*;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
+import com.cakemate.cake_platform.domain.auth.exception.CustomerNotFoundException;
 import com.cakemate.cake_platform.domain.auth.signup.customer.repository.CustomerRepository;
+import com.cakemate.cake_platform.domain.notification.service.NotificationService;
 import com.cakemate.cake_platform.domain.order.common.OrderNumberGenerator;
 import com.cakemate.cake_platform.domain.order.customer.dto.*;
 import com.cakemate.cake_platform.domain.order.customer.exception.ProposalAlreadyOrderedException;
@@ -11,6 +13,9 @@ import com.cakemate.cake_platform.domain.order.entity.Order;
 import com.cakemate.cake_platform.domain.order.enums.OrderStatus;
 import com.cakemate.cake_platform.domain.order.customer.exception.UnauthorizedRequestFormAccessException;
 import com.cakemate.cake_platform.domain.order.repository.OrderRepository;
+import com.cakemate.cake_platform.domain.payment.entity.Payment;
+import com.cakemate.cake_platform.domain.payment.enums.PaymentStatus;
+import com.cakemate.cake_platform.domain.payment.repository.PaymentRepository;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
 import com.cakemate.cake_platform.domain.proposalForm.repository.ProposalFormRepository;
@@ -18,6 +23,7 @@ import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
 import com.cakemate.cake_platform.common.dto.PageDto;
 import com.cakemate.cake_platform.domain.store.entity.Store;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -35,11 +41,19 @@ public class OrderCustomerService {
     private final OrderRepository orderRepository;
     private final ProposalFormRepository proposalFormRepository;
     private final CustomerRepository customerRepository;
+    private final PaymentRepository paymentRepository;
+    private final NotificationService notificationService;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public OrderCustomerService(OrderRepository orderRepository, ProposalFormRepository proposalFormRepository, CustomerRepository customerRepository) {
+
+
+    public OrderCustomerService(OrderRepository orderRepository, ProposalFormRepository proposalFormRepository, CustomerRepository customerRepository, PaymentRepository paymentRepository, NotificationService notificationService, ApplicationEventPublisher eventPublisher) {
         this.orderRepository = orderRepository;
         this.proposalFormRepository = proposalFormRepository;
         this.customerRepository = customerRepository;
+        this.paymentRepository = paymentRepository;
+        this.notificationService = notificationService;
+        this.eventPublisher = eventPublisher;
     }
 
     /**
@@ -69,7 +83,6 @@ public class OrderCustomerService {
         }
 
         // 해당 의뢰서와 견적서는 완료 처리
-        proposalForm.updateStatus(ProposalFormStatus.ACCEPTED);
         requestForm.updateStatus(RequestFormStatus.SELECTED);
 
         // 소비자가 선택한 견적서 외 다른 견적서들은 CANCELLED로 상태 변경
@@ -78,12 +91,18 @@ public class OrderCustomerService {
             p.updateStatus(ProposalFormStatus.CANCELLED);
         }
 
+        //견적서 취소 알림 보내기(소비자->점주)
+        String message = "견적서가 취소되었습니다.";
+        for (ProposalForm p : proposalFormList) {
+            notificationService.sendNotification(p.getOwner().getId(), message, "owner");
+        }
+
         // ProposalForm의 store가 nullable = true -> null 체크
         Store store = Optional.ofNullable(proposalForm.getStore())
                 .orElseThrow(() -> new StoreNotFoundException("견적서에 가게가 존재하지 않습니다."));
 
         Customer customer = customerRepository.findByIdAndIsDeletedFalse(customerId)
-                .orElseThrow(() -> new CustomerNotFoundException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new CustomerNotFoundException());
 
         // 주문 번호 생성
         String orderNumber = OrderNumberGenerator.generateOrderNumber();
@@ -100,7 +119,7 @@ public class OrderCustomerService {
                 .customerPhoneNumber(customer.getPhoneNumber())
                 .storeBusinessName(store.getBusinessName())
                 .storeName(store.getName())
-                .productName(null)
+                .productName(store.getName() + " - 커스텀 케이크")
                 .storePhoneNumber(store.getPhoneNumber())
                 .storeAddress(store.getAddress())
                 .agreedPrice(proposalForm.getProposedPrice())
@@ -108,11 +127,28 @@ public class OrderCustomerService {
                 .finalCakeImage(proposalForm.getImage())
                 .build();
 
-        orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+
+        Payment payment = new Payment(savedOrder, savedOrder.getAgreedPrice(), "간편결제", PaymentStatus.AWAITING_PAYMENT);
+
+        paymentRepository.save(payment);
+
+        //주문 생성 알림 보내기(소비자->점주)
+        String orderMessage = "주문이 생성되었습니다.";
+        notificationService.sendNotification(store.getOwner().getId(), orderMessage, "owner");
 
         CustomerOrderCreateResponseDto responseDto = new CustomerOrderCreateResponseDto(
-                order.getId(), orderNumber, OrderStatus.MAKE_WAITING, LocalDateTime.now()
+                savedOrder.getId(),
+                savedOrder.getOrderNumber(),
+                savedOrder.getStatus(),
+                savedOrder.getCreatedAt(),
+                savedOrder.getAgreedPrice(),
+                savedOrder.getProductName(),
+                savedOrder.getCustomer().getEmail(),
+                savedOrder.getCustomerName(),
+                savedOrder.getCustomerPhoneNumber()
         );
+
         return responseDto;
     }
 

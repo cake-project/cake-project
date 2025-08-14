@@ -2,6 +2,7 @@ package com.cakemate.cake_platform.domain.auth.entity;
 
 import com.cakemate.cake_platform.common.entity.BaseTimeEntity;
 import com.cakemate.cake_platform.domain.auth.exception.BadRequestException;
+import com.cakemate.cake_platform.domain.auth.oAuthEnum.OAuthProvider;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
@@ -17,14 +18,15 @@ public class Customer extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
+    private String customerKey;
+
     @Email(message = "email 형식을 지켜주십시오(ex. cake@gmail.com)")
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
     private String passwordConfirm;
 
     @Column(nullable = false)
@@ -37,17 +39,27 @@ public class Customer extends BaseTimeEntity {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OAuthProvider provider;
+
+    private Long providerId;
+
 
     protected Customer() {
     }
 
     // 회원가입 생성자
-    public Customer(String email, String password, String passwordConfirm, String name, String phoneNumber) {
+    public Customer(String customerKey, String email, String password, String passwordConfirm, String name,
+                    String phoneNumber, OAuthProvider provider, Long providerId) {
+        this.customerKey = customerKey;
         this.email = email;
         this.password = password;
         this.passwordConfirm = passwordConfirm;
         this.name = name;
         this.phoneNumber = phoneNumber;
+        this.provider = provider;
+        this.providerId = providerId;
     }
 
     // 로그인 생성자
@@ -55,8 +67,6 @@ public class Customer extends BaseTimeEntity {
         this.email = email;
         this.password = password;
     }
-
-
 
     //기능
 

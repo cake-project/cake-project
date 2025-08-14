@@ -2,27 +2,27 @@ package com.cakemate.cake_platform.domain.auth.signup.owner.controller;
 
 import com.cakemate.cake_platform.common.command.SearchCommand;
 import com.cakemate.cake_platform.common.dto.ApiResponse;
+import com.cakemate.cake_platform.domain.auth.signup.customer.dto.request.CustomerSignUpRequest;
 import com.cakemate.cake_platform.domain.auth.signup.owner.dto.request.OwnerSignUpRequest;
 import com.cakemate.cake_platform.domain.auth.signup.owner.dto.response.OwnerSignUpResponse;
-import com.cakemate.cake_platform.domain.auth.signup.owner.service.OwnerService;
+import com.cakemate.cake_platform.domain.auth.signup.owner.service.OwnerSignUpService;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.result.view.RedirectView;
 
-
+@Slf4j
 @RestController
 @RequestMapping("/api")
-public class OwnerController {
-    private final OwnerService ownerService;
+public class OwnerSignUpController {
+    private final OwnerSignUpService ownerSignUpService;
 
-    public OwnerController(OwnerService ownerService) {
-        this.ownerService = ownerService;
+    public OwnerSignUpController(OwnerSignUpService ownerSignUpService) {
+        this.ownerSignUpService = ownerSignUpService;
     }
 
-    @PostMapping("signup/owners")
-    public ApiResponse<OwnerSignUpResponse> ownerSignUpApi(@Valid @RequestBody OwnerSignUpRequest signUpRequest) {
+    @PostMapping("/owners/signup")
+    public ApiResponse<?> customerSignUp(@Valid @RequestBody CustomerSignUpRequest signUpRequest) {
         String email = signUpRequest.getEmail();
         String password = signUpRequest.getPassword();
         String passwordConfirm = signUpRequest.getPasswordConfirm();
@@ -31,8 +31,7 @@ public class OwnerController {
 
         SearchCommand searchSignUpRequest = new SearchCommand(email, password, passwordConfirm, name, phoneNumber);
 
-        ApiResponse<OwnerSignUpResponse> ownerSignUpSuccess = ownerService.ownerSaveProcess(searchSignUpRequest);
+        ApiResponse<?> ownerSignUpSuccess = ownerSignUpService.ownerLocalSignUpProcess(searchSignUpRequest);
         return ownerSignUpSuccess;
-
     }
 }
