@@ -48,7 +48,7 @@ public class ProposalFormScheduler {
                 notificationService.sendNotification(
                         proposalForm.getStore().getOwner().getId(),
                         "견적서가 자동으로 취소되었습니다.",
-                        "storeOwner"
+                        "owner"
                 );
             } catch (Exception e) {
                 log.warn("자동 취소 실패 - 견적서 ID: {}, 이유: {}", proposalForm.getId(), e.getMessage());
