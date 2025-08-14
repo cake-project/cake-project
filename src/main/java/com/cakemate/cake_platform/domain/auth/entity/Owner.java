@@ -2,6 +2,7 @@ package com.cakemate.cake_platform.domain.auth.entity;
 
 import com.cakemate.cake_platform.common.entity.BaseTimeEntity;
 import com.cakemate.cake_platform.domain.auth.exception.BadRequestException;
+import com.cakemate.cake_platform.domain.auth.oAuthEnum.OAuthProvider;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
@@ -36,6 +37,12 @@ public class Owner extends BaseTimeEntity {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OAuthProvider provider;
+
+    private Long providerId;
+
     /**
      * 아래는 JPA 애서 쓰는 기본 생성자 입니다.
      */
@@ -43,12 +50,15 @@ public class Owner extends BaseTimeEntity {
     }
 
     // 회원가입 생성자
-    public Owner(String email, String password, String passwordConfirm, String name, String phoneNumber) {
+    public Owner(String email, String password, String passwordConfirm, String name, String phoneNumber,
+                 OAuthProvider provider, Long providerId) {
         this.email = email;
         this.password = password;
         this.passwordConfirm = passwordConfirm;
         this.name = name;
         this.phoneNumber = phoneNumber;
+        this.provider = provider;
+        this.providerId = providerId;
     }
 
     // 로그인 생성자

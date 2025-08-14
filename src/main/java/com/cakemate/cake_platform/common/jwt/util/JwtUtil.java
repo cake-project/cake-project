@@ -1,5 +1,8 @@
 package com.cakemate.cake_platform.common.jwt.util;
 
+import com.cakemate.cake_platform.domain.auth.entity.Customer;
+import com.cakemate.cake_platform.domain.auth.entity.Owner;
+import com.cakemate.cake_platform.domain.auth.oAuthEnum.OAuthProvider;
 import com.cakemate.cake_platform.domain.member.entity.Member;
 import com.cakemate.cake_platform.domain.store.owner.exception.ForbiddenException;
 import io.jsonwebtoken.Claims;
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.Optional;
 
 @Component
 public class JwtUtil {
@@ -31,6 +35,12 @@ public class JwtUtil {
     public String createMemberJwtToken(Member member) {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + TOKEN_EXPIRATION_TIME);
+        OAuthProvider customerOAuthProvider = Optional.ofNullable(member.getCustomer())
+                .map(Customer::getProvider)
+                .orElse(OAuthProvider.LOCAL);
+        OAuthProvider ownerOAuthProvider = Optional.ofNullable(member.getOwner())
+                .map(Owner::getProvider)
+                .orElse(OAuthProvider.LOCAL);
 
         if (hasOwnerId(member)) {
             String subjectOwnerId = member.getOwner().getId().toString();
@@ -40,6 +50,7 @@ public class JwtUtil {
                     .claim("email", member.getOwner().getEmail())
                     .claim("memberName", member.OwnerName()) // 채팅 메시지 발신자(sender)로 사용됨.
                     .claim("memberType", "OWNER")
+                    .claim("oAuthProvider",ownerOAuthProvider.getOAuthName()) // 로그인 타입(소셜or로컬)
                     .expiration(expiration) // 만료시간 120분
                     .signWith(secretKey, SignatureAlgorithm.HS256)
                     .compact();
@@ -52,6 +63,7 @@ public class JwtUtil {
                     .claim("email", member.getCustomer().getEmail())
                     .claim("memberName", member.CustomerName())//  채팅 메시지 발신자(sender)로 사용됨.
                     .claim("memberType", "CUSTOMER")
+                    .claim("oAuthProvider",customerOAuthProvider.getOAuthName()) // 로그인 타입(소셜or로컬)
                     .expiration(expiration) // 만료시간 120분
                     .signWith(secretKey, SignatureAlgorithm.HS256)
                     .compact();

@@ -2,6 +2,7 @@ package com.cakemate.cake_platform.domain.order.customer.service;
 
 import com.cakemate.cake_platform.common.exception.*;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
+import com.cakemate.cake_platform.domain.auth.exception.CustomerNotFoundException;
 import com.cakemate.cake_platform.domain.auth.signup.customer.repository.CustomerRepository;
 import com.cakemate.cake_platform.domain.notification.service.NotificationService;
 import com.cakemate.cake_platform.domain.order.common.OrderNumberGenerator;
@@ -101,7 +102,7 @@ public class OrderCustomerService {
                 .orElseThrow(() -> new StoreNotFoundException("견적서에 가게가 존재하지 않습니다."));
 
         Customer customer = customerRepository.findByIdAndIsDeletedFalse(customerId)
-                .orElseThrow(() -> new CustomerNotFoundException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new CustomerNotFoundException());
 
         // 주문 번호 생성
         String orderNumber = OrderNumberGenerator.generateOrderNumber();

@@ -4,6 +4,7 @@ import com.cakemate.cake_platform.common.dto.ApiResponse;
 import com.cakemate.cake_platform.common.exception.*;
 import com.cakemate.cake_platform.domain.auth.entity.Customer;
 import com.cakemate.cake_platform.domain.auth.entity.Owner;
+import com.cakemate.cake_platform.domain.auth.exception.OwnerNotFoundException;
 import com.cakemate.cake_platform.domain.member.entity.Member;
 import com.cakemate.cake_platform.domain.member.repository.MemberRepository;
 import com.cakemate.cake_platform.domain.notification.service.NotificationService;
