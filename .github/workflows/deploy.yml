@@ -3,8 +3,8 @@ name: CI/CD Deploy
 on:
   push:
     branches:
-      - feature/kgs-배포테스트
       - dev
+
 jobs:
   build:
     runs-on: ubuntu-latest

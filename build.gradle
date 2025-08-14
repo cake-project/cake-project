@@ -7,11 +7,16 @@ plugins {
 group = 'com.cakemate'
 version = '0.0.1-SNAPSHOT'
 
+springBoot {
+	mainClass.set("com.cakemate.cake_platform.CakePlatformApplication")
+}
+
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(17)
 	}
 }
+
 
 configurations {
 	compileOnly {
