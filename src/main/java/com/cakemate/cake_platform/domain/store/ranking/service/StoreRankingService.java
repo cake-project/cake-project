@@ -64,7 +64,6 @@ public class StoreRankingService {
                         .filter(StoreRankingResponseDto.class::isInstance)
                         .map(StoreRankingResponseDto.class::cast)
                         .toList();
-                log.info("[서비스] Redis 캐시 존재, DB 조회 생략");
                 return cached;
             }
         }
