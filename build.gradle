@@ -6,12 +6,17 @@ plugins {
 
 group = 'com.cakemate'
 version = '0.0.1-SNAPSHOT'
+// web소켓 메인메서드 추가로 인한 빌드 할 메인메서드 명시
+springBoot {
+	mainClass.set("com.cakemate.cake_platform.CakePlatformApplication")
+}
 
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(17)
 	}
 }
+
 
 configurations {
 	compileOnly {
