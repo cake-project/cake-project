@@ -1,11 +1,13 @@
 package com.cakemate.cake_platform.domain.store.scheduler;
 
+import com.cakemate.cake_platform.domain.store.ranking.dto.StoreRankingResponseDto;
 import com.cakemate.cake_platform.domain.store.ranking.service.StoreRankingService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -28,12 +30,18 @@ public class StoreRankingCacheScheduler {
     @PostConstruct
     public void init() {
         try {
-            storeRankingService.refreshWeeklyTopStores(); // 서버 시작 시 캐시 바로 로드
-            log.info("[스케줄러] 서버 시작 시 캐시 초기 로드 완료");
+            List<StoreRankingResponseDto> cached = storeRankingService.getCacheIfExists();
+            if (cached == null) {
+                storeRankingService.refreshWeeklyTopStores(); // 캐시 없으면 DB 조회 후 저장
+                log.info("[스케줄러] 서버 시작 시 캐시 초기 로드 완료");
+            } else {
+                log.info("[스케줄러] Redis 캐시 존재, DB 조회 생략");
+            }
         } catch (Exception e) {
             log.error("[스케줄러] 서버 시작 시 캐시 로드 실패", e);
         }
-        scheduleNextRun(); // 앱 시작 시 첫 실행 예약
+
+        scheduleNextRun();
     }
 
     /**

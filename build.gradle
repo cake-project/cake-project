@@ -57,7 +57,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
 
 	// Caffeine Cache
-	implementation 'com.github.ben-manes.caffeine:caffeine'
+	//implementation 'com.github.ben-manes.caffeine:caffeine'
+	//Redis기능
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'io.lettuce:lettuce-core' // Redis 클라이언트
 
 
 

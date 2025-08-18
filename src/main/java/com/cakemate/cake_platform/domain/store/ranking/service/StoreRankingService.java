@@ -4,6 +4,8 @@ import com.cakemate.cake_platform.domain.order.repository.OrderRepository;
 import com.cakemate.cake_platform.domain.store.ranking.dto.StoreOrderCount;
 import com.cakemate.cake_platform.domain.store.ranking.dto.StoreRankingResponseDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -16,22 +18,54 @@ import java.util.List;
 @Service
 public class StoreRankingService {
     private final OrderRepository orderRepository;
+    private final CacheManager cacheManager;
+    private static final String CACHE_KEY = "storeOrderRankings";
+    private static final String CACHE_NAME = "storeOrderRankings";
 
-    public StoreRankingService(OrderRepository orderRepository) {
+    public StoreRankingService(OrderRepository orderRepository, CacheManager cacheManager) {
         this.orderRepository = orderRepository;
+        this.cacheManager = cacheManager;
     }
-    // 기존 요청용 메서드 (Cache-Aside)
-    @Cacheable(value = "storeOrderRankings")
+
+
+    // 기존 요청용 메서드 (캐시 확인 + DB fallback)
     @Transactional(readOnly = true)
     public List<StoreRankingResponseDto> getWeeklyTopStores() {
-        return calculateWeeklyTopStores();
+        List<StoreRankingResponseDto> cached = getCacheIfExists();
+        if (cached != null) {
+            return cached;
+        }
+        return refreshWeeklyTopStores(); // 캐시 없으면 DB 조회 후 저장
     }
 
-    // 스케줄러용 캐시 강제 갱신 메서드
-    @CachePut(value = "storeOrderRankings")
+    // 캐시 강제 갱신
     @Transactional(readOnly = true)
     public List<StoreRankingResponseDto> refreshWeeklyTopStores() {
-        return calculateWeeklyTopStores();
+        List<StoreRankingResponseDto> data = calculateWeeklyTopStores();
+
+        Cache cache = cacheManager.getCache(CACHE_NAME);
+        if (cache != null) {
+            cache.put(CACHE_KEY, data); // @CachePut 대신 직접 저장
+            log.info("[서비스] Redis 캐시에 값 저장 완료");
+        } else {
+            log.warn("[서비스] Redis 캐시 객체 없음");
+        }
+
+        return data;
+    }
+
+    // Redis 캐시 존재 여부 확인
+    @SuppressWarnings("unchecked")
+    public List<StoreRankingResponseDto> getCacheIfExists() {
+        Cache cache = cacheManager.getCache(CACHE_NAME);
+        if (cache != null) {
+            List<StoreRankingResponseDto> cached = cache.get(CACHE_KEY, List.class);
+            if (cached != null) {
+                return cached;
+            }
+        }
+        log.info("[서비스] Redis 캐시 miss ❌");
+        return null;
     }
 
     // 실제 순위 계산 로직 분리
