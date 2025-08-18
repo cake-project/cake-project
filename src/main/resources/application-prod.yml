@@ -17,6 +17,12 @@ spring:
       hibernate:
         format_sql: false
         highlight_sql: false
+    data:
+      redis:
+        host: localhost
+        port: 6379
+    cache:
+      type: redis
 server:
   port: 8000
 jwt:
