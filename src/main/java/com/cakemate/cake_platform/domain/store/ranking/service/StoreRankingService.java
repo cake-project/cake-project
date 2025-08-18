@@ -55,12 +55,16 @@ public class StoreRankingService {
     }
 
     // Redis 캐시 존재 여부 확인
-    @SuppressWarnings("unchecked")
     public List<StoreRankingResponseDto> getCacheIfExists() {
         Cache cache = cacheManager.getCache(CACHE_NAME);
         if (cache != null) {
-            List<StoreRankingResponseDto> cached = cache.get(CACHE_KEY, List.class);
-            if (cached != null) {
+            Object cachedObj = cache.get(CACHE_KEY, Object.class); // Object로 꺼내기
+            if (cachedObj instanceof List<?> list) {               // 런타임에서 타입 체크
+                List<StoreRankingResponseDto> cached = list.stream()
+                        .filter(StoreRankingResponseDto.class::isInstance)
+                        .map(StoreRankingResponseDto.class::cast)
+                        .toList();
+                log.info("[서비스] Redis 캐시 존재, DB 조회 생략");
                 return cached;
             }
         }
