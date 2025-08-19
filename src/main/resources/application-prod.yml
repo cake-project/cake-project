@@ -1,4 +1,9 @@
 spring:
+  data:
+    redis:
+      host: 172.31.5.120
+      port: 17379
+      password: passstrong!1
   application:
     name: cake-platform
 
@@ -7,11 +12,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ${USERNAME}
     password: ${PASSWORD}
-  data:
-    redis:
-      host: 172.31.5.120
-      port: 17379
-      password: passstrong!1
+
   jpa:
     hibernate:
       ddl-auto: none
