@@ -1,4 +1,5 @@
 package com.cakemate.cake_platform.common.config;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,15 +18,30 @@ import java.time.Duration;
 @Configuration
 @EnableCaching
 public class CasheConfig {
+    @Value("${spring.data.redis.host}")
+    private String redisHost;
+
+    @Value("${spring.data.redis.port}")
+    private int redisPort;
+
+    @Value("${spring.data.redis.password}")
+    private String redisPassword;
+
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        // Redis 호스트와 포트에 맞게 수정
-        return new LettuceConnectionFactory("localhost", 6379);
+        LettuceConnectionFactory factory = new LettuceConnectionFactory(redisHost, redisPort);
+
+        if (redisPassword != null && !redisPassword.isBlank()) {
+            factory.setPassword(redisPassword);
+        }
+
+        // 설정 적용
+        factory.afterPropertiesSet();
+        return factory;
     }
 
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory factory) {
-        // GenericJackson2JsonRedisSerializer 사용 (ObjectMapper 포함)
         GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer();
 
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
