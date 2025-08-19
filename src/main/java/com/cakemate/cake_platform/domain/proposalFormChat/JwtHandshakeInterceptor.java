@@ -88,7 +88,7 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
 
             //그 토큰이 점주용 토큰인지(ownerToken), 소비자용 토큰인지(customerToken)를 판별 후
             //판별 결과를 문자열 "OWNER" 또는 "CUSTOMER"로 변환해서
-            //session.getAttributes()에 memberType 키로 저장.
+            //session.getAttributes()에 memberType 으로 저장.
             attributes.put("memberType", ownerToken ? "OWNER" : "CUSTOMER");
 
             return true;

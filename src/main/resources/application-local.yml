@@ -1,3 +1,6 @@
+KAKAO_CLIENT_ID: dummy
+KAKAO_CLIENT_SECRET: dummy
+
 spring:
   application:
     name: cake-platform
@@ -23,7 +26,6 @@ jwt:
 
 server:
   port: 8080
-
 
 kakao:
   redirect-uri-signin-owners-kakao: http://localhost:8080/api/owners/kakao/signin

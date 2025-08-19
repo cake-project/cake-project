@@ -1,7 +1,5 @@
 package com.cakemate.cake_platform.domain.proposalFormChat;
 
-import com.cakemate.cake_platform.common.exception.UnauthorizedAccessException;
-import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
 import com.cakemate.cake_platform.domain.proposalFormChat.dto.ChatMessageRequestDto;
 import com.cakemate.cake_platform.domain.proposalFormChat.dto.ChatMessageResponseDto;
 import com.cakemate.cake_platform.domain.proposalFormChat.service.ChatService;
