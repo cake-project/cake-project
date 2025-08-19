@@ -7,7 +7,11 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ${USERNAME}
     password: ${PASSWORD}
-
+  data:
+    redis:
+      host: 172.31.5.120
+      port: 17379
+      password: passstrong!1
   jpa:
     hibernate:
       ddl-auto: none
@@ -17,11 +21,7 @@ spring:
       hibernate:
         format_sql: false
         highlight_sql: false
-    data:
-      redis:
-        host: 172.31.5.120
-        port: 17379
-        password: passstrong!1
+
     cache:
       type: redis
 server:
