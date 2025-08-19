@@ -20,7 +20,8 @@ spring:
     data:
       redis:
         host: 172.31.5.120
-        port: 6379
+        port: 17379
+        password: passstrong!1
     cache:
       type: redis
 server:
