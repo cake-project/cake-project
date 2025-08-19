@@ -1,0 +1,7 @@
+ALTER TABLE owners
+    MODIFY COLUMN password VARCHAR(255) NULL;
+ALTER TABLE owners
+    MODIFY COLUMN password_confirm VARCHAR(255) NULL;
+ALTER TABLE owners
+    ADD COLUMN provider VARCHAR(20) NOT NULL,
+    ADD COLUMN provider_id BIGINT null ;
