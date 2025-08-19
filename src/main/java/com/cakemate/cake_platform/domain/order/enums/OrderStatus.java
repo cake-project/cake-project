@@ -4,7 +4,8 @@ public enum OrderStatus {
     MAKE_WAITING("MAKE_WAITING", "제작 대기 중"),
     READY_FOR_PICKUP("READY_FOR_PICKUP", "상품 픽업 대기 중"),
     COMPLETED("COMPLETED", "주문 완료"),
-    CANCELLED("CANCELLED", "주문 취소");
+    CANCELLED("CANCELLED", "주문 취소"),
+    EXPIRED("EXPIRED", "결제 시간 만료");
 
     private final String strValue;
     private final String description;

@@ -82,6 +82,9 @@ public class Order extends BaseTimeEntity {
 
     private String finalCakeImage;
 
+    @Column(nullable = false)
+    private LocalDateTime paymentExpiresAt;
+
 
     protected Order() {
     }
@@ -120,4 +123,8 @@ public class Order extends BaseTimeEntity {
         this.status = newStatus;
     }
 
+    // OrderScheduler에서 사용합니다.
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
 }
