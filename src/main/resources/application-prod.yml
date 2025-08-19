@@ -1,4 +1,9 @@
 spring:
+  data:
+    redis:
+      host: 172.31.5.120
+      port: 17379
+      password: passstrong!1
   application:
     name: cake-platform
 
@@ -17,6 +22,9 @@ spring:
       hibernate:
         format_sql: false
         highlight_sql: false
+
+    cache:
+      type: redis
 server:
   port: 8000
 jwt:
@@ -25,8 +33,8 @@ jwt:
 logging:
   config: classpath:logback-spring-${spring.profiles.active}.xml
 kakao:
-  redirect-uri-signin-owners-kakao: http://13.124.198.59:8000/api/signin/owners/kakao
-  redirect-uri-signin-customers-kakao: http://13.124.198.59:8000/api/signin/customers/kakao
+  redirect-uri-signin-owners-kakao: http://cakemate.org:8000/api/owners/kakao/signin
+  redirect-uri-signin-customers-kakao: http://cakemate.org:8000/api/customers/kakao/signin
   client-id: ${KAKAO_CLIENT_ID}
   client-secret: ${KAKAO_CLIENT_SECRET}
   kauth-host: https://kauth.kakao.com

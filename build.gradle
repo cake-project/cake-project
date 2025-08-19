@@ -6,12 +6,17 @@ plugins {
 
 group = 'com.cakemate'
 version = '0.0.1-SNAPSHOT'
+// web소켓 메인메서드 추가로 인한 빌드 할 메인메서드 명시
+springBoot {
+	mainClass.set("com.cakemate.cake_platform.CakePlatformApplication")
+}
 
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(17)
 	}
 }
+
 
 configurations {
 	compileOnly {
@@ -53,6 +58,16 @@ dependencies {
 
 	//아래 추가 ->[WebSocket(실시간 채팅 : 양방향 통신 구현 시 필요)]
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	// Spring Cache
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+
+	// Caffeine Cache
+	//implementation 'com.github.ben-manes.caffeine:caffeine'
+	//Redis기능
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'io.lettuce:lettuce-core' // Redis 클라이언트
+
+
 
 }
 

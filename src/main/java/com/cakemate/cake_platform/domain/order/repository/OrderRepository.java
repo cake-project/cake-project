@@ -2,10 +2,16 @@ package com.cakemate.cake_platform.domain.order.repository;
 
 import com.cakemate.cake_platform.domain.order.entity.Order;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
+import com.cakemate.cake_platform.domain.store.ranking.dto.StoreOrderCount;
+import com.cakemate.cake_platform.domain.store.ranking.dto.StoreRankingResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
@@ -26,4 +32,13 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     boolean existsByProposalForm(ProposalForm proposalForm);
 
     Optional<Order> findByOrderNumber(String orderNumber);
+
+    @Query("select new com.cakemate.cake_platform.domain.store.ranking.dto.StoreOrderCount(s.id, o.storeName, count(o))" +
+            "from Order o " +
+            "join o.store s " +
+            "where o.createdAt >= :startDate " +
+            "group by s.id, o.storeName " +
+            "order by count(o) desc"
+    )
+    List<StoreOrderCount> findWeeklyTopStores(@Param("startDate") LocalDateTime startDate);
 }
