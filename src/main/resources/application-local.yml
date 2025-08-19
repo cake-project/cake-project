@@ -19,8 +19,9 @@ spring:
         highlight_sql: true
         data:
           redis:
-            host: localhost
-            port: 6379
+            host: 172.31.5.120
+            port: 17379
+            password: passstrong!1
   cache:
     type: redis
 
