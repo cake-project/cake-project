@@ -9,15 +9,15 @@ import java.time.LocalDateTime;
 public class NotificationDto {
     //속성
     private String eventId;
-    private String content;
+    private String message;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
 
     //생성자
-    public NotificationDto(String eventId, String content, LocalDateTime createdAt) {
+    public NotificationDto(String eventId, String message, LocalDateTime createdAt) {
         this.eventId = eventId;
-        this.content = content;
+        this.message = message;
         this.createdAt = createdAt;
     }
 

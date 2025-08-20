@@ -18,18 +18,16 @@ public class NotificationController {
 
     @GetMapping(value = "/customer/subscribe", produces = "text/event-stream")
     public SseEmitter subscribeCustomerAPI(
-            @RequestHeader("Authorization") String bearerToken,
-            @RequestHeader(value = "Last-Event-Id", required = false, defaultValue = "") String lastEventId) {
+            @RequestHeader("Authorization") String bearerToken) {
         Long customerId = jwtUtil.extractCustomerId(bearerToken);
-        return notificationService.subscribeCustomer(customerId, lastEventId);
+        return notificationService.subscribeCustomer(customerId);
     }
 
     @GetMapping(value = "/owner/subscribe", produces = "text/event-stream")
     public SseEmitter subscribeOwnerAPI(
-            @RequestHeader("Authorization") String bearerToken,
-            @RequestHeader(value = "Last-Event-Id", required = false, defaultValue = "") String lastEventId) {
+            @RequestHeader("Authorization") String bearerToken) {
         Long ownerId = jwtUtil.extractOwnerId(bearerToken);
-        return notificationService.subscribeOwner(ownerId, lastEventId);
+        return notificationService.subscribeOwner(ownerId);
     }
 
     @PostMapping("/test")

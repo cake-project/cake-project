@@ -9,18 +9,24 @@ import java.util.List;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
-    //모든 알림 조회(최신순)
-    List<Notification> findAllByReceiverIdOrderByCreatedAtDesc(Long receiverid);
+//    //모든 알림 조회(최신순)
+//    List<Notification> findAllByReceiverIdOrderByCreatedAtDesc(Long receiverid);
+//
+//    //읽지 않은 알림 조회(최신순)
+//    List<Notification> findAllByReceiverIdAndReadIsFalseOrderByCreatedAtDesc(Long receiverId);
 
-    //읽지 않은 알림 조회(최신순)
-    List<Notification> findAllByReceiverIdAndReadIsFalseOrderByCreatedAtDesc(Long receiverId);
-
-    //lastEventId 이후~하루 이내 알림 조회
-    List<Notification> findByReceiverIdAndIdGreaterThanAndCreatedAtAfterOrderByIdAsc(
-            Long receiverId, Long lastEvevntId, LocalDateTime after
+    //특정 수신자의 receiverType + createdAt 이후 알림 조회
+    List<Notification> findByReceiverIdAndMemberTypeAndCreatedAtAfter(
+            Long receiverId, String memberType, LocalDateTime createdAt
     );
 
-    //특정 lastEventId 이후 그 ID보다 큰 ID를 가진 알림이 DB에 존재하는지 확인
-    boolean existsByIdGreaterThan(Long id);
+    //특정 수신자의 receiverType + lastEventId 이후 알림 조회
+    List<Notification> findByReceiverIdAndMemberTypeAndIdGreaterThan(
+            Long receiverId, String memberType, Long lastEventId
+    );
 
+    //재연결 시 특정 사용자 lastEventId 이후 알림 조회
+    List<Notification> findByReceiverIdAndMemberTypeAndIdGreaterThanOrderByIdAsc(
+            Long receiverId, String memberType, Long lastEventId
+    );
 }
