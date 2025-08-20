@@ -13,7 +13,7 @@ public class CommentCreateResponseDto {
     private Long ownerId;
     private String content;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;  // 생성일 추가
 
     private CommentCreateResponseDto(
