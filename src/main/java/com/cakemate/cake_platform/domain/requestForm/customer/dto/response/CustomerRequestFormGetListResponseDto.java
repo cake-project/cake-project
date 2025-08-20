@@ -14,7 +14,7 @@ public class CustomerRequestFormGetListResponseDto {
     private CakeSize cakeSize;
     private int quantity;
     private RequestFormStatus requestStatus;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
 
     public CustomerRequestFormGetListResponseDto(

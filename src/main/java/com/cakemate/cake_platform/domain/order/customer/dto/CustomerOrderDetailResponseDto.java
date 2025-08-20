@@ -12,7 +12,7 @@ public class CustomerOrderDetailResponseDto {
 
     private Long orderId;
     private String orderNumber;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime orderCreatedAt;
     private String orderStatus;
     private String customerName;
@@ -26,7 +26,7 @@ public class CustomerOrderDetailResponseDto {
     private String cakeSize;
     private int quantity;
     private int agreedPrice;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime agreedPickupDate;
     private String finalCakeImage;
 }
