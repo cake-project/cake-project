@@ -12,8 +12,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -24,20 +23,34 @@ public class WebSockChatHandler extends TextWebSocketHandler {
     // 채팅 로직을 위임받는 서비스 클래스
     private final ChatService chatService;
 
-
-    /**
-     * 아직 채팅방 입장(ENTER 메시지)을 하지 않은 세션들
-     * → 연결만 하고 방 정보를 전달받지 않은 상태의 세션들을 임시 보관
-     */
-    private final Set<WebSocketSession> tempSessions = ConcurrentHashMap.newKeySet();
-
     /**
      * 클라이언트가 WebSocket 연결을 맺으면 실행됨 (방 정보는 아직 모름)
      * → 이후 클라이언트가 ENTER 메시지를 보내면 방 정보를 알 수 있음
      */
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-        tempSessions.add(session);
+        // 인터셉터에서 이미 검증/세팅됨
+        String roomId = (String) session.getAttributes().get("roomId");
+        Long memberId = (Long) session.getAttributes().get("memberId");
+        String memberName = (String) session.getAttributes().getOrDefault("memberName", "UNKNOWN");
+
+
+        if (roomId == null || roomId.isBlank() || memberId == null) {
+            safeClose(session, CloseStatus.BAD_DATA.withReason("missing attributes"));
+            return;
+        }
+
+        // 세션 등록 (1회)
+        chatService.registerSession(roomId, session);
+
+        // 입장 시스템 메시지 브로드캐스트
+        ChatMessageResponseDto enter = ChatMessageResponseDto.builder()
+                .type(ChatMessageRequestDto.MessageType.ENTER)
+                .roomId(roomId)
+                .sender(memberName)
+                .message(memberName + "님이 입장했습니다.")
+                .build();
+        chatService.saveAndBroadcast(enter);
     }
 
     /**
@@ -59,11 +72,9 @@ public class WebSockChatHandler extends TextWebSocketHandler {
         // -> "token expired(토큰 만료)" 사유로 WebSocket 세션 종료
         // (만료된 토큰인데도 세션에 memberId, memberName 같은 식별 정보가 그대로 남아 있으면,
         //이후에 서버 로직이 잘못 참조해서 만료된 사용자를 유효한 사용자처럼 처리할 위험이 있습니다.)
-        if (expirationTime == null || expirationTime < System.currentTimeMillis() ) {
-            session.getAttributes().remove("memberId");
-            session.getAttributes().remove("expirationTime");
-            session.getAttributes().remove("memberName");
-            session.close(new CloseStatus(4401, "token expired"));
+        if (expirationTime == null || expirationTime < System.currentTimeMillis()) {
+            clearSessionAttributes(session);
+            safeClose(session, new CloseStatus(4401, "token expired"));
             return;
         }
 
@@ -71,69 +82,39 @@ public class WebSockChatHandler extends TextWebSocketHandler {
         String memberName = (String) session.getAttributes().get("memberName");
         if (memberName == null) memberName = "UNKNOWN";
 
+        String sessionRoomId = (String) session.getAttributes().get("roomId");
         Long memberId = (Long) session.getAttributes().get("memberId");
+
+        if (sessionRoomId == null || memberId == null) {
+            safeClose(session, CloseStatus.BAD_DATA.withReason("missing attributes"));
+            return;
+        }
 
         // JSON 문자열을 ChatMessage DTO 로 변환
         ChatMessageRequestDto dto = objectMapper.readValue(message.getPayload(), ChatMessageRequestDto.class);
-        String roomId = dto.getRoomId();
-        if (roomId == null || roomId.isBlank()) {
-            session.close(CloseStatus.BAD_DATA.withReason("missing roomId"));
+
+        // payload 에 roomId가 실려오면 세션의 roomId와 불일치 시 차단 (세션 roomId만 신뢰)
+        if (dto.getRoomId() != null && !dto.getRoomId().isBlank() && !sessionRoomId.equals(dto.getRoomId())) {
+            safeClose(session, CloseStatus.BAD_DATA.withReason("roomId mismatch"));
             return;
         }
 
-        if (!chatService.canAccessRoom(memberId, roomId)) {
-            session.close(new CloseStatus(4403, "유효하지 않은 사용자 유형입니다."));
+        // TALK 만 허용 (ENTER 는 자동 처리이므로 무시)
+        if (dto.getType() != ChatMessageRequestDto.MessageType.TALK) {
             return;
         }
 
-        //ENTER 메시지 처리
-        if (dto.getType() == ChatMessageRequestDto.MessageType.ENTER) {
-
-            // 세션을 실제 채팅방에 등록
-            chatService.registerSession(roomId, session);
-
-            //roomId 저장
-            session.getAttributes().put("roomId", roomId);
-
-            // 임시 세션 목록에서 제거
-            tempSessions.remove(session);
-
-            // 시스템 메시지 생성
-            ChatMessageResponseDto messageResponseDto = ChatMessageResponseDto.builder()
-                    .type(ChatMessageRequestDto.MessageType.ENTER)
-                    .roomId(dto.getRoomId())
-                    .sender(memberName)
-                    .message(memberName + "님이 입장했습니다.")
-                    .build();
-
-            //시스템 메시지 전송
-            chatService.saveAndBroadcast(messageResponseDto);
-            return;
-        }
-
-        // TALK: 이미 위에서 권한 검증했으므로 바로 처리
-        // ENTER 누락 대비
-        chatService.registerSession(roomId, session);
-        // 종료 정리용
-        session.getAttributes().put("roomId", roomId);
-
-        // TALK 메시지 처리
-        ChatMessageResponseDto out = ChatMessageResponseDto.builder()
+        ChatMessageResponseDto messageResponseDto = ChatMessageResponseDto.builder()
                 .type(ChatMessageRequestDto.MessageType.TALK)
-                .roomId(dto.getRoomId())
+                .roomId(sessionRoomId)
                 .sender(memberName)
                 .message(dto.getMessage())
                 .build();
-        //TALK 메시지 저장
-        chatService.saveAndBroadcast(out);
-    }
 
-    /**
-     *  클라이언트(WebSocket)가 연결을 종료했을 때 실행되는 메서드
-     * → 세션을 채팅방에서 제거(메모리 낭비 방지)
-     * 1. 종료된 세션의 roomId를 쿼리 파라미터에서 추출
-     * 2. 해당 roomId의 채팅방에서 세션을 제거하여 메모리 낭비를 방지
-     */
+        //시스템 메시지 전송
+        chatService.saveAndBroadcast(messageResponseDto);
+    }
+    /** 연결 종료 시 방에서 세션 해제 + 속성 정리 */
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         String roomId = (String) session.getAttributes().get("roomId");
@@ -142,5 +123,19 @@ public class WebSockChatHandler extends TextWebSocketHandler {
         } else {
             log.warn("afterConnectionClosed: roomId missing. uri={}", session.getUri());
         }
+        clearSessionAttributes(session);
+    }
+
+    private void clearSessionAttributes(WebSocketSession session) {
+        Map<String, Object> attrs = session.getAttributes();
+        attrs.remove("roomId");
+        attrs.remove("memberId");
+        attrs.remove("memberName");
+        attrs.remove("memberType");
+        attrs.remove("expirationTime");
+    }
+
+    private void safeClose(WebSocketSession session, CloseStatus status) {
+        try { session.close(status); } catch (Exception ignore) {}
     }
 }
