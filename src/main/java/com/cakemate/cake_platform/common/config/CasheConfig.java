@@ -31,11 +31,10 @@ public class CasheConfig {
     public RedisConnectionFactory redisConnectionFactory() {
         LettuceConnectionFactory factory = new LettuceConnectionFactory(redisHost, redisPort);
 
-        if (redisPassword != null && !redisPassword.isBlank()) {
+        if (redisPassword != null && !redisPassword.trim().isEmpty()) {
             factory.setPassword(redisPassword);
         }
 
-        // 설정 적용
         factory.afterPropertiesSet();
         return factory;
     }
@@ -45,7 +44,7 @@ public class CasheConfig {
         GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer();
 
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofMinutes(5))
+                .entryTtl(Duration.ofMinutes(60))//60분
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer))
                 .disableCachingNullValues();
 

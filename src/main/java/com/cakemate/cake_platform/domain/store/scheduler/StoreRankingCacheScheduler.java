@@ -4,7 +4,6 @@ import com.cakemate.cake_platform.domain.store.ranking.dto.StoreRankingResponseD
 import com.cakemate.cake_platform.domain.store.ranking.service.StoreRankingService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,8 +19,8 @@ public class StoreRankingCacheScheduler {
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
     // TTL 및 마진 설정 (운영 환경: TTL 60분, 마진 5분)
-    private static final long TTL_MINUTES = 5;
-    private static final long MARGIN_MINUTES = 1;
+    private static final long TTL_MINUTES = 60;
+    private static final long MARGIN_MINUTES = 5;
 
     public StoreRankingCacheScheduler(StoreRankingService storeRankingService) {
         this.storeRankingService = storeRankingService;
