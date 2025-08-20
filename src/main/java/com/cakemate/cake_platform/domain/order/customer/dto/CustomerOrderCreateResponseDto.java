@@ -15,8 +15,10 @@ public class CustomerOrderCreateResponseDto {
     private Long orderId;
     private String orderNumber;
     private OrderStatus orderStatus;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime orderCreatedAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private LocalDateTime paymentExpiresAt;
     private String currency = "KRW";
     private int amount;
     private String orderName;
@@ -24,11 +26,12 @@ public class CustomerOrderCreateResponseDto {
     private String customerName;
     private String customerMobilePhone;
 
-    public CustomerOrderCreateResponseDto(Long orderId, String orderNumber, OrderStatus orderStatus, LocalDateTime orderCreatedAt, int amount, String orderName, String customerEmail, String customerName, String customerMobilePhone) {
+    public CustomerOrderCreateResponseDto(Long orderId, String orderNumber, OrderStatus orderStatus, LocalDateTime orderCreatedAt, LocalDateTime paymentExpiresAt, int amount, String orderName, String customerEmail, String customerName, String customerMobilePhone) {
         this.orderId = orderId;
         this.orderNumber = orderNumber;
         this.orderStatus = orderStatus;
         this.orderCreatedAt = orderCreatedAt;
+        this.paymentExpiresAt = paymentExpiresAt;
         this.amount = amount;
         this.orderName = orderName;
         this.customerEmail = customerEmail;

@@ -12,12 +12,12 @@ public class OwnerOrderSummaryResponseDto {
 
     private Long orderId;
     private String orderNumber;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime orderCreatedAt;
     private String orderStatus;
     private String customerName;
     private String productName;
     private int agreedPrice;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime agreedPickupDate;
 }
