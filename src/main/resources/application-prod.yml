@@ -1,4 +1,9 @@
 spring:
+  data:
+    redis:
+      host: 172.31.5.120
+      port: 17379
+      password: passstrong!1
   application:
     name: cake-platform
 
@@ -17,6 +22,9 @@ spring:
       hibernate:
         format_sql: false
         highlight_sql: false
+
+    cache:
+      type: redis
 server:
   port: 8000
 jwt:

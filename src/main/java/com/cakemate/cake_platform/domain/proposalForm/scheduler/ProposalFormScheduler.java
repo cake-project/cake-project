@@ -1,5 +1,6 @@
 package com.cakemate.cake_platform.domain.proposalForm.scheduler;
 
+import com.cakemate.cake_platform.domain.notification.service.NotificationService;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.proposalForm.enums.ProposalFormStatus;
 import com.cakemate.cake_platform.domain.proposalForm.repository.ProposalFormRepository;
@@ -16,14 +17,16 @@ import java.util.List;
 @Slf4j
 public class ProposalFormScheduler {
     private final ProposalFormRepository proposalFormRepository;
+    private final NotificationService notificationService;
 
-    public ProposalFormScheduler(ProposalFormRepository proposalFormRepository) {
+    public ProposalFormScheduler(ProposalFormRepository proposalFormRepository, NotificationService notificationService) {
         this.proposalFormRepository = proposalFormRepository;
+        this.notificationService = notificationService;
     }
 
     //confirmed 상태 견적서 자동 취소 기능
     @Transactional
-    @Scheduled(fixedRate = 60000)//매일 새벽 1시에 실행
+    @Scheduled(cron = "0 0 1 * * *")//매일 새벽 1시에 실행
     public void autoCancelConfirmedProposals() {
         LocalDateTime startTime = LocalDateTime.now();
         log.info("견적서 자동 취소 스케줄러 시작 - 시작시간: {}", startTime);
@@ -40,9 +43,17 @@ public class ProposalFormScheduler {
                 proposalForm.canceledStatus();
                 cancelCount++;  // 여기서 상태 변경 성공 시 카운트 증가
                 log.info("자동 취소된 견적서 ID: {}", proposalForm.getId());
+
+                //견적서 취소 알림 보내기(점주에게)
+                notificationService.sendNotification(
+                        proposalForm.getStore().getOwner().getId(),
+                        "견적서가 자동으로 취소되었습니다.",
+                        "owner"
+                );
             } catch (Exception e) {
                 log.warn("자동 취소 실패 - 견적서 ID: {}, 이유: {}", proposalForm.getId(), e.getMessage());
             }
+
         }
         LocalDateTime endTime = LocalDateTime.now();
         log.info("견적서 자동 취소 스케줄러 종료 - 종료시간: {}", endTime);

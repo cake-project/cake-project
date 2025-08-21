@@ -1,4 +1,4 @@
-package com.cakemate.cake_platform.domain.proposalForm.dto;
+package com.cakemate.cake_platform.domain.notification.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
@@ -6,22 +6,17 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
-public class CommentDataDto {
+public class NotificationDto {
     //속성
-    private Long commentId;
-    private Long customerId;
-    private Long ownerId;
+    private String eventId;
     private String content;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
 
     //생성자
-
-    public CommentDataDto(Long commentId, Long customerId, Long ownerId, String content, LocalDateTime createdAt) {
-        this.commentId = commentId;
-        this.customerId = customerId;
-        this.ownerId = ownerId;
+    public NotificationDto(String eventId, String content, LocalDateTime createdAt) {
+        this.eventId = eventId;
         this.content = content;
         this.createdAt = createdAt;
     }

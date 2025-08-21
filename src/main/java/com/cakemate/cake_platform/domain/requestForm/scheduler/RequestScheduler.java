@@ -1,5 +1,6 @@
 package com.cakemate.cake_platform.domain.requestForm.scheduler;
 
+import com.cakemate.cake_platform.domain.notification.service.NotificationService;
 import com.cakemate.cake_platform.domain.requestForm.entity.RequestForm;
 import com.cakemate.cake_platform.domain.requestForm.enums.RequestFormStatus;
 import com.cakemate.cake_platform.domain.requestForm.repository.RequestFormRepository;
@@ -17,9 +18,11 @@ import java.util.List;
 public class RequestScheduler {
 
     private final RequestFormRepository requestFormRepository;
+    private final NotificationService notificationService;
 
-    public RequestScheduler(RequestFormRepository requestFormRepository) {
+    public RequestScheduler(RequestFormRepository requestFormRepository, NotificationService notificationService) {
         this.requestFormRepository = requestFormRepository;
+        this.notificationService = notificationService;
     }
 
     /**
@@ -27,7 +30,7 @@ public class RequestScheduler {
      * desiredPickUpDate가 지난 의뢰서를 매일 새벽 1시에 소프트 딜리트 처리(현재는 test용으로 1분간격으로 되어있음)
      */
     @Transactional
-    @Scheduled(fixedRate = 60000)//테스트용으로 60초로 바꿈
+    @Scheduled(cron = "0 0 1 * * *")//테스트용으로 60초로 바꿈
     public void autoSoftDeleteExpiredRequests() {
         LocalDateTime startTime = LocalDateTime.now();
         log.info("의뢰서 자동 소프트 딜리트 스케쥴러 시작 - 시작시간: {}", startTime);
@@ -47,7 +50,15 @@ public class RequestScheduler {
                 requestForm.validateAndSoftDeleteForScheduler();
                 deletedCount++;
                 log.info("자동 소프트 딜리트된 의뢰서 ID: {}", requestForm.getId());
-            } catch (Exception e) {
+
+                //의뢰서 취소 알림 보내기(소비자에게)
+                notificationService.sendNotification(
+                        requestForm.getCustomer().getId(),
+                        "의뢰서가 자동으로 취소되었습니다.",
+                        "customer"
+                );
+            }
+            catch (Exception e) {
                 log.warn("소프트 딜리트 실패 - 의뢰서 ID: {}, 이유: {}", requestForm.getId(), e.getMessage());
             }
         }

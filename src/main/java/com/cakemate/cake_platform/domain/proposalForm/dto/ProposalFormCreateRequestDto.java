@@ -17,7 +17,7 @@ public class ProposalFormCreateRequestDto {
     private String managerName;
     private int proposedPrice;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
     private LocalDateTime proposedPickupDate;
 
     private String image;
