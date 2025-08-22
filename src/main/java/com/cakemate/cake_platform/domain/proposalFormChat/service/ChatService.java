@@ -6,6 +6,7 @@ import com.cakemate.cake_platform.common.exception.UnauthorizedAccessException;
 import com.cakemate.cake_platform.domain.auth.exception.BadRequestException;
 import com.cakemate.cake_platform.domain.proposalForm.entity.ProposalForm;
 import com.cakemate.cake_platform.domain.proposalForm.repository.ProposalFormRepository;
+import com.cakemate.cake_platform.domain.proposalFormChat.dto.BroadcastMessageResponseDto;
 import com.cakemate.cake_platform.domain.proposalFormChat.dto.ChatMessageHistoryResponseDto;
 import com.cakemate.cake_platform.domain.proposalFormChat.dto.ChatMessageResponseDto;
 import com.cakemate.cake_platform.domain.proposalFormChat.dto.ChatRoomResponseDto;
@@ -24,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -199,10 +202,20 @@ public class ChatService {
     //반대로, DB 저장이 성공한 뒤 전송이 실패하면(네트워크 문제 등) 재전송 로직을 통해 동일한 데이터를 다시 보낼 수 있습니다.
     @Transactional
     public void saveAndBroadcast(ChatMessageResponseDto dto) {
-        // DB 저장 (영속)
-        chatMessageRepository.save(ChatMessageEntity.from(dto));
+        // DB 저장 (roomId 포함 -> 과거 내역 조회시 필요)
+        ChatMessageEntity saved = chatMessageRepository.save(ChatMessageEntity.from(dto));
+
+        //외부로는 sender + message +sentAt 만 보냄
+        BroadcastMessageResponseDto broadcastMessageResponseDto = BroadcastMessageResponseDto.builder()
+                .sender(dto.getSender())
+                .message(dto.getMessage())
+                // dto.getSender()가 null 이면 "UNKNOWN"
+                // null 아니면 그대로 반환
+                .sentAt(Objects.requireNonNullElse(saved.getCreatedAt(), LocalDateTime.now()))
+                .build();
+
         //실시간 전송
-        broadcast(dto.getRoomId(), dto);
+        broadcast(dto.getRoomId(), broadcastMessageResponseDto);
     }
 
     /**

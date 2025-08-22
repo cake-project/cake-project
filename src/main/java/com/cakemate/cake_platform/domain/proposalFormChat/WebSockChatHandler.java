@@ -2,6 +2,7 @@ package com.cakemate.cake_platform.domain.proposalFormChat;
 
 import com.cakemate.cake_platform.domain.proposalFormChat.dto.ChatMessageRequestDto;
 import com.cakemate.cake_platform.domain.proposalFormChat.dto.ChatMessageResponseDto;
+import com.cakemate.cake_platform.domain.proposalFormChat.enums.MessageType;
 import com.cakemate.cake_platform.domain.proposalFormChat.service.ChatService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +46,7 @@ public class WebSockChatHandler extends TextWebSocketHandler {
 
         // 입장 시스템 메시지 브로드캐스트
         ChatMessageResponseDto enter = ChatMessageResponseDto.builder()
-                .type(ChatMessageRequestDto.MessageType.ENTER)
+                .type(MessageType.ENTER)
                 .roomId(roomId)
                 .sender(memberName)
                 .message(memberName + "님이 입장했습니다.")
@@ -93,19 +94,18 @@ public class WebSockChatHandler extends TextWebSocketHandler {
         // JSON 문자열을 ChatMessage DTO 로 변환
         ChatMessageRequestDto dto = objectMapper.readValue(message.getPayload(), ChatMessageRequestDto.class);
 
-        // payload 에 roomId가 실려오면 세션의 roomId와 불일치 시 차단 (세션 roomId만 신뢰)
-        if (dto.getRoomId() != null && !dto.getRoomId().isBlank() && !sessionRoomId.equals(dto.getRoomId())) {
-            safeClose(session, CloseStatus.BAD_DATA.withReason("roomId mismatch"));
+        // TALK 만 허용 (ENTER 는 자동 처리이므로 무시)
+        if (dto.getType() != MessageType.TALK) {
             return;
         }
 
-        // TALK 만 허용 (ENTER 는 자동 처리이므로 무시)
-        if (dto.getType() != ChatMessageRequestDto.MessageType.TALK) {
+        if (dto.getMessage() == null || dto.getMessage().isBlank()) {
+            safeClose(session, CloseStatus.BAD_DATA.withReason("내용을 입력하세요."));
             return;
         }
 
         ChatMessageResponseDto messageResponseDto = ChatMessageResponseDto.builder()
-                .type(ChatMessageRequestDto.MessageType.TALK)
+                .type(MessageType.TALK)
                 .roomId(sessionRoomId)
                 .sender(memberName)
                 .message(dto.getMessage())

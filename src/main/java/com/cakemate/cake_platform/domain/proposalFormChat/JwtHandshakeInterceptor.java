@@ -3,6 +3,7 @@ package com.cakemate.cake_platform.domain.proposalFormChat;
 import com.cakemate.cake_platform.common.jwt.util.JwtUtil;
 import com.cakemate.cake_platform.domain.proposalFormChat.dto.ChatMessageRequestDto;
 import com.cakemate.cake_platform.domain.proposalFormChat.service.ChatService;
+import com.cakemate.cake_platform.domain.store.owner.exception.ForbiddenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
@@ -118,10 +119,13 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
             //이름 저장
             attributes.put("memberName", memberName);
 
+
             //그 토큰이 점주용 토큰인지(ownerToken), 소비자용 토큰인지(customerToken)를 판별 후
             //판별 결과를 문자열 "OWNER" 또는 "CUSTOMER"로 변환해서
             //session.getAttributes()에 memberType 으로 저장.
             attributes.put("memberType", ownerToken ? "OWNER" : "CUSTOMER");
+
+            attributes.put("roomId", roomId);
 
             return true;
 
