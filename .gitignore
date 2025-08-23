@@ -45,3 +45,8 @@ src/main/java/com/cakemate/cake_platform/DataInitializer.java
 
 ### RequestFormCsvGenerator 제외 ###
 src/main/java/RequestFormCsvGenerator.java
+
+# Python (not used)
+get-pip.py
+.venv/
+__pycache__/
