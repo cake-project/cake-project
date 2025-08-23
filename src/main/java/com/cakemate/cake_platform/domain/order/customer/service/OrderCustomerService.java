@@ -125,6 +125,7 @@ public class OrderCustomerService {
                 .agreedPrice(proposalForm.getProposedPrice())
                 .agreedPickupDate(proposalForm.getProposedPickupDate())
                 .finalCakeImage(proposalForm.getImage())
+                .paymentExpiresAt(LocalDateTime.now().plusHours(24))
                 .build();
 
         Order savedOrder = orderRepository.save(order);
@@ -142,6 +143,7 @@ public class OrderCustomerService {
                 savedOrder.getOrderNumber(),
                 savedOrder.getStatus(),
                 savedOrder.getCreatedAt(),
+                savedOrder.getPaymentExpiresAt(),
                 savedOrder.getAgreedPrice(),
                 savedOrder.getProductName(),
                 savedOrder.getCustomer().getEmail(),
