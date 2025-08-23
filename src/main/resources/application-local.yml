@@ -5,7 +5,7 @@ spring:
     redis:
       host: localhost
       port: 6379
-      password:
+      password: ""
   datasource:
     url: jdbc:mysql://localhost:3306/${DATABASE}?serverTimezone=UTC
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -23,7 +23,8 @@ spring:
         highlight_sql: true
 
   cache:
-    type: redis
+    type: simple
+
 
 
 jwt:
@@ -32,11 +33,10 @@ jwt:
 server:
   port: 8080
 
-
 kakao:
   redirect-uri-signin-owners-kakao: http://localhost:8080/api/owners/kakao/signin
   redirect-uri-signin-customers-kakao: http://localhost:8080/api/customers/kakao/signin
-  client-id: ${KAKAO_CLIENT_ID}
-  client-secret: ${KAKAO_CLIENT_SECRET}
+  client-id: ${KAKAO_CLIENT_ID:dummy}
+  client-secret: ${KAKAO_CLIENT_SECRET:dummy}
   kauth-host: https://kauth.kakao.com
   kapi-host: https://kapi.kakao.com
