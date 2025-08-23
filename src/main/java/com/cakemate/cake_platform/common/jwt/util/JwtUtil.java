@@ -81,9 +81,21 @@ public class JwtUtil {
         boolean memberType = "OWNER".equals(claims.get("memberType", String.class));
         return memberType;
     }
+    public boolean hasOwnerToken(String bearerJwtToken) {
+        String jwtToken = substringToken(bearerJwtToken);
+        Claims claims = verifyToken(jwtToken);
+        boolean memberType = "OWNER".equals(claims.get("memberType", String.class));
+        return memberType;
+    }
 
     //점주인지 소비자인지 구분하는 메서드
     public boolean isCustomerToken(Claims claims) {
+        boolean memberType = "CUSTOMER".equals(claims.get("memberType", String.class));
+        return memberType;
+    }
+    public boolean hasCustomerToken(String bearerJwtToken) {
+        String jwtToken = substringToken(bearerJwtToken);
+        Claims claims = verifyToken(jwtToken);
         boolean memberType = "CUSTOMER".equals(claims.get("memberType", String.class));
         return memberType;
     }
@@ -119,6 +131,19 @@ public class JwtUtil {
 
         throw new RuntimeException();
     }
+    public String extractMemberEmail(String bearerJwtToken) {
+        String jwtToken = substringToken(bearerJwtToken);
+        return verifyToken(jwtToken).get("email", String.class);
+    }
+    public String extractMemberName(String bearerJwtToken) {
+        String jwtToken = substringToken(bearerJwtToken);
+        return verifyToken(jwtToken).get("memberName", String.class);
+    }
+    public OAuthProvider extractMemberOAuthProvide(String bearerJwtToken) {
+        String jwtToken = substringToken(bearerJwtToken);
+        return verifyToken(jwtToken).get("oAuthProvider", OAuthProvider.class);
+    }
+
 
     public Claims verifyToken(String JwtToken) {
         // 토큰 검증 로직
