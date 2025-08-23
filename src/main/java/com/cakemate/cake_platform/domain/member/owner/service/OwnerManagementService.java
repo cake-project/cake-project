@@ -127,5 +127,4 @@ public class OwnerManagementService {
         return ApiResponse.success(HttpStatus.OK, owner.getName() + "님, 회원탈퇴가 정상적으로 완료되었습니다.", null);
 
     }
-    public void switchToCustomerProcess() {}
 }

@@ -88,7 +88,7 @@ public class OwnerSignUpService {
         String passwordConfirmEncode = passwordEncoder.encode(passwordConfirm);
 
         boolean existsOwner = existsOwner(name, phoneNumber);
-        String oAuthName = findOwner(name, phoneNumber).getProvider().getOAuthName();
+
         Owner ownerByLocal;
         if (existsOwner) {
             Optional<Owner> ownerByNameAndPhoneNumber =
