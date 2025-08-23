@@ -91,6 +91,7 @@ public class CustomerSignUpService {
 
         boolean existsOwner = existsCustomer(name, phoneNumber);
         Customer customerByLocal;
+        String oAuthName = findCustomer(name, phoneNumber).getProvider().getOAuthName();
         if (existsOwner) {
             Optional<Customer> customerByNameAndPhoneNumber =
                     customerRepository.findByNameAndPhoneNumber(name, phoneNumber);
@@ -107,7 +108,11 @@ public class CustomerSignUpService {
                                 customerByProvider.getCustomer().getName() + "님", customerSignInResponse);
                 return SignInSuccess;
             }
+        } else {
+            // 이름과 핸드폰 번호가 동일 할 경우 어떤 경로로 회원가입 되어 있는지 확인하는 예외처리 추가
+            throw new OAuthAccountAlreadyBoundException(oAuthName);
         }
+
 
         Customer customerInfo = new Customer(UUID.randomUUID().toString(), email, passwordEncode,
                 passwordConfirmEncode, name, phoneNumber, OAuthProvider.LOCAL, null);
@@ -128,82 +133,6 @@ public class CustomerSignUpService {
         return signUpSuccess;
     }
 
-    public ApiResponse<?> customerKakaoSignUpProcess(String code) {
-
-        KakaoUserResponse kakaoUserInfo = retrieveKakaoUser(code);
-
-        Long kakaoUserId = kakaoUserInfo.getId();
-        String kakaoEmail = kakaoUserInfo.getKakao_account().getEmail();
-        String kakaoName = kakaoUserInfo.getKakao_account().getName();
-        String kakaoUserPhoneNumber = kakaoUserInfo.getKakao_account().getPhone_number();
-        String replaceKakaoUserPhoneNumber = kakaoUserPhoneNumber.replaceAll("^\\+82\\s?0?10", "010");
-
-        //기존에 가입한 계정(로컬, 어나더소셜) 이 있는가?
-        boolean existsOwner = existsCustomer(kakaoName, replaceKakaoUserPhoneNumber);
-        Customer customerByProvide;
-        if (existsOwner) {
-            Optional<Customer> customerByNameAndPhoneNumber =
-                    customerRepository.findByNameAndPhoneNumber(kakaoName, replaceKakaoUserPhoneNumber);
-            if (customerByNameAndPhoneNumber.isPresent()) {
-                Member customerByKaKaoInMember = findCustomerByKaKaoInMember(kakaoName,
-                        replaceKakaoUserPhoneNumber,
-                        OAuthProvider.KAKAO,
-                        kakaoUserId);
-
-                String customerJwtToken = jwtUtil.createMemberJwtToken(customerByKaKaoInMember);
-                CustomerSignInResponse customerSignInResponse = new CustomerSignInResponse(customerJwtToken);
-
-                ApiResponse<CustomerSignInResponse> SignInSuccess
-                        = ApiResponse
-                        .success(HttpStatus.OK, "환영합니다 " +
-                                customerByKaKaoInMember.getCustomer().getName() + "님", customerSignInResponse);
-                return SignInSuccess;
-            }
-        }
-
-        Customer kakaoUserCustomerInfo = new Customer(UUID.randomUUID().toString(), kakaoEmail, null,
-                null, kakaoName, replaceKakaoUserPhoneNumber, OAuthProvider.KAKAO, kakaoUserId);
-        customerByProvide = customerRepository.save(kakaoUserCustomerInfo);
-
-        Member custmerMember = new Member(customerByProvide);
-        memberRepository.save(custmerMember);
-
-        CustomerSignUpResponse KaKaoUserCustomerSignUpResponse
-                = new CustomerSignUpResponse(customerByProvide);
-
-        ApiResponse<CustomerSignUpResponse> success = ApiResponse
-                .success(HttpStatus.CREATED,
-                        customerByProvide.getName() + "님 회원가입이 완료되었습니다.",
-                        KaKaoUserCustomerSignUpResponse);
-        return success;
-
-    }
-
-    private KakaoUserResponse retrieveKakaoUser(String code) {
-        try {
-            KakaoTokenResponse tokenResponse = getToken(code);
-            String accessToken = tokenResponse.getAccess_token();
-
-            // accessToken을 RequestContextHolder.currentRequestAttributes()에 저장
-            if (accessToken != null) {
-                saveAccessToken(accessToken);
-            }
-
-            RestClient.RequestBodySpec userProfileRequestSpec = restClient
-                    .method(HttpMethod.valueOf("GET"))
-                    .uri(kapiHost + "/v2/user/me")
-                    .headers(headers -> headers.setBearerAuth(Objects.requireNonNull(accessToken)));
-
-            String body = userProfileRequestSpec.retrieve().body(String.class);
-
-            // body에 담겨 있는 json을 자바 객체로 가져오기 위해 역직렬화 진행
-            KakaoUserResponse kakaoUserInfo = objectMapper.readValue(body, KakaoUserResponse.class);
-            return kakaoUserInfo;
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     private Customer findCustomer(String name, String phoneNumber) {
         Customer customer = customerRepository
