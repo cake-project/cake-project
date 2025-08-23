@@ -107,10 +107,10 @@ public class OwnerSignUpService {
                         .success(HttpStatus.OK, "환영합니다 " + name + "님", ownerSignInResponse);
                 return SignInSuccess;
             }
-        } else {
-            // 이름과 핸드폰 번호가 동일 할 경우 어떤 경로로 회원가입 되어 있는지 확인하는 예외처리 추가
-            throw new OAuthAccountAlreadyBoundException(oAuthName);
         }
+            // 이름과 핸드폰 번호가 동일 할 경우 어떤 경로로 회원가입 되어 있는지 확인하는 예외처리 추가
+
+
 
         Owner ownerInfo = new Owner(email, passwordEncode, passwordConfirmEncode, name, phoneNumber, OAuthProvider.LOCAL, null);
         ownerByLocal = ownerRepository.save(ownerInfo);
