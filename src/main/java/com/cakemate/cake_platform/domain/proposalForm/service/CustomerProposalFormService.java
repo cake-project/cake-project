@@ -129,7 +129,7 @@ public class CustomerProposalFormService {
     }
 
     /**
-     * 소비자 -> 견적서 선택 기능
+     * 소비자 -> 채팅방 생성 기능
      */
     @Transactional
     public ApiResponse<CreateRoomByCustomerResponseDto> createRoomByCustomer(Long proposalFormId, Long customerId) {
@@ -153,7 +153,7 @@ public class CustomerProposalFormService {
         );
 
         return ApiResponse.success(
-                HttpStatus.OK, "견적서 선택이 완료되었습니다.", createRoomByCustomerResponseDto
+                HttpStatus.OK, "채팅 생성이 완료되었습니다.", createRoomByCustomerResponseDto
         );
     }
 
