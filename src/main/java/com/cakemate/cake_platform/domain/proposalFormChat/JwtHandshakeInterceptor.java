@@ -50,6 +50,7 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
 
         try {
             if (authorizationHeader == null || authorizationHeader.isEmpty()) {
+
                 return unauthorizedError(response, "인증 토큰이 없습니다.");
             }
 
