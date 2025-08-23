@@ -89,10 +89,10 @@ public class CustomerSignUpService {
         String passwordEncode = passwordEncoder.encode(password);
         String passwordConfirmEncode = passwordEncoder.encode(passwordConfirm);
 
-        boolean existsOwner = existsCustomer(name, phoneNumber);
+        boolean existsCustomer = existsCustomer(name, phoneNumber);
         Customer customerByLocal;
-        String oAuthName = findCustomer(name, phoneNumber).getProvider().getOAuthName();
-        if (existsOwner) {
+
+        if (existsCustomer) {
             Optional<Customer> customerByNameAndPhoneNumber =
                     customerRepository.findByNameAndPhoneNumber(name, phoneNumber);
             if (customerByNameAndPhoneNumber.isPresent()) {
@@ -108,10 +108,7 @@ public class CustomerSignUpService {
                                 customerByProvider.getCustomer().getName() + "님", customerSignInResponse);
                 return SignInSuccess;
             }
-        } else {
-            // 이름과 핸드폰 번호가 동일 할 경우 어떤 경로로 회원가입 되어 있는지 확인하는 예외처리 추가
-            throw new OAuthAccountAlreadyBoundException(oAuthName);
-        }
+        } 
 
 
         Customer customerInfo = new Customer(UUID.randomUUID().toString(), email, passwordEncode,
