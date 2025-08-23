@@ -132,6 +132,35 @@ public class CustomerProposalFormService {
      * 소비자 -> 견적서 선택 기능
      */
     @Transactional
+    public ApiResponse<CreateRoomByCustomerResponseDto> createRoomByCustomer(Long proposalFormId, Long customerId) {
+        /* 1) 소유권 + 삭제 여부 한 번에 검증 */
+        boolean myForm = proposalFormRepository
+                .existsByIdAndRequestForm_Customer_IdAndIsDeletedFalse(
+                        proposalFormId, customerId);
+        if (!myForm) {
+            throw new UnauthorizedAccessException("본인의 의뢰서가 아닙니다.");
+        }
+
+        //견적서마다 최초로 한 번만 채팅방 생성
+        ChatRoomResponseDto chatDto = chatService
+                .createRoomIfAbsent(proposalFormId, customerId)
+                .getData();
+
+        // 5) DTO 에 채팅방 ID 추가
+        CreateRoomByCustomerResponseDto createRoomByCustomerResponseDto
+                = new CreateRoomByCustomerResponseDto(
+                chatDto.getRoomId()
+        );
+
+        return ApiResponse.success(
+                HttpStatus.OK, "견적서 선택이 완료되었습니다.", createRoomByCustomerResponseDto
+        );
+    }
+
+    /**
+     * 소비자 -> 견적서 선택 기능
+     */
+    @Transactional
     public ApiResponse<CustomerProposalFormAcceptResponseDto> acceptProposalFormByCustomer(Long proposalFormId, Long customerId) {
         /* 1) 소유권 + 삭제 여부 한 번에 검증 */
         boolean myForm = proposalFormRepository
@@ -169,17 +198,11 @@ public class CustomerProposalFormService {
             notificationService.sendNotification(owner.getId(), message, "owner");
         }
 
-        //견적서마다 최초로 한 번만 채팅방 생성
-        ChatRoomResponseDto chatDto = chatService
-                .createRoomIfAbsent(proposalFormId, customerId)
-                .getData();
-
         // 5) DTO 에 채팅방 ID 추가
         CustomerProposalFormAcceptResponseDto customerProposalFormAcceptResponseDto
                 = new CustomerProposalFormAcceptResponseDto(
                 proposalForm.getId(),
-                proposalForm.getStatus(),
-                chatDto.getRoomId()
+                proposalForm.getStatus()
         );
 
         return ApiResponse.success(
