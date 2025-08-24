@@ -141,17 +141,55 @@ jobs:
             sleep 3
             sudo docker logs -f dnd2 > /home/ubuntu/app.log 2>&1 &
 
+          # 서브 EC2 배포 (9)
+      - name: AWS Sub EC2 Connection
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.SUB_EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SUB_EC2_SSH_KEY }}
+          port: ${{ secrets.SUB_EC2_SSH_PORT }}
+          timeout: 60s
+          script: |
+            DATABASE="${{ secrets.RDS_DATABASE }}"
+            USERNAME="${{ secrets.RDS_USERNAME }}"
+            PASSWORD="${{ secrets.RDS_PASSWORD }}"
+            EC2END="${{ secrets.EC2END }}"
+            JWT_SECRET_KEY="${{ secrets.JWT_SECRET_KEY }}"
+            KAKAO_CLIENT_ID="${{ secrets.KAKAO_CLIENT_ID }}"
+            KAKAO_CLIENT_SECRET="${{ secrets.KAKAO_CLIENT_SECRET }}"
+            export REDIS_HOST="${{ secrets.REDIS_HOST }}"
+            export REDIS_PORT="${{ secrets.REDIS_PORT }}"
+            export REDIS_PASSWORD="${{ secrets.REDIS_PASSWORD }}"
 
-      - name: Debug ENV
-        run: |
-          echo "DATABASE=$DATABASE"
-          echo "USERNAME=$USERNAME"
-          echo "EC2END=$EC2END"
-      
-      
+            sudo docker stop dnd2-sub || true
+            sudo docker rm dnd2-sub || true
+            sudo docker rmi zoemthsus/cakemate:1.0 || true
+            sudo docker pull zoemthsus/cakemate:1.0
 
-      # REMOVE GitHub IP FROM a security group (9)
+            sudo docker run -it -d \
+              --restart unless-stopped \
+              -p 8000:8000 \
+              --name dnd2-sub \
+              -v /home/ubuntu/app/prod-log:/app/logs \
+              -e REDIS_HOST=$REDIS_HOST \
+              -e REDIS_PORT=$REDIS_PORT \
+              -e REDIS_PASSWORD=$REDIS_PASSWORD \
+              -e EC2END=$EC2END \
+              -e DATABASE=$DATABASE \
+              -e USERNAME=$USERNAME \
+              -e PASSWORD=$PASSWORD \
+              -e JWT_SECRET_KEY=$JWT_SECRET_KEY \
+              -e KAKAO_CLIENT_ID=$KAKAO_CLIENT_ID \
+              -e KAKAO_CLIENT_SECRET=$KAKAO_CLIENT_SECRET \
+              zoemthsus/cakemate:1.0
+
+            sleep 3
+            sudo docker logs -f dnd2-sub > /home/ubuntu/app-sub.log 2>&1 &
+
+      # REMOVE GitHub IP FROM a security group (10) 배포 실패시에도 ip제거
       - name: Remove IP FROM security group
+        if: always()
         run: |
           aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} \
           --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
