@@ -39,3 +39,9 @@ kakao:
   client-secret: ${KAKAO_CLIENT_SECRET}
   kauth-host: https://kauth.kakao.com
   kapi-host: https://kapi.kakao.com
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
