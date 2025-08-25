@@ -92,9 +92,21 @@ jobs:
           echo "Runner IP: ${{ steps.ip.outputs.ipv4 }}"
           aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} \
           --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
-      
 
-      # AWS EC2 Server Connect & Docker 명령어 실행 (8)
+      # 도커로 ec2에 있는 레디스 배포
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/redis-project
+            docker-compose down
+            docker-compose pull
+            docker-compose up -d
+
+          # AWS EC2 Server Connect & Docker 명령어 실행 (8)
       - name: AWS EC2 Connection
         uses: appleboy/ssh-action@v0.1.6
         with:
