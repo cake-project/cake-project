@@ -92,6 +92,12 @@ jobs:
           echo "Runner IP: ${{ steps.ip.outputs.ipv4 }}"
           aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} \
           --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+          
+
+      - name: Add GitHub IP to REDIS_AWS
+        run: |
+          aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_REDIS_SG_ID }} \
+          --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
 
       # 도커로 ec2에 있는 레디스 배포
       - name: Deploy to EC2 via SSH
