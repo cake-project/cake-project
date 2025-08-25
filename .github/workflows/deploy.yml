@@ -125,7 +125,7 @@ jobs:
               --restart unless-stopped \
               -p 8000:8000 \
               --name dnd2 \
-              -v /home/ubuntu/app/prod-log:/app/logs
+              -v /home/ubuntu/app/prod-log:/app/logs \
               -e REDIS_HOST=$REDIS_HOST \
               -e REDIS_PORT=$REDIS_PORT \
               -e REDIS_PASSWORD=$REDIS_PASSWORD \
