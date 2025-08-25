@@ -9,3 +9,4 @@ services:
       - ./redis.conf:/usr/local/etc/redis/redis.conf
       - redis-data:/data
     command: redis-server /usr/local/etc/redis/redis.conf
+    restart: unless-stopped
