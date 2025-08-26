@@ -20,33 +20,28 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "receiver_id", nullable = false)
     private Long receiverId;
     private String message;
 
     @Column(name = "is_read")
-    private boolean read = false;
+    private boolean isRead = false;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "read_at")
-    private LocalDateTime readAt;
-
-    @Column(name = "receiver_type", nullable = false)
-    private String memberType;
     //생성자
     public Notification() {}
 
-    public Notification(Long receiverId, String message, String memberType) {
+    public Notification(Long receiverId, String message) {
         this.receiverId = receiverId;
         this.message = message;
-        this.memberType = memberType;
     }
 
     //알림 읽음 처리 기능
     public void markAsRead() {
-        this.read = true;
-        this.readAt = LocalDateTime.now();
+        this.isRead = true;
     }
+
 }

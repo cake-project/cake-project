@@ -2,6 +2,8 @@ package com.cakemate.cake_platform.domain.notification.repository;
 
 import com.cakemate.cake_platform.domain.notification.entity.Notification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -9,24 +11,22 @@ import java.util.List;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
-//    //모든 알림 조회(최신순)
-//    List<Notification> findAllByReceiverIdOrderByCreatedAtDesc(Long receiverid);
-//
-//    //읽지 않은 알림 조회(최신순)
-//    List<Notification> findAllByReceiverIdAndReadIsFalseOrderByCreatedAtDesc(Long receiverId);
+    //특정 사용자 3일 이내 알림 조회
+    List<Notification> findByReceiverIdAndCreatedAtAfterOrderByIdAsc(Long receiverId, LocalDateTime after);
 
-    //특정 수신자의 receiverType + createdAt 이후 알림 조회
-    List<Notification> findByReceiverIdAndMemberTypeAndCreatedAtAfter(
-            Long receiverId, String memberType, LocalDateTime createdAt
-    );
+    //Last-Event-ID 또는 LastSentEvent 기준 누락 알림 조회용
+    List<Notification> findByReceiverIdAndIdGreaterThanOrderByIdAsc(Long receiverId, Long id);
 
-    //특정 수신자의 receiverType + lastEventId 이후 알림 조회
-    List<Notification> findByReceiverIdAndMemberTypeAndIdGreaterThan(
-            Long receiverId, String memberType, Long lastEventId
-    );
+    //LastSentEvent 기준 최근 3일 이내 알림 조회
+    List<Notification> findByReceiverIdAndIdGreaterThanAndCreatedAtAfterOrderByIdAsc(Long receiverId, Long id, LocalDateTime after);
 
-    //재연결 시 특정 사용자 lastEventId 이후 알림 조회
-    List<Notification> findByReceiverIdAndMemberTypeAndIdGreaterThanOrderByIdAsc(
-            Long receiverId, String memberType, Long lastEventId
-    );
+    //헤더 없거나 LastSentEvent 기준으로 누락된 알림(최근 3일치) 조회
+    @Query("SELECT n FROM Notification n " +
+            "WHERE n.receiverId = :receiverId " +
+            "AND (n.id > :lastSentId OR n.createdAt > :threeDaysAgoUtc) " +
+            "ORDER BY n.id ASC")
+    List<Notification> findMissedNotifications(@Param("receiverId") Long receiverId,
+                                               @Param("lastSentId") Long lastSentId,
+                                               @Param("threeDaysAgoUtc") LocalDateTime threeDaysAgoUtc);
+
 }
